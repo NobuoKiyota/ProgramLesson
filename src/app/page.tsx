@@ -1,0 +1,341 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Navbar, { ActiveTab } from '@/components/Navbar';
+import DailyResume from '@/components/DailyResume';
+import QuizCard from '@/components/QuizCard';
+import AudioRunner from '@/components/AudioRunner';
+import BugHuntView from '@/components/BugHuntView';
+import { INITIAL_CURRICULUM } from '@/data/curriculum';
+import { TrackType, DailyResumeData, CurriculumTopic } from '@/types/learning';
+import { BookOpen, Headphones, ChevronDown, ChevronRight, Award, CheckCircle2 } from 'lucide-react';
+
+export default function Home() {
+  const [activeTrack, setActiveTrack] = useState<TrackType>('csharp');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('resume');
+  const [streakDays, setStreakDays] = useState(3);
+  const [completedTopicIds, setCompletedTopicIds] = useState<string[]>([]);
+  const [weakCategories, setWeakCategories] = useState<string[]>([]);
+  const [expandedTopicId, setExpandedTopicId] = useState<string | null>(null);
+  const [isLoadingResume, setIsLoadingResume] = useState(false);
+
+  // 初期デイリーレジュメデータ
+  const [currentResume, setCurrentResume] = useState<DailyResumeData>({
+    date: new Date().toLocaleDateString('ja-JP'),
+    title: activeTrack === 'csharp' 
+      ? '本日の5分集中: C# 値型・参照型とGC停止ノイズの撲滅' 
+      : '本日の5分集中: C++ ポインタ走査とリアルタイムオーディオの掟',
+    focusPoint: activeTrack === 'csharp' ? 'Memory & GC' : 'Pointers & Buffers',
+    reason: 'オーディオ再生中に最も恐ろしい音飛び（プチノイズ）の根本原因となるメモリ領域の概念を復習します。',
+    briefExplanation: activeTrack === 'csharp'
+      ? 'UnityでSE発音時に new を繰り返すとマネージドヒープにゴミが溜まり、突発的なGCスパイクが発生してオーディオバッファがアンダーランを起こします。構造体（struct）や事前確保されたオブジェクトプールを徹底しましょう。'
+      : 'float* buffer はDAWから渡される波形メモリアドレスです。ステレオの場合は [L, R, L, R...] と並んでいるため、Lチャンネルのみの処理ではポインタを2サンプルずつ進める（p += 2）必要があります。',
+    drillQuestions: [],
+    quickChallenge: '今日の挑戦: 書いたコードがヒープにアロケーションしていないか（GCゴミを出していないか）意識しよう！'
+  });
+
+  // トラックごとのカリキュラム抽出
+  const currentCurriculum = INITIAL_CURRICULUM.filter((t) => t.track === activeTrack);
+  const currentAudioExercise = currentCurriculum.find((t) => t.audioExercise)?.audioExercise;
+
+  // ローカルストレージからのロード
+  useEffect(() => {
+    try {
+      const savedCompleted = localStorage.getItem('audio_dev_completed_topics');
+      if (savedCompleted) setCompletedTopicIds(JSON.parse(savedCompleted));
+      const savedWeak = localStorage.getItem('audio_dev_weak_categories');
+      if (savedWeak) setWeakCategories(JSON.parse(savedWeak));
+    } catch {
+      // LocalStorage not available or error
+    }
+    if (currentCurriculum.length > 0) {
+      setExpandedTopicId(currentCurriculum[0].id);
+    }
+  }, []);
+
+  // トラック切り替え時の追従
+  useEffect(() => {
+    const list = INITIAL_CURRICULUM.filter((t) => t.track === activeTrack);
+    if (list.length > 0) {
+      setExpandedTopicId(list[0].id);
+    }
+  }, [activeTrack]);
+
+  // クイズ回答時の進捗反映
+  const handleAnswered = (isCorrect: boolean, category: string) => {
+    if (!isCorrect) {
+      if (!weakCategories.includes(category)) {
+        const nextWeak = [...weakCategories, category];
+        setWeakCategories(nextWeak);
+        try {
+          localStorage.setItem('audio_dev_weak_categories', JSON.stringify(nextWeak));
+        } catch {
+          // ignore
+        }
+      }
+    }
+  };
+
+  // トピック完了の切り替え
+  const toggleTopicComplete = (topicId: string) => {
+    let next: string[];
+    if (completedTopicIds.includes(topicId)) {
+      next = completedTopicIds.filter((id) => id !== topicId);
+    } else {
+      next = [...completedTopicIds, topicId];
+    }
+    setCompletedTopicIds(next);
+    try {
+      localStorage.setItem('audio_dev_completed_topics', JSON.stringify(next));
+    } catch {
+      // ignore
+    }
+  };
+
+  // Gemini API によるレジュメ再生成
+  const handleRefreshResume = async () => {
+    setIsLoadingResume(true);
+    try {
+      const res = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          track: activeTrack,
+          weakCategories,
+          streakDays,
+          scoreSummary: `完了トピック数: ${completedTopicIds.length}`,
+        }),
+      });
+      const json = await res.json();
+      if (json.success && json.data) {
+        setCurrentResume(json.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch resume:', err);
+    } finally {
+      setIsLoadingResume(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 pb-20 md:pb-12 text-slate-100 flex flex-col">
+      <Navbar
+        activeTrack={activeTrack}
+        onTrackChange={setActiveTrack}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        streakDays={streakDays}
+      />
+
+      <main className="max-w-6xl w-full mx-auto px-4 py-6 flex-1 flex flex-col gap-6">
+        {/* デイリーレジュメ タブ */}
+        {activeTab === 'resume' && (
+          <div className="flex flex-col gap-6">
+            <DailyResume
+              initialResume={currentResume}
+              track={activeTrack}
+              weakCategories={weakCategories}
+              streakDays={streakDays}
+              onRefreshResume={handleRefreshResume}
+              isLoading={isLoadingResume}
+            />
+
+            {/* 今日の音出しクイック演習 */}
+            {currentAudioExercise && (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2 text-base font-bold text-white">
+                  <Headphones className="w-5 h-5 text-cyan-400" />
+                  <span>今日のクイック音響コードチャレンジ（実際に鳴らしてみる）</span>
+                </div>
+                <AudioRunner exercise={currentAudioExercise} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* カリキュラム学習 タブ */}
+        {activeTab === 'curriculum' && (
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <div>
+                <h2 className="text-xl md:text-2xl font-black text-white">
+                  {activeTrack === 'csharp' ? 'C# サウンドエンジニアリング カリキュラム' : 'C++ VST / DSP 低レイヤ カリキュラム'}
+                </h2>
+                <p className="text-xs md:text-sm text-slate-400 mt-0.5">
+                  Unity、CRI、Cubase、VSTプラグインの現場で直面する本質的な知識を自力で習得
+                </p>
+              </div>
+              <div className="text-xs bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-slate-300">
+                完了: {completedTopicIds.filter((id) => currentCurriculum.some((c) => c.id === id)).length} / {currentCurriculum.length}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              {currentCurriculum.map((topic) => {
+                const isExpanded = expandedTopicId === topic.id;
+                const isCompleted = completedTopicIds.includes(topic.id);
+
+                return (
+                  <div
+                    key={topic.id}
+                    className="bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden shadow-lg transition-all"
+                  >
+                    {/* トピックヘッダー (クリックで開閉) */}
+                    <div
+                      onClick={() => setExpandedTopicId(isExpanded ? null : topic.id)}
+                      className="p-4 md:p-5 flex items-center justify-between cursor-pointer hover:bg-slate-800/40 select-none"
+                    >
+                      <div className="flex items-start gap-3">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleTopicComplete(topic.id);
+                          }}
+                          className={`mt-0.5 p-1 rounded-lg border transition-all ${
+                            isCompleted
+                              ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
+                              : 'border-slate-700 text-slate-600 hover:border-slate-500'
+                          }`}
+                        >
+                          <CheckCircle2 className="w-5 h-5" />
+                        </button>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">
+                              {topic.category}
+                            </span>
+                            {isCompleted && (
+                              <span className="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-1.5 py-0.2 rounded">
+                                修了済
+                              </span>
+                            )}
+                          </div>
+                          <h3 className="text-base md:text-lg font-bold text-white mt-0.5">
+                            {topic.title}
+                          </h3>
+                          <div className="text-xs text-slate-400">{topic.subtitle}</div>
+                        </div>
+                      </div>
+
+                      <div className="text-slate-400">
+                        {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                      </div>
+                    </div>
+
+                    {/* 開いた中身 */}
+                    {isExpanded && (
+                      <div className="p-4 md:p-6 border-t border-slate-800/80 bg-slate-950/60 flex flex-col gap-6">
+                        {/* なぜサウンド開発者にとって重要か */}
+                        <div className="bg-cyan-950/30 border border-cyan-800/50 rounded-xl p-4 flex items-start gap-3">
+                          <Headphones className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
+                          <div>
+                            <div className="text-xs font-bold text-cyan-300">サウンドデザイナー・エンジニア目線での視点:</div>
+                            <div className="text-xs md:text-sm text-slate-200 mt-1 leading-relaxed">
+                              {topic.soundDesignerPerspective}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 重要概念とGood/Badコード比較 */}
+                        <div className="flex flex-col gap-4">
+                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                            🔑 本質理解: コード比較
+                          </h4>
+                          <div className="grid grid-cols-1 gap-4">
+                            {topic.keyConcepts.map((concept, idx) => (
+                              <div key={idx} className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col gap-3">
+                                <div>
+                                  <div className="text-sm font-bold text-white">{concept.name}</div>
+                                  <div className="text-xs text-slate-300 mt-1 leading-relaxed whitespace-pre-wrap">
+                                    {concept.description}
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
+                                  {concept.badPattern && (
+                                    <div className="bg-rose-950/20 border border-rose-900/50 rounded-lg p-3">
+                                      <div className="text-[11px] font-bold text-rose-400 mb-1">❌ 避けるべき実装 (Bad)</div>
+                                      <pre className="text-xs text-rose-300 font-mono overflow-x-auto leading-relaxed">
+                                        {concept.badPattern}
+                                      </pre>
+                                    </div>
+                                  )}
+                                  {concept.goodPattern && (
+                                    <div className="bg-emerald-950/20 border border-emerald-900/50 rounded-lg p-3">
+                                      <div className="text-[11px] font-bold text-emerald-400 mb-1">⭕ 推奨される実装 (Good)</div>
+                                      <pre className="text-xs text-emerald-300 font-mono overflow-x-auto leading-relaxed">
+                                        {concept.goodPattern}
+                                      </pre>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* クイズセクション */}
+                        {topic.quizzes.length > 0 && (
+                          <div className="flex flex-col gap-3">
+                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                              📝 理解度チェッククイズ
+                            </h4>
+                            <div className="grid grid-cols-1 gap-4">
+                              {topic.quizzes.map((q) => (
+                                <QuizCard key={q.id} question={q} onAnswered={handleAnswered} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* 音出し演習 */}
+                        {topic.audioExercise && (
+                          <div className="flex flex-col gap-3">
+                            <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">
+                              🎛️ 音出し実技演習 (Audio Runner)
+                            </h4>
+                            <AudioRunner exercise={topic.audioExercise} />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 音出し演習 タブ */}
+        {activeTab === 'audio-runner' && currentAudioExercise && (
+          <div className="flex flex-col gap-5">
+            <div>
+              <h2 className="text-xl md:text-2xl font-black text-white">
+                リアルタイム音響コードランナー (Web Audio DSP)
+              </h2>
+              <p className="text-xs md:text-sm text-slate-400 mt-0.5">
+                ブラウザ上でアルゴリズムを実行し、実際に鳴る音とオシロスコープ波形を確認します。
+              </p>
+            </div>
+            <AudioRunner exercise={currentAudioExercise} />
+          </div>
+        )}
+
+        {/* バグ退治 タブ */}
+        {activeTab === 'bug-hunt' && (
+          <div className="flex flex-col gap-5">
+            <div>
+              <h2 className="text-xl md:text-2xl font-black text-white">
+                現場バグ退治モード (Bug Hunting)
+              </h2>
+              <p className="text-xs md:text-sm text-slate-400 mt-0.5">
+                UnityのGCスパイクやオーディオスレッドのデッドロックなど、現場で多発する不具合の原因を特定する訓練。
+              </p>
+            </div>
+            <BugHuntView activeTrack={activeTrack} />
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

@@ -1,0 +1,7 @@
+# AI成果物アーカイブフォルダ
+ai_archives/
+.gemini/
+.next/
+node_modules/
+dist/
+build/
