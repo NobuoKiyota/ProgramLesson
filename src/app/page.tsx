@@ -6,15 +6,18 @@ import DailyResume from '@/components/DailyResume';
 import QuizCard from '@/components/QuizCard';
 import AudioRunner from '@/components/AudioRunner';
 import BugHuntView from '@/components/BugHuntView';
+import AiCustomStudio from '@/components/AiCustomStudio';
 import { INITIAL_CURRICULUM } from '@/data/curriculum';
-import { TrackType, DailyResumeData, CurriculumTopic } from '@/types/learning';
-import { BookOpen, Headphones, ChevronDown, ChevronRight, Award, CheckCircle2 } from 'lucide-react';
+import { TrackType, DailyResumeData, CurriculumTopic, LevelFilter } from '@/types/learning';
+import { BookOpen, Headphones, ChevronDown, ChevronRight, Award, CheckCircle2, Sparkles, Wand2 } from 'lucide-react';
 
 export default function Home() {
   const [activeTrack, setActiveTrack] = useState<TrackType>('csharp');
   const [activeTab, setActiveTab] = useState<ActiveTab>('resume');
+  const [levelFilter, setLevelFilter] = useState<LevelFilter>('all');
   const [streakDays, setStreakDays] = useState(3);
   const [completedTopicIds, setCompletedTopicIds] = useState<string[]>([]);
+  const [customTopics, setCustomTopics] = useState<CurriculumTopic[]>([]);
   const [weakCategories, setWeakCategories] = useState<string[]>([]);
   const [expandedTopicId, setExpandedTopicId] = useState<string | null>(null);
   const [isLoadingResume, setIsLoadingResume] = useState(false);
@@ -34,8 +37,24 @@ export default function Home() {
     quickChallenge: '今日の挑戦: 書いたコードがヒープにアロケーションしていないか（GCゴミを出していないか）意識しよう！'
   });
 
+  // 初期カリキュラム + ユーザーがGeminiに作らせたカスタムトピック
+  const allTopics = [...INITIAL_CURRICULUM, ...customTopics];
+
   // トラックごとのカリキュラム抽出
-  const currentCurriculum = INITIAL_CURRICULUM.filter((t) => t.track === activeTrack);
+  const trackCurriculum = allTopics.filter((t) => t.track === activeTrack);
+
+  // 難易度によるフィルタリング
+  const currentCurriculum = trackCurriculum.filter((t) => {
+    if (levelFilter === 'all') return true;
+    if (levelFilter === 'beginner') {
+      return t.category.includes('Basics') || t.quizzes.some((q) => q.difficulty === 'beginner');
+    }
+    if (levelFilter === 'intermediate') {
+      return !t.category.includes('Basics') || t.quizzes.some((q) => q.difficulty === 'intermediate');
+    }
+    return true;
+  });
+
   const currentAudioExercise = currentCurriculum.find((t) => t.audioExercise)?.audioExercise;
 
   // ローカルストレージからのロード
@@ -45,13 +64,27 @@ export default function Home() {
       if (savedCompleted) setCompletedTopicIds(JSON.parse(savedCompleted));
       const savedWeak = localStorage.getItem('audio_dev_weak_categories');
       if (savedWeak) setWeakCategories(JSON.parse(savedWeak));
+      const savedCustom = localStorage.getItem('audio_dev_custom_topics');
+      if (savedCustom) setCustomTopics(JSON.parse(savedCustom));
     } catch {
       // LocalStorage not available or error
     }
-    if (currentCurriculum.length > 0) {
-      setExpandedTopicId(currentCurriculum[0].id);
+    if (trackCurriculum.length > 0) {
+      setExpandedTopicId(trackCurriculum[0].id);
     }
   }, []);
+
+  // AIカスタムトピックが追加されたときのハンドラ
+  const handleTopicAdded = (newTopic: CurriculumTopic) => {
+    const updated = [newTopic, ...customTopics];
+    setCustomTopics(updated);
+    try {
+      localStorage.setItem('audio_dev_custom_topics', JSON.stringify(updated));
+    } catch {
+      // ignore
+    }
+    setExpandedTopicId(newTopic.id);
+  };
 
   // トラック切り替え時の追従
   useEffect(() => {
@@ -156,7 +189,7 @@ export default function Home() {
         {/* カリキュラム学習 タブ */}
         {activeTab === 'curriculum' && (
           <div className="flex flex-col gap-5">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
               <div>
                 <h2 className="text-xl md:text-2xl font-black text-white">
                   {activeTrack === 'csharp' ? 'C# サウンドエンジニアリング カリキュラム' : 'C++ VST / DSP 低レイヤ カリキュラム'}
@@ -165,8 +198,43 @@ export default function Home() {
                   Unity、CRI、Cubase、VSTプラグインの現場で直面する本質的な知識を自力で習得
                 </p>
               </div>
-              <div className="text-xs bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-slate-300">
-                完了: {completedTopicIds.filter((id) => currentCurriculum.some((c) => c.id === id)).length} / {currentCurriculum.length}
+
+              {/* 難易度フィルター & AI作成ボタン */}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="bg-slate-900 border border-slate-800 p-1 rounded-xl flex items-center gap-1">
+                  <button
+                    onClick={() => setLevelFilter('all')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                      levelFilter === 'all' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    すべて
+                  </button>
+                  <button
+                    onClick={() => setLevelFilter('beginner')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                      levelFilter === 'beginner' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    🌱 超初歩・基礎
+                  </button>
+                  <button
+                    onClick={() => setLevelFilter('intermediate')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                      levelFilter === 'intermediate' ? 'bg-amber-600 text-white' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    🚀 実践・中級
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => setActiveTab('ai-studio')}
+                  className="bg-purple-950/60 hover:bg-purple-900 border border-purple-800 text-purple-300 text-xs font-bold py-1.5 px-3 rounded-xl flex items-center gap-1.5 transition-all shadow-md active:scale-95"
+                >
+                  <Wand2 className="w-3.5 h-3.5" />
+                  <span>AIに新レッスンを頼む</span>
+                </button>
               </div>
             </div>
 
@@ -334,6 +402,14 @@ export default function Home() {
             </div>
             <BugHuntView activeTrack={activeTrack} />
           </div>
+        )}
+
+        {/* AI直接改造・新レッスン生成スタジオ タブ */}
+        {activeTab === 'ai-studio' && (
+          <AiCustomStudio
+            activeTrack={activeTrack}
+            onTopicAdded={handleTopicAdded}
+          />
         )}
       </main>
     </div>

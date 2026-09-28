@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { BookOpen, Headphones, Bug, Sparkles, Flame, Laptop, Smartphone } from 'lucide-react';
+import { BookOpen, Headphones, Bug, Sparkles, Flame, Wand2 } from 'lucide-react';
 import { TrackType } from '@/types/learning';
 
-export type ActiveTab = 'resume' | 'curriculum' | 'audio-runner' | 'bug-hunt';
+export type ActiveTab = 'resume' | 'curriculum' | 'audio-runner' | 'bug-hunt' | 'ai-studio';
 
 interface NavbarProps {
   activeTrack: TrackType;
@@ -26,6 +26,7 @@ export default function Navbar({
     { id: 'curriculum' as ActiveTab, label: 'カリキュラム', icon: BookOpen },
     { id: 'audio-runner' as ActiveTab, label: '音出し演習', icon: Headphones },
     { id: 'bug-hunt' as ActiveTab, label: 'バグ退治', icon: Bug },
+    { id: 'ai-studio' as ActiveTab, label: 'AI改造', icon: Wand2 },
   ];
 
   return (

@@ -1,6 +1,7 @@
 export type TrackType = 'csharp' | 'cpp';
 
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
+export type LevelFilter = 'all' | 'beginner' | 'intermediate';
 
 export interface QuizOption {
   id: string;

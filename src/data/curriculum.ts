@@ -2,7 +2,282 @@ import { CurriculumTopic } from '@/types/learning';
 
 export const INITIAL_CURRICULUM: CurriculumTopic[] = [
   // ==========================================
-  // Track: C# (Unity & Game Sound)
+  // Track: C# (超初歩・基礎)
+  // ==========================================
+  {
+    id: 'cs-basics-variables',
+    track: 'csharp',
+    title: '【超基礎】変数とデータ型（float, int, bool）',
+    subtitle: '音量・ピッチ・再生中フラグをコードで表す基本中の基本',
+    iconName: 'Sparkles',
+    category: 'C# Basics',
+    summary: 'プログラミングの第一歩！音量などの実数値を扱う `float`、効果音IDや番号を扱う `int`、鳴っているか否かを扱う `bool` の3大基本型をマスターします。',
+    soundDesignerPerspective: 'Cubaseのフェーダー（0.0〜1.0）やノブの回転角はすべて「float」、MIDIノート番号（60=C4）は「int」、ミュート状態は「bool」です。サウンドのパラメータはすべてこの3つの箱に入っています。',
+    keyConcepts: [
+      {
+        name: 'float（実数・浮動小数点数）',
+        description: '音量（0.8f）や再生速度（1.25f）、周波数（440.0f）などを扱う型。数値の後ろに `f` を付けるのがC#の決まりです。',
+        goodPattern: 'float volume = 0.75f; // 75%の音量\nfloat pitch = 1.0f;   // 等倍速'
+      },
+      {
+        name: 'int（整数）と bool（真偽値）',
+        description: 'トラック番号やサウンドIDなどの端数がない数は `int`。再生中（true）か停止中（false）かのON/OFFは `bool` です。',
+        goodPattern: 'int soundId = 101;     // 発音するSEのID\nbool isPlaying = true; // 現在再生中か'
+      }
+    ],
+    quizzes: [
+      {
+        id: 'q-cs-var-1',
+        track: 'csharp',
+        category: 'C# Basics',
+        difficulty: 'beginner',
+        type: 'choice',
+        title: '音量を保持する適切なデータ型',
+        question: 'UnityでAudioSourceの音量（0.0 から 1.0 の間の細かな小数値）を変数に保持したい場合、最も適切なデータ型はどれですか？',
+        options: [
+          {
+            id: 'opt1',
+            text: 'float (例: float currentVol = 0.8f;)',
+            isCorrect: true,
+            explanation: '正解！0.8 や 0.05 などの小数を扱うには `float` 型を使用します。末尾に `f` を忘れないようにしましょう。'
+          },
+          {
+            id: 'opt2',
+            text: 'int (例: int currentVol = 1;)',
+            isCorrect: false,
+            explanation: 'intは整数（1, 2, 3...）しか保持できないため、0.8 などの小数は切り捨てられて 0 になってしまいます！'
+          },
+          {
+            id: 'opt3',
+            text: 'bool (例: bool currentVol = true;)',
+            isCorrect: false,
+            explanation: 'boolは true（真）または false（偽）の2つの状態しか持てません。'
+          }
+        ],
+        soundContext: 'フェーダー音量制御の超基本'
+      }
+    ],
+    audioExercise: {
+      id: 'ex-cs-volume',
+      track: 'csharp',
+      title: 'マスター音量（float volume）による増幅と減衰',
+      description: 'float型の音量変数 `volume` を各サンプルに乗算して、音の大きさをコントロールします。',
+      soundGoal: '音量（volume = 0.3f）を乗算して、耳に優しい適度な音量に調整する',
+      initialCode: `// buffer[i] に波形サンプルが入っています。
+// volume (0.0f 〜 1.0f) を乗算して音量を調整してください。
+public void SetVolume(float[] buffer, float volume) {
+    for (int i = 0; i < buffer.Length; i++) {
+        // TODO: buffer[i] に volume を乗算してください
+        buffer[i] = buffer[i] * 1.0f;
+    }
+}`,
+      solutionSnippet: `buffer[i] = buffer[i] * volume;`,
+      dspType: 'gain_clip'
+    }
+  },
+  {
+    id: 'cs-basics-conditionals',
+    track: 'csharp',
+    title: '【超基礎】条件分岐 (if / else) で音を切り替える',
+    subtitle: '「水面なら水音」「残りHPがゼロならゲームオーバー」のロジック',
+    iconName: 'Split',
+    category: 'C# Basics',
+    summary: 'ゲームの状況（地面の材質、プレイヤーの体力、ボス戦突入など）に応じて、再生する音響キューをダイナミックに分岐させる基礎構文 `if` と `else` を学びます。',
+    soundDesignerPerspective: '「走っている時だけ足音を鳴らす」「HPが20%以下になったら心音SEを鳴らし始める」といったインタラクティブサウンドの核となるのが条件分岐です。',
+    keyConcepts: [
+      {
+        name: 'if文による条件判定',
+        description: '`if (条件式)` のカッコ内が true のときだけ中括弧 `{ }` の処理が実行されます。',
+        goodPattern: 'if (isUnderwater) {\n    PlaySound("Underwater_Muffled.wav");\n} else {\n    PlaySound("Footstep_Dry.wav");\n}'
+      }
+    ],
+    quizzes: [
+      {
+        id: 'q-cs-if-1',
+        track: 'csharp',
+        category: 'C# Basics',
+        difficulty: 'beginner',
+        type: 'choice',
+        title: 'ピンチ時（瀕死状態）の警告音判定',
+        question: '「プレイヤーの体力（hp）が 20 以下、かつまだ死んでいない（isAlive が true）」のときに心拍音（Heartbeat SE）を鳴らす正しいif文はどれですか？',
+        options: [
+          {
+            id: 'opt1',
+            text: 'if (hp <= 20 && isAlive)',
+            isCorrect: true,
+            explanation: '正解！`<=` は「以下」、`&&` は「かつ（AND）」を表します。'
+          },
+          {
+            id: 'opt2',
+            text: 'if (hp == 20 || isAlive)',
+            isCorrect: false,
+            explanation: 'これだと「hpが丁度20のとき」または「生きているならいつでも（HP100でも）」鳴ってしまいます。'
+          },
+          {
+            id: 'opt3',
+            text: 'if (hp > 20)',
+            isCorrect: false,
+            explanation: 'これは「HPが20より大きい元気なとき」になってしまいます。'
+          }
+        ],
+        soundContext: 'ゲームのダイナミックミキシングやステート遷移の基礎'
+      }
+    ]
+  },
+  {
+    id: 'cs-basics-loops',
+    track: 'csharp',
+    title: '【超基礎】forループ で波形配列を1つずつ処理する',
+    subtitle: '1秒間に44100回並んだ音の粒を順番に操作するループの仕組み',
+    iconName: 'Repeat',
+    category: 'C# Basics',
+    summary: 'デジタルオーディオは「数値がずらりと並んだ配列」です。その数千〜数万のサンプルを瞬時に1つずつ処理するための `for (int i = 0; i < length; i++)` を完璧に理解します。',
+    soundDesignerPerspective: 'DAWの1バッファ（例: 512サンプル）の処理は、forループで0番目のサンプルから511番目まで順番に音量をかけたりエフェクトをかけたりすることで音になります。すべてのDSPの基本姿勢です。',
+    keyConcepts: [
+      {
+        name: 'for文の3要素 (初期化; 継続条件; 増分)',
+        description: '`int i = 0` で0番目から開始、`i < buffer.Length` の間繰り返し、`i++` で1つずつ次のサンプルへ進みます。',
+        goodPattern: '// すべてのサンプルを0にして完全無音（ミュート）にする\nfor (int i = 0; i < buffer.Length; i++) {\n    buffer[i] = 0.0f;\n}'
+      }
+    ],
+    quizzes: [
+      {
+        id: 'q-cs-loop-1',
+        track: 'csharp',
+        category: 'C# Basics',
+        difficulty: 'beginner',
+        type: 'choice',
+        title: '配列外参照エラー（IndexOutOfRangeException）を防ぐ',
+        question: '要素数が 512 個の配列 `float[] buffer` を先頭から末尾までループ処理する際、正しいループ条件はどれですか？',
+        options: [
+          {
+            id: 'opt1',
+            text: 'for (int i = 0; i < buffer.Length; i++)',
+            isCorrect: true,
+            explanation: '正解！インデックスは 0 〜 511 までなので、`i < 512`（または `< buffer.Length`）が正解です。'
+          },
+          {
+            id: 'opt2',
+            text: 'for (int i = 0; i <= buffer.Length; i++)',
+            isCorrect: false,
+            explanation: '<= にすると i = 512 に達したときに配列の範囲外（512番目のインデックスは存在しない）を踏んでクラッシュします！'
+          },
+          {
+            id: 'opt3',
+            text: 'for (int i = 1; i < buffer.Length; i++)',
+            isCorrect: false,
+            explanation: 'i = 1 から始めると、一番最初の「0番目のサンプル」が処理されずに取り残されてしまいます。'
+          }
+        ],
+        soundContext: 'オーディオバッファ処理での最頻出初心者トラップ'
+      }
+    ]
+  },
+
+  // ==========================================
+  // Track: C++ (超初歩・基礎)
+  // ==========================================
+  {
+    id: 'cpp-basics-variables',
+    track: 'cpp',
+    title: '【超基礎】C++の型サイズとメモリの箱',
+    subtitle: 'なぜCubaseやVSTの波形データは float（32-bit浮動小数点）なのか？',
+    iconName: 'Box',
+    category: 'C++ Basics',
+    summary: 'C++では各データ型が「メモリを何バイト消費するか」を意識します。16-bit PCM音源（CD音質）と 32-bit float（DAW内部処理）のデータ表現の違いを学びます。',
+    soundDesignerPerspective: 'CDは16-bit整数（short型: -32768〜+32767）ですが、CubaseやVSTプラグインの内部はすべて32-bit浮動小数点数（float型: -1.0f〜+1.0f）です。floatを使うことで0dBを超えても音割れせずヘッドルームを確保できる理由がコードから分かります。',
+    keyConcepts: [
+      {
+        name: '型とメモリサイズ (sizeof)',
+        description: '`char`: 1バイト, `short`: 2バイト (16-bit音源), `int`: 4バイト, `float`: 4バイト (32-bit float音源)',
+        goodPattern: 'float sample = 0.0f; // 4バイトのメモリを占有\n// -1.0f 〜 +1.0f の範囲で音の振幅を表す'
+      }
+    ],
+    quizzes: [
+      {
+        id: 'q-cpp-var-1',
+        track: 'cpp',
+        category: 'C++ Basics',
+        difficulty: 'beginner',
+        type: 'choice',
+        title: 'DAWやVST内部で最も標準的な波形データの型',
+        question: 'VST3や現代のDAWのオーディオスレッドで、波形振幅（-1.0 〜 +1.0）を表すために最も標準的に使用される型はどれですか？',
+        options: [
+          {
+            id: 'opt1',
+            text: 'float (32-bit 単精度浮動小数点数)',
+            isCorrect: true,
+            explanation: '正解！VST3SDKでも `float` が標準です（一部高精度モードで double もサポートされますが float が主流です）。'
+          },
+          {
+            id: 'opt2',
+            text: 'int (32-bit 整数)',
+            isCorrect: false,
+            explanation: 'intでは小数点以下の滑らかな波形カーブを直接表現できません。'
+          },
+          {
+            id: 'opt3',
+            text: 'char (8-bit 整数)',
+            isCorrect: false,
+            explanation: 'charはファミコン初期のような粗い8-bit音しか表現できず、現代の音響処理では使われません。'
+          }
+        ],
+        soundContext: 'VST3 / AudioUnit のデータ受渡しの基本規格'
+      }
+    ]
+  },
+  {
+    id: 'cpp-basics-arrays',
+    track: 'cpp',
+    title: '【超基礎】C++の配列とインデックスアクセス',
+    subtitle: '固定配列 buffer[512] で波形を保持する感覚を掴む',
+    iconName: 'ListOrdered',
+    category: 'C++ Basics',
+    summary: 'ポインタを学ぶ前の最重要ステップ！`float buffer[512]` のようにメモリ上に連続して並ぶ配列の構造と、`buffer[i]` でアクセスする仕組みを学びます。',
+    soundDesignerPerspective: 'オーディオインターフェースのバッファサイズ（128, 256, 512サンプル）とは、まさにこの固定配列のサイズそのものです。',
+    keyConcepts: [
+      {
+        name: '配列の宣言と初期化',
+        description: '`float buffer[256] = {0.0f};` で256個のサンプルがすべて0.0f（無音）で確保されます。',
+        goodPattern: 'const int BLOCK_SIZE = 256;\nfloat buffer[BLOCK_SIZE];\nfor (int i = 0; i < BLOCK_SIZE; ++i) {\n    buffer[i] = 0.0f; // 無音で初期化\n}'
+      }
+    ],
+    quizzes: [
+      {
+        id: 'q-cpp-arr-1',
+        track: 'cpp',
+        category: 'C++ Basics',
+        difficulty: 'beginner',
+        type: 'choice',
+        title: 'サイズ256の配列の最後のサンプルの添字（インデックス）',
+        question: '`float buffer[256];` と宣言された配列の、「一番最後のサンプル」を読み書きする正しい添字はどれですか？',
+        options: [
+          {
+            id: 'opt1',
+            text: 'buffer[255]',
+            isCorrect: true,
+            explanation: '正解！C++の配列は 0 から始まるため、サイズ256の末尾は 255 番目になります。'
+          },
+          {
+            id: 'opt2',
+            text: 'buffer[256]',
+            isCorrect: false,
+            explanation: 'buffer[256] は配列の範囲外（257個目）となり、メモリ破壊クラッシュを引き起こします！'
+          },
+          {
+            id: 'opt3',
+            text: 'buffer[0]',
+            isCorrect: false,
+            explanation: 'buffer[0] は一番先頭のサンプルです。'
+          }
+        ],
+        soundContext: 'オーディオバッファ終端境界の安全管理'
+      }
+    ]
+  },
+
+  // ==========================================
+  // Track: C# (中級・実践)
   // ==========================================
   {
     id: 'cs-memory-gc',
