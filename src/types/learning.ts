@@ -15,14 +15,14 @@ export type QuizType = 'choice' | 'fill_in_the_blank' | 'bug_hunting' | 'why_con
 export interface QuizQuestion {
   id: string;
   track: TrackType;
-  category: string; // e.g. "GC & Memory", "Pointers & Buffers", "Unity Audio", "VST / DSP"
+  category: string;
   difficulty: DifficultyLevel;
   type: QuizType;
   title: string;
   question: string;
   codeSnippet?: string;
   options: QuizOption[];
-  soundContext?: string; // e.g. "CRI ADXのボイスプールでのメモリ枯渇を防ぐ理由"
+  soundContext?: string;
 }
 
 export interface AudioExercise {
@@ -30,21 +30,29 @@ export interface AudioExercise {
   track: TrackType;
   title: string;
   description: string;
-  soundGoal: string; // e.g. "440Hzのサイン波を生成し、音割れを防ぐソフトサチュレーションを実装する"
+  soundGoal: string;
   initialCode: string;
   solutionSnippet?: string;
   dspType: 'sine' | 'gain_clip' | 'panning' | 'ring_buffer' | 'delay';
 }
 
+export interface SoundJargon {
+  term: string; // 用語（例: メソッド, struct, インスタンス）
+  analogy: string; // 音響・機材でのたとえ（例: エフェクターのつまみ/ボタン）
+  explanation: string; // 直感的な解説
+}
+
 export interface CurriculumTopic {
   id: string;
   track: TrackType;
+  phase?: string; // フェーズ名（例: フェーズ1: ゼロからの変数と基本計算）
   title: string;
   subtitle: string;
   iconName: string;
   category: string;
   summary: string;
-  soundDesignerPerspective: string; // なぜサウンド開発者にとって重要なのか
+  soundDesignerPerspective: string;
+  soundJargon?: SoundJargon[]; // 用語解説
   keyConcepts: {
     name: string;
     description: string;
@@ -55,9 +63,16 @@ export interface CurriculumTopic {
   audioExercise?: AudioExercise;
 }
 
+export interface TopicStats {
+  answered: number; // 総回答数
+  correct: number; // 正解数
+  refreshedCount: number; // クイズを刷新した回数
+  completed: boolean; // クリアフラグ
+}
+
 export interface UserProgress {
-  completedTopics: string[]; // topic IDs
-  scoreByTopic: Record<string, { correct: number; total: number }>;
+  completedTopics: string[];
+  topicStats: Record<string, TopicStats>;
   weakCategories: string[];
   streakDays: number;
   lastStudiedDate: string;
@@ -68,7 +83,7 @@ export interface DailyResumeData {
   date: string;
   title: string;
   focusPoint: string;
-  reason: string; // e.g. "ポインタ演算での配列外参照のミスが多いため、本日はバッファ境界チェックを復習"
+  reason: string;
   briefExplanation: string;
   drillQuestions: QuizQuestion[];
   quickChallenge?: string;

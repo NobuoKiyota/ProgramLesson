@@ -1,17 +1,30 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CheckCircle, XCircle, HelpCircle, Code2, Headphones } from 'lucide-react';
+import { CheckCircle, XCircle, HelpCircle, Code2, Headphones, RotateCw } from 'lucide-react';
 import { QuizQuestion } from '@/types/learning';
 
 interface QuizCardProps {
   question: QuizQuestion;
   onAnswered?: (isCorrect: boolean, category: string) => void;
+  onRefreshQuiz?: () => Promise<void>;
+  isRefreshing?: boolean;
 }
 
-export default function QuizCard({ question, onAnswered }: QuizCardProps) {
+export default function QuizCard({
+  question,
+  onAnswered,
+  onRefreshQuiz,
+  isRefreshing = false,
+}: QuizCardProps) {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // 設問が変わったら（刷新されたら）リセット
+  React.useEffect(() => {
+    setSelectedOptionId(null);
+    setIsSubmitted(false);
+  }, [question.id]);
 
   const handleSelect = (optionId: string) => {
     if (isSubmitted) return;
@@ -32,8 +45,16 @@ export default function QuizCard({ question, onAnswered }: QuizCardProps) {
   const selectedOption = question.options.find((o) => o.id === selectedOptionId);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 md:p-6 shadow-lg flex flex-col gap-4">
-      {/* バッジ & カテゴリ */}
+    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 md:p-6 shadow-lg flex flex-col gap-4 relative overflow-hidden">
+      {/* 刷新中オーバーレイ */}
+      {isRefreshing && (
+        <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center gap-2">
+          <RotateCw className="w-6 h-6 text-cyan-400 animate-spin" />
+          <span className="text-xs font-bold text-white">Geminiが新しいクイズを考案中...</span>
+        </div>
+      )}
+
+      {/* バッジ & 刷新ボタン */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-cyan-950 text-cyan-400 border border-cyan-800/60 uppercase">
@@ -47,9 +68,23 @@ export default function QuizCard({ question, onAnswered }: QuizCardProps) {
             {question.difficulty === 'beginner' ? '基礎・初級' : '中級・実践'}
           </span>
         </div>
-        <span className="text-xs text-slate-500 font-mono">
-          {question.type === 'bug_hunting' ? '🐞 バグ退治' : question.type === 'why_concept' ? '💡 Why問' : '📝 クイズ'}
-        </span>
+
+        <div className="flex items-center gap-2">
+          {onRefreshQuiz && (
+            <button
+              onClick={onRefreshQuiz}
+              disabled={isRefreshing}
+              title="このクイズをGeminiで新しい問題に刷新する"
+              className="flex items-center gap-1 text-[11px] text-cyan-300 hover:text-white bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-cyan-700 px-2 py-1 rounded-lg transition-all active:scale-95"
+            >
+              <RotateCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span>クイズを刷新</span>
+            </button>
+          )}
+          <span className="text-xs text-slate-500 font-mono">
+            {question.type === 'bug_hunting' ? '🐞 バグ退治' : question.type === 'why_concept' ? '💡 Why問' : '📝 クイズ'}
+          </span>
+        </div>
       </div>
 
       {/* 設問タイトル & 本文 */}
@@ -125,7 +160,7 @@ export default function QuizCard({ question, onAnswered }: QuizCardProps) {
               </span>
             ) : (
               <span className="flex items-center gap-1.5 text-sm font-bold text-rose-400">
-                <XCircle className="w-4 h-4" /> 不正解（もう一度確認してみよう）
+                <XCircle className="w-4 h-4" /> 不正解（解説を確認してもう一度トライ！）
               </span>
             )}
           </div>
@@ -145,13 +180,26 @@ export default function QuizCard({ question, onAnswered }: QuizCardProps) {
             </div>
           )}
 
-          <div className="flex justify-end pt-1">
-            <button
-              onClick={handleReset}
-              className="text-xs text-slate-400 hover:text-white transition-colors"
-            >
-              もう一度挑戦する
-            </button>
+          <div className="flex justify-between items-center pt-1 border-t border-slate-800/60 mt-1">
+            <span className="text-[11px] text-slate-400">
+              理解度メーターに回答結果が自動反映されました
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleReset}
+                className="text-xs text-slate-400 hover:text-white transition-colors"
+              >
+                もう一度解く
+              </button>
+              {onRefreshQuiz && (
+                <button
+                  onClick={onRefreshQuiz}
+                  className="text-xs text-cyan-400 hover:text-cyan-300 font-bold transition-colors"
+                >
+                  次の問題に刷新 →
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
