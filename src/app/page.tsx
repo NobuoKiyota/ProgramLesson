@@ -9,15 +9,18 @@ import BugHuntView from '@/components/BugHuntView';
 import AiCustomStudio from '@/components/AiCustomStudio';
 import EndlessQuizView from '@/components/EndlessQuizView';
 import ProgressDashboard from '@/components/ProgressDashboard';
+import ApiKeyModal from '@/components/ApiKeyModal';
 import { INITIAL_CURRICULUM } from '@/data/curriculum';
 import { TrackType, DailyResumeData, CurriculumTopic, LevelFilter, QuizQuestion, TopicStats } from '@/types/learning';
-import { BookOpen, Headphones, ChevronDown, ChevronRight, Award, CheckCircle2, Sparkles, Wand2, Dices, Plus, RotateCw, HelpCircle, Layers } from 'lucide-react';
+import { BookOpen, Headphones, ChevronDown, ChevronRight, Award, CheckCircle2, Sparkles, Wand2, Dices, Plus, RotateCw, HelpCircle, Layers, Key } from 'lucide-react';
 
 export default function Home() {
   const [activeTrack, setActiveTrack] = useState<TrackType>('csharp');
   const [activeTab, setActiveTab] = useState<ActiveTab>('resume');
   const [levelFilter, setLevelFilter] = useState<LevelFilter>('all');
   const [streakDays, setStreakDays] = useState(3);
+  const [userApiKey, setUserApiKey] = useState<string>('');
+  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState<boolean>(false);
 
   // 学習進捗ステート（トピックIDごとの詳細記録）
   const [topicStats, setTopicStats] = useState<Record<string, TopicStats>>({});
@@ -73,6 +76,9 @@ export default function Home() {
 
       const savedCustom = localStorage.getItem('audio_dev_custom_topics');
       if (savedCustom) setCustomTopics(JSON.parse(savedCustom));
+
+      const savedApiKey = localStorage.getItem('audio_dev_gemini_api_key');
+      if (savedApiKey) setUserApiKey(savedApiKey);
     } catch {
       // ignore
     }
@@ -80,6 +86,19 @@ export default function Home() {
       setExpandedTopicId(trackCurriculum[0].id);
     }
   }, []);
+
+  const handleSaveApiKey = (key: string) => {
+    setUserApiKey(key);
+    try {
+      if (key) {
+        localStorage.setItem('audio_dev_gemini_api_key', key);
+      } else {
+        localStorage.removeItem('audio_dev_gemini_api_key');
+      }
+    } catch {
+      // ignore
+    }
+  };
 
   // トラック切り替え時
   useEffect(() => {
@@ -146,6 +165,7 @@ export default function Home() {
           category: topic.category,
           difficulty: topic.quizzes[0]?.difficulty || 'beginner',
           topicTitle: topic.title,
+          userApiKey: userApiKey || undefined,
         }),
       });
       const json = await res.json();
@@ -223,6 +243,8 @@ export default function Home() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         streakDays={streakDays}
+        onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
+        hasApiKey={!!userApiKey}
       />
 
       <main className="max-w-6xl w-full mx-auto px-4 py-6 flex-1 flex flex-col gap-6">
@@ -507,7 +529,11 @@ export default function Home() {
 
         {/* AI無限出題特訓 タブ */}
         {activeTab === 'endless-quiz' && (
-          <EndlessQuizView activeTrack={activeTrack} />
+          <EndlessQuizView
+            activeTrack={activeTrack}
+            userApiKey={userApiKey}
+            onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
+          />
         )}
 
         {/* 音出し演習 タブ */}
@@ -548,6 +574,14 @@ export default function Home() {
           />
         )}
       </main>
+
+      {/* Gemini APIキー設定モーダル */}
+      <ApiKeyModal
+        isOpen={isApiKeyModalOpen}
+        onClose={() => setIsApiKeyModalOpen(false)}
+        onKeySaved={handleSaveApiKey}
+        currentKey={userApiKey}
+      />
     </div>
   );
 }

@@ -1,25 +1,31 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Dices, RefreshCw, Trophy, Flame, ArrowRight, Lightbulb } from 'lucide-react';
+import { Sparkles, Dices, RefreshCw, Trophy, Flame, ArrowRight, Lightbulb, Key } from 'lucide-react';
 import { QuizQuestion, TrackType, DifficultyLevel } from '@/types/learning';
 import QuizCard from './QuizCard';
 
 interface EndlessQuizViewProps {
   activeTrack: TrackType;
+  userApiKey?: string;
+  onOpenApiKeyModal?: () => void;
 }
 
-export default function EndlessQuizView({ activeTrack }: EndlessQuizViewProps) {
+export default function EndlessQuizView({
+  activeTrack,
+  userApiKey = '',
+  onOpenApiKeyModal,
+}: EndlessQuizViewProps) {
   const [currentQuiz, setCurrentQuiz] = useState<QuizQuestion | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('beginner');
   const [solvedCount, setSolvedCount] = useState(0);
   const [streak, setStreak] = useState(0);
 
-  // 初回マウント時、またはトラック変更時にクイズを1問自動生成
+  // 初回マウント時、またはトラック・難易度・APIキー変更時にクイズを1問自動生成
   useEffect(() => {
     fetchNewQuiz();
-  }, [activeTrack, difficulty]);
+  }, [activeTrack, difficulty, userApiKey]);
 
   const fetchNewQuiz = async () => {
     setIsLoading(true);
@@ -31,6 +37,7 @@ export default function EndlessQuizView({ activeTrack }: EndlessQuizViewProps) {
           track: activeTrack,
           difficulty: difficulty,
           topicTitle: activeTrack === 'csharp' ? 'Unityサウンドプログラミング / C#' : 'VST3・オーディオDSP / C++',
+          userApiKey: userApiKey || undefined,
         }),
       });
       const json = await res.json();
@@ -67,14 +74,14 @@ export default function EndlessQuizView({ activeTrack }: EndlessQuizViewProps) {
                 Infinite AI Quiz Generator
               </span>
               <span className="text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded-full font-bold">
-                完全自動生成
+                {userApiKey ? 'Gemini 1.5 実稼働中' : 'プロシージャル動的生成'}
               </span>
             </div>
             <h3 className="text-xl font-bold text-white mt-0.5">
               Gemini 無限クイズ特訓モード
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              毎回AIが新しい現場シチュエーションを考案！同じ問題は二度と出ません。
+              毎回新しい現場シチュエーションを自動生成！同じ3問をぐるぐる回ることは二度とありません。
             </p>
           </div>
         </div>
@@ -92,6 +99,22 @@ export default function EndlessQuizView({ activeTrack }: EndlessQuizViewProps) {
           </div>
         </div>
       </div>
+
+      {/* APIキー案内バナー (未設定の場合) */}
+      {!userApiKey && onOpenApiKeyModal && (
+        <div className="bg-cyan-950/40 border border-cyan-800/60 rounded-xl p-3 flex items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-cyan-300">
+            <Key className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span>Google AI StudioのAPIキーを設定すると、本物のGeminiが毎回完全オリジナルの現場問題を出題します。</span>
+          </div>
+          <button
+            onClick={onOpenApiKeyModal}
+            className="shrink-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1 px-3 rounded-lg transition-all"
+          >
+            キーを設定
+          </button>
+        </div>
+      )}
 
       {/* 難易度セレクター & 新問題生成ボタン */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-950/60 border border-slate-800 p-3 rounded-xl">
@@ -125,7 +148,7 @@ export default function EndlessQuizView({ activeTrack }: EndlessQuizViewProps) {
           className="bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all shadow-md active:scale-95 disabled:opacity-50"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-          <span>{isLoading ? 'Geminiが新しい問題を考案中...' : '🎲 別の新問題を自動生成'}</span>
+          <span>{isLoading ? '新しい問題を考案中...' : '🎲 別の新問題を自動生成'}</span>
         </button>
       </div>
 
@@ -133,8 +156,8 @@ export default function EndlessQuizView({ activeTrack }: EndlessQuizViewProps) {
       {isLoading ? (
         <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-12 flex flex-col items-center justify-center gap-3">
           <Sparkles className="w-8 h-8 text-amber-400 animate-spin" />
-          <div className="text-sm font-bold text-white">Geminiが新しいオリジナルクイズを生成中...</div>
-          <div className="text-xs text-slate-400">現場のサウンドコーディングに役立つ問題を考案しています</div>
+          <div className="text-sm font-bold text-white">新しいオリジナルクイズを考案中...</div>
+          <div className="text-xs text-slate-400">現場のサウンドコーディングに役立つ問題を生成しています</div>
         </div>
       ) : currentQuiz ? (
         <div className="flex flex-col gap-4">
@@ -142,6 +165,8 @@ export default function EndlessQuizView({ activeTrack }: EndlessQuizViewProps) {
             key={currentQuiz.id}
             question={currentQuiz}
             onAnswered={(isCorrect) => handleAnswered(isCorrect)}
+            onRefreshQuiz={fetchNewQuiz}
+            isRefreshing={isLoading}
           />
 
           <div className="flex justify-end pt-2">

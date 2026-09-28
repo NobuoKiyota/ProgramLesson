@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BookOpen, Headphones, Bug, Sparkles, Flame, Wand2, Dices } from 'lucide-react';
+import { BookOpen, Headphones, Bug, Sparkles, Flame, Wand2, Dices, Key } from 'lucide-react';
 import { TrackType } from '@/types/learning';
 
 export type ActiveTab = 'resume' | 'curriculum' | 'endless-quiz' | 'audio-runner' | 'bug-hunt' | 'ai-studio';
@@ -12,6 +12,8 @@ interface NavbarProps {
   activeTab: ActiveTab;
   onTabChange: (tab: ActiveTab) => void;
   streakDays: number;
+  onOpenApiKeyModal: () => void;
+  hasApiKey: boolean;
 }
 
 export default function Navbar({
@@ -20,6 +22,8 @@ export default function Navbar({
   activeTab,
   onTabChange,
   streakDays,
+  onOpenApiKeyModal,
+  hasApiKey,
 }: NavbarProps) {
   const tabs = [
     { id: 'resume' as ActiveTab, label: 'デイリー', icon: Sparkles },
@@ -77,8 +81,8 @@ export default function Navbar({
             </button>
           </div>
 
-          {/* 右側: 連続日数 (Streak) & PC用タブ */}
-          <div className="flex items-center gap-4">
+          {/* 右側: 連続日数 (Streak) & PC用タブ & APIキー */}
+          <div className="flex items-center gap-3">
             <div className="hidden md:flex items-center gap-1 bg-slate-900/90 border border-slate-800 p-1 rounded-xl">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -100,9 +104,23 @@ export default function Navbar({
               })}
             </div>
 
+            {/* APIキー設定ボタン */}
+            <button
+              onClick={onOpenApiKeyModal}
+              title="Gemini APIキーを設定して本物のAI出題を有効化"
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                hasApiKey
+                  ? 'bg-emerald-950/40 border-emerald-800/60 text-emerald-400 hover:bg-emerald-900/60'
+                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
+              }`}
+            >
+              <Key className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{hasApiKey ? 'AIキー: ON' : 'AIキー設定'}</span>
+            </button>
+
             <div className="flex items-center gap-1 bg-amber-950/40 border border-amber-800/60 px-2.5 py-1.5 rounded-lg text-amber-400 text-xs font-bold">
               <Flame className="w-4 h-4 fill-amber-400" />
-              <span>{streakDays}日連続</span>
+              <span>{streakDays}日</span>
             </div>
           </div>
         </div>
@@ -117,7 +135,7 @@ export default function Navbar({
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${
+              className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all ${
                 isActive ? 'text-cyan-400' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
