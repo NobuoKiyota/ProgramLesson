@@ -21,6 +21,8 @@ export default function EndlessQuizView({
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('beginner');
   const [solvedCount, setSolvedCount] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [generationSource, setGenerationSource] = useState<'gemini' | 'procedural_fallback' | 'initial'>('initial');
+  const [generationWarning, setGenerationWarning] = useState<string | null>(null);
 
   // 初回マウント時、またはトラック・難易度・APIキー変更時にクイズを1問自動生成
   useEffect(() => {
@@ -29,6 +31,7 @@ export default function EndlessQuizView({
 
   const fetchNewQuiz = async () => {
     setIsLoading(true);
+    setGenerationWarning(null);
     try {
       const res = await fetch('/api/gemini/quiz', {
         method: 'POST',
@@ -43,9 +46,15 @@ export default function EndlessQuizView({
       const json = await res.json();
       if (json.success && json.data) {
         setCurrentQuiz(json.data);
+        setGenerationSource(json.source || 'gemini');
+        if (json.warning) {
+          setGenerationWarning(json.warning);
+        }
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      const e = err as Error;
       console.error('Failed to generate quiz:', err);
+      setGenerationWarning(e.message);
     } finally {
       setIsLoading(false);
     }
@@ -73,8 +82,12 @@ export default function EndlessQuizView({
               <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
                 Infinite AI Quiz Generator
               </span>
-              <span className="text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded-full font-bold">
-                {userApiKey ? 'Gemini 1.5 実稼働中' : 'プロシージャル動的生成'}
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${
+                generationSource === 'gemini'
+                  ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                  : 'bg-amber-950 text-amber-300 border-amber-800'
+              }`}>
+                {generationSource === 'gemini' ? '✨ Gemini AI 実稼働中' : '⚙️ プロシージャル動的生成'}
               </span>
             </div>
             <h3 className="text-xl font-bold text-white mt-0.5">
@@ -100,11 +113,31 @@ export default function EndlessQuizView({
         </div>
       </div>
 
+      {/* Gemini APIエラーや警告がある場合の通知バナー */}
+      {generationWarning && (
+        <div className="bg-amber-950/60 border border-amber-800/80 rounded-xl p-3.5 flex items-start gap-2.5 text-xs text-amber-200">
+          <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <div className="font-bold text-amber-300">Gemini API 通信情報:</div>
+            <div className="text-[11px] text-amber-200/90 mt-0.5">{generationWarning}</div>
+            <div className="text-[10px] text-slate-400 mt-1">※APIキーが無効、または未設定の場合は、ローカルの動的生成エンジンが自動で代行します。</div>
+          </div>
+          {onOpenApiKeyModal && (
+            <button
+              onClick={onOpenApiKeyModal}
+              className="shrink-0 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-2.5 py-1 rounded-lg text-[11px] transition-all"
+            >
+              キーを確認・変更
+            </button>
+          )}
+        </div>
+      )}
+
       {/* APIキー案内バナー (未設定の場合) */}
-      {!userApiKey && onOpenApiKeyModal && (
+      {!userApiKey && !generationWarning && onOpenApiKeyModal && (
         <div className="bg-cyan-950/40 border border-cyan-800/60 rounded-xl p-3 flex items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 text-cyan-300">
-            <Key className="w-4 h-4 text-cyan-400 shrink-0" />
+            <Key className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
             <span>Google AI StudioのAPIキーを設定すると、本物のGeminiが毎回完全オリジナルの現場問題を出題します。</span>
           </div>
           <button
