@@ -26,6 +26,7 @@ export default function Home() {
   const [topicStats, setTopicStats] = useState<Record<string, TopicStats>>({});
   const [customTopics, setCustomTopics] = useState<CurriculumTopic[]>([]);
   const [activeQuizzes, setActiveQuizzes] = useState<Record<string, QuizQuestion>>({});
+  const [topicQuizIndexMap, setTopicQuizIndexMap] = useState<Record<string, number>>({});
   const [refreshingTopicId, setRefreshingTopicId] = useState<string | null>(null);
 
   const [weakCategories, setWeakCategories] = useState<string[]>([]);
@@ -153,47 +154,34 @@ export default function Home() {
     });
   };
 
-  // クイズ刷新（Geminiで別問に差し替え）
-  const handleRefreshQuiz = async (topic: CurriculumTopic) => {
-    setRefreshingTopicId(topic.id);
-    try {
-      const res = await fetch('/api/gemini/quiz', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          track: topic.track,
-          category: topic.category,
-          difficulty: topic.quizzes[0]?.difficulty || 'beginner',
-          topicTitle: topic.title,
-          userApiKey: userApiKey || undefined,
-        }),
-      });
-      const json = await res.json();
-      if (json.success && json.data) {
-        // 表示中のクイズを刷新
-        setActiveQuizzes((prev) => ({
-          ...prev,
-          [topic.id]: json.data,
-        }));
+  // クイズ切替（蓄積された良問プールから次の問題に即座にローテーション）
+  const handleRefreshQuiz = (topic: CurriculumTopic) => {
+    if (!topic.quizzes || topic.quizzes.length === 0) return;
+    const currentIdx = topicQuizIndexMap[topic.id] ?? 0;
+    const nextIdx = (currentIdx + 1) % topic.quizzes.length;
+    const nextQuiz = topic.quizzes[nextIdx];
 
-        // 刷新回数をインクリメント
-        setTopicStats((prev) => {
-          const current = prev[topic.id] || { answered: 0, correct: 0, refreshedCount: 0, completed: false };
-          const updated = { ...current, refreshedCount: current.refreshedCount + 1 };
-          const newMap = { ...prev, [topic.id]: updated };
-          try {
-            localStorage.setItem('audio_dev_topic_stats', JSON.stringify(newMap));
-          } catch {
-            // ignore
-          }
-          return newMap;
-        });
+    setTopicQuizIndexMap((prev) => ({
+      ...prev,
+      [topic.id]: nextIdx,
+    }));
+    setActiveQuizzes((prev) => ({
+      ...prev,
+      [topic.id]: nextQuiz,
+    }));
+
+    // 刷新回数をインクリメント
+    setTopicStats((prev) => {
+      const current = prev[topic.id] || { answered: 0, correct: 0, refreshedCount: 0, completed: false };
+      const updated = { ...current, refreshedCount: current.refreshedCount + 1 };
+      const newMap = { ...prev, [topic.id]: updated };
+      try {
+        localStorage.setItem('audio_dev_topic_stats', JSON.stringify(newMap));
+      } catch {
+        // ignore
       }
-    } catch (err) {
-      console.error('Failed to refresh quiz:', err);
-    } finally {
-      setRefreshingTopicId(null);
-    }
+      return newMap;
+    });
   };
 
   // AIカスタムトピックが追加されたときのハンドラ
@@ -482,20 +470,25 @@ export default function Home() {
                           </div>
                         </div>
 
-                        {/* クイズセクション（刷新対応） */}
+                        {/* クイズセクション（蓄積問題ローテーション対応） */}
                         {displayQuiz && (
                           <div className="flex flex-col gap-3">
                             <div className="flex items-center justify-between">
-                              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                                📝 理解度チェッククイズ
-                              </h4>
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                  📝 理解度チェッククイズ
+                                </h4>
+                                <span className="text-[11px] font-mono font-bold text-amber-400 bg-amber-950/60 border border-amber-800/60 px-2 py-0.5 rounded-full">
+                                  問 {(topicQuizIndexMap[topic.id] ?? 0) + 1} / {topic.quizzes.length}
+                                </span>
+                              </div>
                               <button
                                 onClick={() => handleRefreshQuiz(topic)}
-                                disabled={refreshingTopicId === topic.id}
                                 className="flex items-center gap-1.5 text-xs text-purple-300 hover:text-white bg-purple-950/60 hover:bg-purple-900/80 border border-purple-800 px-3 py-1.5 rounded-lg transition-all active:scale-95"
+                                title="蓄積された別の良問に切り替えます"
                               >
-                                <RotateCw className={`w-3.5 h-3.5 ${refreshingTopicId === topic.id ? 'animate-spin' : ''}`} />
-                                <span>{refreshingTopicId === topic.id ? 'Geminiが新問題を考案中...' : '🔄 クイズを刷新（別問に変更）'}</span>
+                                <RotateCw className="w-3.5 h-3.5" />
+                                <span>🔄 次の問題へ切替</span>
                               </button>
                             </div>
 

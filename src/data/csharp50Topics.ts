@@ -35,7 +35,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-01',
+        id: 'q-cs-01-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -47,6 +47,34 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'float vol = 0.5;', isCorrect: false, explanation: 'f がないと double 型と判定され、型不一致エラーになります。' }
         ],
         soundContext: 'Unityやオーディオプラグインパラメータの基本'
+      },
+      {
+        id: 'q-cs-01-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'floatの誤差と「完全無音」判定の罠',
+        question: 'フェードアウト完了時の「無音判定」で、バグになりやすい危険なコードはどれですか？',
+        options: [
+          { id: 'o1', text: 'if (volume == 0.0f) // floatの完全一致比較', isCorrect: true, explanation: '正解！浮動小数点は計算過程で 0.0000001f などの微小誤差が残り、厳密な 0.0f と一致せず無音処理がスキップされる恐れがあります。通常は `volume <= 0.0001f` や `Mathf.Approximately` を使います。' },
+          { id: 'o2', text: 'if (volume <= 0.0001f) // 微小イプシロン判定', isCorrect: false, explanation: 'こちらは推奨される安全な比較方法です。' }
+        ],
+        soundContext: 'DSPボリュームフェードアウト完了検出'
+      },
+      {
+        id: 'q-cs-01-3',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'リニアゲインからdB(デシベル)計算でのゼロ除算ガード',
+        question: '音量（0.0〜1.0）をデシベル（dB）に変換する際、`20.0f * Mathf.Log10(vol)` で vol が 0 だと何が発生しますか？',
+        options: [
+          { id: 'o1', text: '-Infinity（負の無限大）になりDSPがクラッシュ・ミュートする', isCorrect: true, explanation: '正解！log10(0)は数学的に未定義（-Infinity）となり、ミキサーにNaNやInfが流れて音が出なくなります。必ず `Mathf.Max(vol, 0.0001f)` 等で下限をクランプします。' },
+          { id: 'o2', text: '自動的に -96dB に丸め込まれる', isCorrect: false, explanation: '自動では丸められず、-Infinity になってしまいます。' }
+        ],
+        soundContext: 'DAWミキサー・フェーダーカーブ計算'
       }
     ],
     audioExercise: {
@@ -86,7 +114,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-02',
+        id: 'q-cs-02-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -98,6 +126,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '61 (四捨五入される)', isCorrect: false, explanation: 'キャストでは四捨五入は行われません。' }
         ],
         soundContext: 'MIDIピッチベンドの半音計算での注意点'
+      },
+      {
+        id: 'q-cs-02-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'ボイスプールのインデックス循環',
+        question: '同時発音数16ボイスのプールで、次の空きインデックスを循環（0〜15）させる正しい式はどれですか？',
+        options: [
+          { id: 'o1', text: 'nextIndex = (currentIndex + 1) % 16;', isCorrect: true, explanation: '正解！剰余演算子 `%` を使うことで、15の次は自動的に0に戻るリングバッファが綺麗に作れます。' },
+          { id: 'o2', text: 'nextIndex = currentIndex + 1 / 16;', isCorrect: false, explanation: '演算子の優先順位により、1/16（0）が足されるだけになってしまいます。' }
+        ],
+        soundContext: '同時発音管理（ボイススティーリング）'
       }
     ]
   },
@@ -127,7 +169,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-03',
+        id: 'q-cs-03-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -139,6 +181,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'true', isCorrect: false, explanation: '! で値が反転します。' }
         ],
         soundContext: '再生/停止トグルボタンの実装'
+      },
+      {
+        id: 'q-cs-03-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '短絡評価（ショートサーキット）とヌルポ防止',
+        question: 'AudioSourceの再生状態を安全に確認する条件式として正しい順序はどちらですか？',
+        options: [
+          { id: 'o1', text: 'if (source != null && source.isPlaying)', isCorrect: true, explanation: '正解！左側の `source != null` が false の場合、右側の評価を行わずに即終了（短絡評価）するため、NullReferenceException が発生しません。' },
+          { id: 'o2', text: 'if (source.isPlaying && source != null)', isCorrect: false, explanation: '危険！source が null だった場合、先に `source.isPlaying` を評価しようとして即座にクラッシュします。' }
+        ],
+        soundContext: 'Unity AudioSourceの安全な参照チェック'
       }
     ]
   },
@@ -168,7 +224,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-04',
+        id: 'q-cs-04-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -180,6 +236,34 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: "string seName = 'Laser_Shot';", isCorrect: false, explanation: '一重引用符 \' \' は1文字だけを扱う char 型用です。' }
         ],
         soundContext: 'サウンドキュー管理'
+      },
+      {
+        id: 'q-cs-04-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'Update内での文字列結合によるGCスパイク',
+        question: 'Unityの毎フレーム走るUpdate()内で `"BGM_Track_" + trackNumber` を実行すると、オーディオにどんな悪影響がありますか？',
+        options: [
+          { id: 'o1', text: '毎フレーム新しいstringがヒープ生成され、GC（ガベージコレクション）スパイクによる音飛びの原因になる', isCorrect: true, explanation: '正解！C#のstringは不変オブジェクトのため、結合のたびに新しいメモリが確保されGCゴミになります。あらかじめ配列等でキャッシュしておくのが鉄則です。' },
+          { id: 'o2', text: 'メモリは一切消費せず、CPUの浮動小数点レジスタのみ消費する', isCorrect: false, explanation: '文字列結合は明確にマネージドヒープを確保（GCゴミ発生）します。' }
+        ],
+        soundContext: 'リアルタイムオーディオとゼロアロケーション'
+      },
+      {
+        id: 'q-cs-04-3',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'キュー名の安全なNullチェック',
+        question: 'キュー名が渡されていない（nullまたは空文字列）状態を最も安全かつ高速に判定するメソッドはどれですか？',
+        options: [
+          { id: 'o1', text: 'string.IsNullOrEmpty(cueName)', isCorrect: true, explanation: '正解！cueName が null の場合でも NullReferenceException を出さずに安全に true を返してくれます。' },
+          { id: 'o2', text: 'cueName.Length == 0', isCorrect: false, explanation: 'cueName が null だった場合に即座にクラッシュ（NullReferenceException）します。' }
+        ],
+        soundContext: 'サウンドAPIの引数バリデーション'
       }
     ]
   },
@@ -202,7 +286,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-05',
+        id: 'q-cs-05-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -214,6 +298,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '0.5f', isCorrect: false, explanation: 'どちらかに f を付けないと 0.5f にはなりません！初心者が最も引っかかる罠です。' }
         ],
         soundContext: 'フェーダー比率計算での頻出バグ'
+      },
+      {
+        id: 'q-cs-05-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '半音上げ周波数の計算式',
+        question: '基準周波数 baseFreq を半音1つ上げる計算式 `baseFreq * Mathf.Pow(2.0f, 1 / 12)` で、正しく半音上がらない原因は何ですか？',
+        options: [
+          { id: 'o1', text: '`1 / 12` が整数の除算になり 0 乗（等倍 1.0）になってしまうため', isCorrect: true, explanation: '正解！`1 / 12` は 0 に切り捨てられ、`2^0 = 1.0` となりピッチが全く変化しません。`1.0f / 12.0f` と書く必要があります。' },
+          { id: 'o2', text: 'Mathf.Pow の第1引数は 10.0f でなければならないため', isCorrect: false, explanation: 'オクターブは周波数2倍なので第1引数は 2.0f で正解です。指数の除算が問題です。' }
+        ],
+        soundContext: 'シンセサイザー・ピッチチューニング計算'
       }
     ]
   },
@@ -243,7 +341,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-06',
+        id: 'q-cs-06-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -255,6 +353,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '正常に48000に更新される', isCorrect: false, explanation: 'const変数は書き換え不可です。' }
         ],
         soundContext: 'オーディオ設定の安全保護'
+      },
+      {
+        id: 'q-cs-06-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'const と readonly の違い',
+        question: 'ゲーム起動時に設定ファイル（settings.json）から読み込んだ「最大同時発音数」を実行中変更不可にする場合、どちらを使うべきですか？',
+        options: [
+          { id: 'o1', text: 'readonly int MaxVoices;', isCorrect: true, explanation: '正解！const はコンパイル時に値が確定している必要があります。実行時の初期化で一度だけ代入して以降不変に保つには `readonly` を使います。' },
+          { id: 'o2', text: 'const int MaxVoices;', isCorrect: false, explanation: 'const には実行時にファイルから読み込んだ値を代入することはできません（コンパイルエラー）。' }
+        ],
+        soundContext: 'オーディオミドルウェアの初期化設計'
       }
     ]
   },
@@ -284,7 +396,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-07',
+        id: 'q-cs-07-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -296,6 +408,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '問題なく0.5fとして読み出せる', isCorrect: false, explanation: '内側で宣言した変数は外側から触れません。' }
         ],
         soundContext: 'ローカル変数の安全管理'
+      },
+      {
+        id: 'q-cs-07-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '同名変数のシャドウイングと this キーワード',
+        question: 'メソッド引数 `float volume` とクラスのメンバ変数 `volume` が同名の場合、クラス側の変数を明示的に指す正しい書き方はどれですか？',
+        options: [
+          { id: 'o1', text: 'this.volume = volume;', isCorrect: true, explanation: '正解！`this.volume` でクラスのメンバ変数、右辺の `volume` でメソッド引数を指し分けます。' },
+          { id: 'o2', text: 'volume = volume;', isCorrect: false, explanation: '引数自身に引数を代入するだけの無意味なコードになり、クラス変数は更新されません。' }
+        ],
+        soundContext: 'サウンドマネージャーのセッター実装'
       }
     ]
   },
@@ -325,7 +451,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-08',
+        id: 'q-cs-08-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -337,6 +463,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'float amp = raw / 32767;', isCorrect: false, explanation: 'これだと整数割り算になってしまい、1未満の端数が消えてしまいます。' }
         ],
         soundContext: 'WAVローダーの基本処理'
+      },
+      {
+        id: 'q-cs-08-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'ボクシング（Boxing）による予期せぬGCアロケーション',
+        question: '値型である float を `object` 型に暗黙変換したり `string.Format` に直接渡すと発生する、ゲームオーディオで警戒すべき現象はどれですか？',
+        options: [
+          { id: 'o1', text: 'ボクシング（ヒープ領域へのオブジェクトラッピング）が発生し、GCゴミを生む', isCorrect: true, explanation: '正解！値型が参照型に変換される際にヒープ領域にコピーが作られ、これが高頻度ループで起きるとGCスパイクの原因になります。' },
+          { id: 'o2', text: 'CPUクロックが自動的に半減する', isCorrect: false, explanation: 'CPU周波数ではなくメモリ確保の問題です。' }
+        ],
+        soundContext: 'オーディオDSP・ゼロアロケーションの原則'
       }
     ]
   },
@@ -359,7 +499,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-09',
+        id: 'q-cs-09-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -371,6 +511,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '"Voice ID is {voiceId}"', isCorrect: false, explanation: '$ がないと単にそのまま文字として「{voiceId}」と表示されてしまいます。' }
         ],
         soundContext: 'オーディオログ出力'
+      },
+      {
+        id: 'q-cs-09-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '音量数値の桁数フォーマット',
+        question: '`float vol = 0.8492f;` を小数第2位までの「Volume: 0.85」として文字列表示する正しい書式指定はどれですか？',
+        options: [
+          { id: 'o1', text: '$\"Volume: {vol:F2}\"', isCorrect: true, explanation: '正解！`:F2` を指定することで固定小数点（Fixed-point）で小数2桁に丸めて出力されます。' },
+          { id: 'o2', text: '$\"Volume: {vol:2}\"', isCorrect: false, explanation: '`:2` では最小桁幅の指定になってしまい、小数点のフォーマットになりません。' }
+        ],
+        soundContext: 'デバッグGUIやミキサー画面の数値表示'
       }
     ]
   },
@@ -393,7 +547,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-10',
+        id: 'q-cs-10-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -405,6 +559,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '# ここにメモ', isCorrect: false, explanation: '# はPythonなどの記法で、C#ではプリプロセッサ命令用です。' }
         ],
         soundContext: 'チーム開発での音響設定メモ'
+      },
+      {
+        id: 'q-cs-10-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'XMLドキュメントコメントの恩恵',
+        question: '関数や変数の上に `/// <summary>BGMをクロスフェード再生</summary>` と記述する最大のメリットは何ですか？',
+        options: [
+          { id: 'o1', text: 'UnityエディタやVisual Studioでマウスを乗せた時にツールチップとして日本語解説が表示される', isCorrect: true, explanation: '正解！チームのサウンドデザイナーや他プログラマーが関数を使う際、IDE上で即座に仕様が読めるため開発効率が劇的に上がります。' },
+          { id: 'o2', text: 'コンパイル後のEXEファイルの実行速度が2倍になる', isCorrect: false, explanation: 'コメントはビルド時にバイナリから除外されるため実行速度には影響しません。' }
+        ],
+        soundContext: 'サウンドライブラリ・APIの設計作法'
       }
     ]
   },
@@ -431,7 +599,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-11',
+        id: 'q-cs-11-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -443,6 +611,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'volume に 0.0f を代入したとき', isCorrect: false, explanation: '代入は `=` 1つです。比較は `==` 2つ使います。' }
         ],
         soundContext: '無音判定'
+      },
+      {
+        id: 'q-cs-11-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'ガード節（早期リターン）によるネスト解消',
+        question: 'オーディオ再生関数で「無音なら即座に処理を抜けてCPU負荷をゼロにする」プロの書き方はどれですか？',
+        options: [
+          { id: 'o1', text: 'if (volume <= 0.0f) return; // ガード節', isCorrect: true, explanation: '正解！関数の先頭で不要な条件を弾いて return することで、後続の複雑なコードのインデント（ネスト）が深くならず可読性と速度が保たれます。' },
+          { id: 'o2', text: 'if (volume > 0.0f) { /* 全処理を巨大な中括弧で囲む */ }', isCorrect: false, explanation: '間違いではありませんが、条件が増えると多重ネストになり可読性が低下します。' }
+        ],
+        soundContext: 'DSP処理の早期リターン最適化'
       }
     ]
   },
@@ -465,7 +647,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-12',
+        id: 'q-cs-12-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -477,6 +659,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'PlayWalkSound() (歩き音)', isCorrect: false, explanation: '上の条件に一致した時点で以降の else if はスキップされます。' }
         ],
         soundContext: '歩行サウンドマネージャー'
+      },
+      {
+        id: 'q-cs-12-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'else if の判定順序の罠',
+        question: 'もし `if (speed > 0.1f)` を一番上に書き、その下の else if に `speed > 5.0f` を書くとどうなりますか？',
+        options: [
+          { id: 'o1', text: 'speedが6.0fでも「歩き音」が鳴ってしまい、走り音が絶対に鳴らなくなる', isCorrect: true, explanation: '正解！6.0fは0.1fより大きいため最初のifに合致してしまい、下の走り足音条件まで判定が到達しなくなります。より厳しい条件（大きい値）から上に書くのが鉄則です。' },
+          { id: 'o2', text: '自動的に両方の音が同時に鳴る', isCorrect: false, explanation: 'else if は最初に一致した1つしか実行されません。' }
+        ],
+        soundContext: '速度追従オーディオの順序バグ'
       }
     ]
   },
@@ -499,7 +695,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-13',
+        id: 'q-cs-13-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -511,6 +707,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '<>', isCorrect: false, explanation: '<> はSQL等で使われますが、C#では != を使います。' }
         ],
         soundContext: 'BGMの二重再生防止'
+      },
+      {
+        id: 'q-cs-13-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'ノイズゲート閾値のチャタリング問題',
+        question: 'ノイズゲートで `if (inputLevel > threshold)` の単純比較だけを行うと、入力が閾値ギリギリの時に何が起こりますか？',
+        options: [
+          { id: 'o1', text: 'ゲートが毎サンプル激しく開閉を繰り返し、不快なジッパーノイズ（チャタリング）が発生する', isCorrect: true, explanation: '正解！境界付近での細かな揺れで高速にON/OFFが繰り返されます。これを防ぐために開く閾値と閉じる閾値を変える「ヒステリシス」やアタック・リリース時間を設けます。' },
+          { id: 'o2', text: '音が綺麗にフェードアウトする', isCorrect: false, explanation: '単純な比較だけではブツブツとノイズが発生します。' }
+        ],
+        soundContext: 'ダイナミクスエフェクトのDSP設計'
       }
     ]
   },
@@ -533,7 +743,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-14',
+        id: 'q-cs-14-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -545,6 +755,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'true', isCorrect: false, explanation: '両方が true である必要があります。' }
         ],
         soundContext: '着地サウンドトリガー'
+      },
+      {
+        id: 'q-cs-14-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '短絡評価（Short-circuit）の挙動',
+        question: '`if (hasVoiceSlot && TryAllocateVoice())` において、`hasVoiceSlot` が false だった場合、右側の `TryAllocateVoice()` は実行されますか？',
+        options: [
+          { id: 'o1', text: '実行されない（左が false の時点で全体が false 確定とみなされ評価が打ち切られる）', isCorrect: true, explanation: '正解！`&&` は短絡評価を行うため、左が false の時は右側のメソッド呼び出し自体がスキップされます。無駄な処理を省く最適化にもなります。' },
+          { id: 'o2', text: '必ず実行される', isCorrect: false, explanation: '短絡評価のためスキップされます。' }
+        ],
+        soundContext: 'ボイスアロケーションの短絡最適化'
       }
     ]
   },
@@ -567,7 +791,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-15',
+        id: 'q-cs-15-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -579,6 +803,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '実行されない (false)', isCorrect: false, explanation: 'どちらか1つでも満たせば実行されます。' }
         ],
         soundContext: 'ポーズ時の一括消音'
+      },
+      {
+        id: 'q-cs-15-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '&& と || の演算子優先順位',
+        question: '「ポーズ中 または メニュー中、かつ BGMミュート設定が無効」を意図した `if (isPaused || isMenuOpen && !muteBgm)` の重大なバグは何ですか？',
+        options: [
+          { id: 'o1', text: '`&&` は `||` よりも優先順位が高いため、カッコ `(isPaused || isMenuOpen) && !muteBgm` と書かないと意図通りに動かない', isCorrect: true, explanation: '正解！演算子の優先順位により、`isPaused || (isMenuOpen && !muteBgm)` と解釈されてしまい、ポーズ中は muteBgm の設定に関わらず常に true になってしまいます。' },
+          { id: 'o2', text: '文法エラーでコンパイルが通らない', isCorrect: false, explanation: '文法上は通ってしまうため、発見が遅れやすいステルスバグになります。' }
+        ],
+        soundContext: '複雑なオーディオステートマシンの優先順位'
       }
     ]
   },
@@ -608,7 +846,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-16',
+        id: 'q-cs-16-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -620,6 +858,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'else:', isCorrect: false, explanation: 'switch文では else ではなく default を使います。' }
         ],
         soundContext: 'マテリアル足音ルーティング'
+      },
+      {
+        id: 'q-cs-16-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '複数のcaseで同じサウンドを鳴らす（フォールスルー）',
+        question: '「Concrete（コンクリート）」と「Stone（石）」で同じ硬質な足音を鳴らしたい時の正しい書き方はどれですか？',
+        options: [
+          { id: 'o1', text: 'case "Concrete":\ncase "Stone":\n    PlayHardFootstep();\n    break;', isCorrect: true, explanation: '正解！caseラベルを処理を書かずに重ねることで、どちらの場合でも同一のサウンド処理を実行できます（C#で許可されている安全なフォールスルー）。' },
+          { id: 'o2', text: 'case "Concrete" || "Stone":', isCorrect: false, explanation: 'caseラベル内で論理OR演算子 `||` は使えません。' }
+        ],
+        soundContext: '複数マテリアルの共有サウンド設計'
       }
     ]
   },
@@ -642,7 +894,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-17',
+        id: 'q-cs-17-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -654,6 +906,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '*', isCorrect: false, explanation: 'C#のswitch式では _ を使います。' }
         ],
         soundContext: '天候・環境音の切り替え'
+      },
+      {
+        id: 'q-cs-17-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'switch式とガード節 (when)',
+        question: '`Weather.Rain when intensity > 0.8f => "Amb_HeavyRain"` のように、条件を追加で付与するキーワードはどれですか？',
+        options: [
+          { id: 'o1', text: 'when', isCorrect: true, explanation: '正解！`when` 句を使うことで、列挙型の値に加えて雨の強度（intensity）などの数値条件を美しく組み合わせることができます。' },
+          { id: 'o2', text: 'if', isCorrect: false, explanation: 'switch式のパターンガードには `if` ではなく `when` を使用します。' }
+        ],
+        soundContext: 'インタラクティブな環境音パラメトリック分岐'
       }
     ]
   },
@@ -676,7 +942,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-18',
+        id: 'q-cs-18-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -688,6 +954,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '1.0f', isCorrect: false, explanation: '条件が成り立っていないため左側は選ばれません。' }
         ],
         soundContext: 'パンニング減衰計算'
+      },
+      {
+        id: 'q-cs-18-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '波形サンプルのクリッピングガード',
+        question: 'オーディオ波形サンプル sample を -1.0f から +1.0f の範囲に制限する三項演算子ネストの解釈として正しいものはどれですか？',
+        options: [
+          { id: 'o1', text: '`sample > 1.0f ? 1.0f : (sample < -1.0f ? -1.0f : sample)`', isCorrect: true, explanation: '正解！1.0fを超えたら1.0f、-1.0f未満なら-1.0f、それ以外ならそのままの値を返します（Mathf.Clampと同様の動作）。' },
+          { id: 'o2', text: '`sample ? 1.0f : -1.0f`', isCorrect: false, explanation: 'C#では float を直接条件式（bool）として評価することはできません。' }
+        ],
+        soundContext: 'ハードクリッパー（歪み・過大入力防止）の実装'
       }
     ]
   },
@@ -721,7 +1001,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-19',
+        id: 'q-cs-19-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -733,6 +1013,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'ランダムなゴミデータが入っている', isCorrect: false, explanation: 'それはC++のmallocなどの場合です。C#は安全のため0でゼロクリアされます。' }
         ],
         soundContext: '無音バッファの初期化'
+      },
+      {
+        id: 'q-cs-19-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'オーディオコールバック内での new 配列の厳禁ルール',
+        question: 'Unityの `OnAudioFilterRead` や毎フレームのUpdateで `float[] temp = new float[512];` を呼ぶと何が起きますか？',
+        options: [
+          { id: 'o1', text: '1秒間に何十回・何百回もヒープ確保が走り、激しいGCスパイクで「プチッ」という音飛びノイズが連発する', isCorrect: true, explanation: '正解！オーディオ処理において毎フレーム/毎ブロックの new は絶対厳禁です。起動時に1度だけ確保したバッファを使い回す（再利用する）のが現場の絶対掟です。' },
+          { id: 'o2', text: 'C#のガベージコレクタが自動的にスタックメモリに変換してくれるため安全', isCorrect: false, explanation: '配列は参照型（Array）なので必ずマネージドヒープに確保されGC負荷になります。' }
+        ],
+        soundContext: 'リアルタイムオーディオスレッドのゼロアロケーション'
       }
     ]
   },
@@ -755,7 +1049,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-20',
+        id: 'q-cs-20-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -767,6 +1061,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'buffer[1024]', isCorrect: false, explanation: 'buffer[1024] は存在せず、IndexOutOfRangeException エラーで落ちます！' }
         ],
         soundContext: 'オーディオバッファの安全境界'
+      },
+      {
+        id: 'q-cs-20-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'リバース再生（逆再生エフェクト）のインデックス計算',
+        question: 'バッファ（要素数 N）の i 番目に対応する「逆再生サンプル」の正しい添字はどれですか？',
+        options: [
+          { id: 'o1', text: 'N - 1 - i', isCorrect: true, explanation: '正解！i=0のときは末尾 N-1 を指し、i=N-1のときは先頭 0 を指すため、完全に前後の反転が成立します。' },
+          { id: 'o2', text: 'N - i', isCorrect: false, explanation: 'i=0のときに buffer[N] となり、配列外アクセスで即座にクラッシュします！' }
+        ],
+        soundContext: '逆再生シンバル・テープリバースDSP'
       }
     ]
   },
@@ -789,7 +1097,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-21',
+        id: 'q-cs-21-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -801,6 +1109,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'i <= buffer.Length', isCorrect: false, explanation: '<= にすると末尾を超えてクラッシュします。' }
         ],
         soundContext: 'DSP走査の基本'
+      },
+      {
+        id: 'q-cs-21-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'インターリーブステレオバッファのLチャンネル走査',
+        question: '[L, R, L, R, L, R...] と交互に並ぶインターリーブ配列で、Lチャンネルのみを走査するfor文の増分ステップ（3番目の式）は何ですか？',
+        options: [
+          { id: 'o1', text: 'i += 2', isCorrect: true, explanation: '正解！添字を 0, 2, 4, 6... と2つずつ飛ばして進めることで、Lチャンネルのみを正確に処理できます。' },
+          { id: 'o2', text: 'i++', isCorrect: false, explanation: 'i++ では L と R を区別せず全サンプルを連続して触ってしまいます。' }
+        ],
+        soundContext: 'Unity OnAudioFilterRead インターリーブ処理'
       }
     ],
     audioExercise: {
@@ -833,7 +1155,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-22',
+        id: 'q-cs-22-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -845,6 +1167,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '末尾のサンプルが返される', isCorrect: false, explanation: 'それはPythonなどの言語の挙動です。C#ではエラーになります。' }
         ],
         soundContext: 'ディレイバッファ境界管理'
+      },
+      {
+        id: 'q-cs-22-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'リングバッファでのインデックス折り返し（ラップアラウンド）',
+        question: 'ディレイ処理で書き込み位置 `writePos` がバッファ末尾（delayBuffer.Length）に達したとき、最も効率よく0に折り返す演算はどれですか？',
+        options: [
+          { id: 'o1', text: 'writePos = (writePos + 1) % delayBuffer.Length;', isCorrect: true, explanation: '正解！剰余 `%` を用いることでif文を使わずに末尾で自動的に0に戻る循環バッファ（サーキュラーバッファ）が安全に構築できます。' },
+          { id: 'o2', text: 'writePos = 0; // 常に0にする', isCorrect: false, explanation: '毎サンプル0に戻してしまうと1サンプルしか記録できません。' }
+        ],
+        soundContext: 'ディレイ・リバーブ・リングバッファDSP'
       }
     ]
   },
@@ -867,7 +1203,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-23',
+        id: 'q-cs-23-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -879,6 +1215,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '1秒経つと自動的にループを抜ける', isCorrect: false, explanation: '自動では抜けません。必ず終了条件を用意する必要があります。' }
         ],
         soundContext: 'フェード処理の安全設計'
+      },
+      {
+        id: 'q-cs-23-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'コルーチン内での音量フェードと while ループ',
+        question: 'Unityのコルーチンでフェードアウトを行う際、毎フレーム音量を減衰させながら処理を一時停止する正しい構文はどれですか？',
+        options: [
+          { id: 'o1', text: 'while (volume > 0f) { volume -= speed * Time.deltaTime; yield return null; }', isCorrect: true, explanation: '正解！`yield return null;` を挟むことで1フレーム処理を待機し、滑らかなリアルタイムフェードが実現します。これを忘れると同一フレームで一瞬で音量がゼロになります。' },
+          { id: 'o2', text: 'while (volume > 0f) { volume -= speed; }', isCorrect: false, explanation: 'フレーム待機（yield）がないため、1フレーム内で瞬時に音量がゼロになりフェードになりません。' }
+        ],
+        soundContext: 'UnityコルーチンによるBGMクロスフェード'
       }
     ]
   },
@@ -901,7 +1251,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-24',
+        id: 'q-cs-24-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -913,6 +1263,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'ループ全体が終了する', isCorrect: false, explanation: 'ループ全体を終わらせるのは break です。' }
         ],
         soundContext: '波形ピーク高速スキャン'
+      },
+      {
+        id: 'q-cs-24-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'ノイズフロア以下のサンプルスキップ',
+        question: 'バッファ走査中に `if (Mathf.Abs(buffer[i]) < 0.0001f) continue;` と記述するDSP上のメリットは何ですか？',
+        options: [
+          { id: 'o1', text: 'ほぼ完全な無音サンプルに対する重いエフェクト演算（フィルター計算等）をスキップしてCPU負荷を削減する', isCorrect: true, explanation: '正解！演算不要な無音部分を continue で早期スキップすることで、CPU負荷（デノミナル処理負荷）を大幅に軽減できます。' },
+          { id: 'o2', text: '音量を自動的に+6dBブーストする', isCorrect: false, explanation: '音量ブーストではなく不要な計算のスキップです。' }
+        ],
+        soundContext: 'DSPデノミナル（微小数値）CPU負荷対策'
       }
     ]
   },
@@ -935,7 +1299,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-25',
+        id: 'q-cs-25-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -947,6 +1311,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '途中で要素の追加や削除が自由にできる', isCorrect: false, explanation: 'foreachの実行中にコレクションの要素数を変更すると例外エラーになります。' }
         ],
         soundContext: 'ボイスプールの一括操作'
+      },
+      {
+        id: 'q-cs-25-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'オーディオ更新ループでの foreach の注意点',
+        question: '古いUnity環境や一部のインターフェース型に対する foreach で、ガベージコレクション（GC）が発生することがある理由はどれですか？',
+        options: [
+          { id: 'o1', text: '内部で IEnumerator オブジェクトのインスタンス生成（ヒープ確保）が行われるため', isCorrect: true, explanation: '正解！配列に対する foreach は最適化されますが、一般的なインターフェース等では列挙子オブジェクトがアロケーションされる歴史的要因がありました。毎フレーム走る極限最適化では通常の `for (int i=0; ...)` が好まれる理由です。' },
+          { id: 'o2', text: 'ループが並列スレッドで実行されてしまうため', isCorrect: false, explanation: '並列化はされません。列挙子の確保が理由です。' }
+        ],
+        soundContext: '高頻度ループのGCゼロ化テクニック'
       }
     ]
   },
@@ -969,7 +1347,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-26',
+        id: 'q-cs-26-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -981,6 +1359,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'stereoBuffer[0][1]', isCorrect: false, explanation: 'これはLチャンネルの2番目のサンプルになってしまいます。' }
         ],
         soundContext: 'DAWステレオ処理の規格'
+      },
+      {
+        id: 'q-cs-26-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'Interleaved（インターリーブ）と Non-Interleaved（分離配列）の違い',
+        question: 'VST3やCubase内部で標準採用されている「Non-Interleaved（非インターリーブ）」ステレオバッファの特徴はどれですか？',
+        options: [
+          { id: 'o1', text: 'Lチャンネルのサンプル全数（float* L）と、Rチャンネルのサンプル全数（float* R）が別々のメモリブロックに独立して並んでいる', isCorrect: true, explanation: '正解！SIMDベクトル命令（AVX/SSE）で一括高速演算しやすいため、現代のDAWやプラグイン規格ではNon-Interleavedが主流です。' },
+          { id: 'o2', text: 'LとRが1サンプルずつ [L, R, L, R...] と交互に1本の配列に並んでいる', isCorrect: false, explanation: 'これは Interleaved（インターリーブ）形式の説明です。' }
+        ],
+        soundContext: 'DAWオーディオエンジン・SIMD最適化の基礎'
       }
     ]
   },
@@ -1014,7 +1406,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-27',
+        id: 'q-cs-27-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1026,6 +1418,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'PlayExplosion;', isCorrect: false, explanation: '括弧がないと呼び出しになりません。' }
         ],
         soundContext: 'SE発声処理の呼び出し'
+      },
+      {
+        id: 'q-cs-27-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '単一責任の原則（Single Responsibility）とサウンド設計',
+        question: '「PlayFootstep()」という関数内に「距離減衰計算」「リバーブパラメータ設定」「ボイススティーリング」「発声」をすべてベタ書きする設計の重大な問題は何ですか？',
+        options: [
+          { id: 'o1', text: '足音以外のSE（銃撃音など）で距離減衰や発声コードを再利用できず、不具合修正時に全箇所を修正する羽目になる', isCorrect: true, explanation: '正解！「距離減衰計算」「発声処理」などの共通ロジックを小分けのメソッドに切り出して呼び出すことで、コードの再利用性と保守性が大幅に向上します。' },
+          { id: 'o2', text: '1つの関数が長くなるとUnityエディタが自動停止する', isCorrect: false, explanation: 'エディタは停止しませんが、エンジニアのメンテ負担が破綻します。' }
+        ],
+        soundContext: 'オーディオアーキテクチャの責務分離'
       }
     ]
   },
@@ -1055,7 +1461,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-28',
+        id: 'q-cs-28-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1067,6 +1473,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'PlaySound(0.8f, 105);', isCorrect: false, explanation: '引数の順番が逆のため、型不一致エラーになります。' }
         ],
         soundContext: 'サウンドAPI設計'
+      },
+      {
+        id: 'q-cs-28-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '値渡し（Pass by Value）の挙動',
+        question: '`float vol = 0.5f; Boost(vol);` と呼んだ時、`void Boost(float v) { v *= 2.0f; }` 内で v が倍になっても呼び出し側の vol が 0.5f のまま変わらない理由は何ですか？',
+        options: [
+          { id: 'o1', text: 'floatは値型であり、メソッドには変数のコピー（複製）が渡されているため', isCorrect: true, explanation: '正解！値型はコピーが渡されるため、メソッド内で書き換えても呼び出し元の元の変数は影響を受けません。書き換えたい場合は `ref` を使います。' },
+          { id: 'o2', text: 'Boost関数内で return していないため', isCorrect: false, explanation: 'returnの有無ではなく値渡し（コピー）によるものです。' }
+        ],
+        soundContext: '引数の値渡しと副作用'
       }
     ]
   },
@@ -1096,7 +1516,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-29',
+        id: 'q-cs-29-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1108,6 +1528,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '最初からもう一度メソッドを実行する', isCorrect: false, explanation: '最初に戻るわけではありません。' }
         ],
         soundContext: '3Dオーディオ距離減衰計算'
+      },
+      {
+        id: 'q-cs-29-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '戻り値を使ったメソッドチェーン（Fluent API）',
+        question: '`SoundPlayer.Play("BGM").SetVolume(0.8f).SetLoop(true);` のようにドットで連続して設定を書けるようにするメソッド設計の秘密は何ですか？',
+        options: [
+          { id: 'o1', text: '各設定メソッドが戻り値として自分自身のインスタンス（`return this;`）を返している', isCorrect: true, explanation: '正解！`return this;` することで次のメソッドをドットで繋げられる「Fluent Interface」パターンが実現します。音響再生APIで非常に人気があります。' },
+          { id: 'o2', text: 'C#コンパイラが自動的にドットを解釈してくれるため', isCorrect: false, explanation: '明示的に `return this;` する設計が必要です。' }
+        ],
+        soundContext: 'モダンなサウンド再生API設計'
       }
     ]
   },
@@ -1137,7 +1571,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-30',
+        id: 'q-cs-30-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1149,6 +1583,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'result に 0 が入る', isCorrect: false, explanation: '0すら返さないのが void です。' }
         ],
         soundContext: '発声停止命令'
+      },
+      {
+        id: 'q-cs-30-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'async void の危険性と非同期サウンド処理',
+        question: 'BGMのフェードアウトなどを非同期で行う際、`async void FadeOutAsync()` と書くのが危険とされる理由はどれですか？',
+        options: [
+          { id: 'o1', text: '呼び出し元で await（完了待機）できず、内部で発生した例外が捕捉されずにアプリクラッシュを引き起こす恐れがあるため', isCorrect: true, explanation: '正解！イベントハンドラを除き、非同期メソッドは `async Task` または Unityの `async UniTask` を戻り値にすべきです。`async void` はエラーハンドリングが破綻します。' },
+          { id: 'o2', text: 'Unityが強制的にシングルスレッドモードに固定されるため', isCorrect: false, explanation: '例外の伝播とawait待機ができないことが主因です。' }
+        ],
+        soundContext: '非同期オーディオ処理の安全設計'
       }
     ]
   },
@@ -1171,7 +1619,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-31',
+        id: 'q-cs-31-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1183,6 +1631,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '1.0f', isCorrect: false, explanation: '指定した場合は指定値が優先されます。' }
         ],
         soundContext: '使いやすいサウンドAPI設計'
+      },
+      {
+        id: 'q-cs-31-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '名前付き引数（Named Arguments）の威力',
+        question: '`PlaySe(int id, float vol = 1.0f, float pitch = 1.0f, bool loop = false)` で、volは規定値のまま pitch だけ 1.2f に変えて呼び出す記法はどれですか？',
+        options: [
+          { id: 'o1', text: 'PlaySe(101, pitch: 1.2f);', isCorrect: true, explanation: '正解！`引数名: 値` という名前付き引数を使うことで、中間の引数をスキップして必要なパラメータだけを直感的に渡せます。' },
+          { id: 'o2', text: 'PlaySe(101, , 1.2f);', isCorrect: false, explanation: 'カンマだけを空ける記法はC#では文法エラーになります。' }
+        ],
+        soundContext: 'パラメータの多いオーディオAPI呼び出し'
       }
     ]
   },
@@ -1205,7 +1667,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-32',
+        id: 'q-cs-32-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1217,6 +1679,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'どちらが呼ばれるかランダムで決まる', isCorrect: false, explanation: '型によって厳密に決定されます。' }
         ],
         soundContext: 'ミドルウェアAPIの親切設計'
+      },
+      {
+        id: 'q-cs-32-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '戻り値の型だけが異なるオーバーロードの可否',
+        question: '引数が同じで戻り値だけが異なる `int Play(int id)` と `bool Play(int id)` を同じクラスに定義するとどうなりますか？',
+        options: [
+          { id: 'o1', text: 'コンパイルエラーになる（戻り値の型のみによるオーバーロードはC#で禁止されている）', isCorrect: true, explanation: '正解！メソッド呼び出し時に戻り値を受け取らない呼び方（単に `Play(10);`）をされた場合、どちらを実行すべきかコンパイラが判断できないため禁止されています。' },
+          { id: 'o2', text: '正常に定義できる', isCorrect: false, explanation: '戻り値の型だけではオーバーロードできません。' }
+        ],
+        soundContext: 'オーディオAPIの設計制約'
       }
     ]
   },
@@ -1246,7 +1722,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-33',
+        id: 'q-cs-33-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1258,6 +1734,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'new AudioMath().DbToLinear(-6.0f);', isCorrect: false, explanation: 'staticクラスは new できません。' }
         ],
         soundContext: 'オーディオ共通計算ライブラリ'
+      },
+      {
+        id: 'q-cs-33-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'staticメソッド内からのインスタンスアクセス制限',
+        question: '`public static void Stop()` の中から、クラス内の非static変数 `private AudioSource source;` に直接アクセスしようとすると何が起きますか？',
+        options: [
+          { id: 'o1', text: '「静的でないフィールドに静的コンテキストからアクセスできません」とコンパイルエラーになる', isCorrect: true, explanation: '正解！staticメソッドは特定のインスタンス（実体）に紐付いていないため、どのAudioSourceを指しているのか分からずアクセスできません。引数で渡す必要があります。' },
+          { id: 'o2', text: 'シーン内のすべてのAudioSourceが一斉に止まる', isCorrect: false, explanation: '自動で全停止するわけではなくコンパイルエラーです。' }
+        ],
+        soundContext: 'オーディオユーティリティ関数の設計'
       }
     ]
   },
@@ -1280,7 +1770,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-34',
+        id: 'q-cs-34-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1292,6 +1782,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '引数の値が自動的に 0 にリセットされる', isCorrect: false, explanation: 'リセットされるわけではありません。' }
         ],
         soundContext: '高負荷ゲームオーディオエンジン'
+      },
+      {
+        id: 'q-cs-34-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'ref と in と out の使い分け',
+        question: 'メソッドから「複数の計算結果（例: 左chゲインと右chゲイン）」を戻り値の代わりに安全に受け取るのに最適な修飾子はどれですか？',
+        options: [
+          { id: 'o1', text: 'out (出力引数: メソッド内で必ず代入されることが保証される)', isCorrect: true, explanation: '正解！`out float gainL, out float gainR` のように宣言すると、メソッド内で必ず値が代入されることがコンパイル時に保証され、事前初期化なしで安全に受け取れます。' },
+          { id: 'o2', text: 'in (読み取り専用)', isCorrect: false, explanation: 'in は読み取り専用のため、メソッド内での値の出力には使えません。' }
+        ],
+        soundContext: '3Dパンニング・マルチチャンネル出力計算'
       }
     ]
   },
@@ -1325,7 +1829,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-35',
+        id: 'q-cs-35-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1337,6 +1841,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'マネージドヒープ領域 (GCが回収する)', isCorrect: false, explanation: 'ヒープに配置されるのは class です。' }
         ],
         soundContext: 'GCスパイク撲滅の第一歩'
+      },
+      {
+        id: 'q-cs-35-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'struct の代入（値コピー）の挙動',
+        question: '`VoiceParam p1; p1.Volume = 1.0f; VoiceParam p2 = p1; p2.Volume = 0.2f;` の実行後、p1.Volume は何になりますか？',
+        options: [
+          { id: 'o1', text: '1.0f (p1 は影響を受けない)', isCorrect: true, explanation: '正解！structは値型のため、代入によってデータが完全に複製されます。p2を変更してもp1には一切影響しません。' },
+          { id: 'o2', text: '0.2f', isCorrect: false, explanation: 'classなら同じ参照を指すため変わりますが、structは値が独立してコピーされます。' }
+        ],
+        soundContext: 'パラメータ構造体の安全なコピー'
       }
     ]
   },
@@ -1366,7 +1884,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-36',
+        id: 'q-cs-36-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1378,6 +1896,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'ポインタ型', isCorrect: false, explanation: 'C#の基本用語では「値型」と呼びます。' }
         ],
         soundContext: 'メモリ構造の最重要理解'
+      },
+      {
+        id: 'q-cs-36-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'class の代入（参照コピー）の挙動',
+        question: '`SoundManager m1 = new SoundManager(); m1.Volume = 1.0f; SoundManager m2 = m1; m2.Volume = 0.3f;` のとき、m1.Volume はどうなりますか？',
+        options: [
+          { id: 'o1', text: '0.3f になる (同じヒープ上の実体を指しているため)', isCorrect: true, explanation: '正解！classは参照型のため、変数 m1 と m2 は机の上の同一実機のリモコンを持っている状態になります。m2から変更するとm1から見た値も変わります。' },
+          { id: 'o2', text: '1.0f のまま変わらない', isCorrect: false, explanation: '変わらないのは値型（struct）の場合です。' }
+        ],
+        soundContext: 'サウンドマネージャー参照の共有'
       }
     ]
   },
@@ -1407,7 +1939,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-37',
+        id: 'q-cs-37-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1419,6 +1951,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'ROM領域', isCorrect: false, explanation: 'ヒープ領域に動的確保されます。' }
         ],
         soundContext: 'メモリリークとGCの理解'
+      },
+      {
+        id: 'q-cs-37-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '発音ごとの new を防ぐ「オブジェクトプール」',
+        question: '効果音を鳴らすたびに `new AudioSource()` や Unityの `Instantiate` を行うのをやめ、あらかじめ作っておいた実機を使い回す設計パターンを何と呼びますか？',
+        options: [
+          { id: 'o1', text: 'オブジェクトプール（Object Pool）パターン', isCorrect: true, explanation: '正解！ゲームオーディオの最重要パターンです。あらかじめ16個などのAudioSourceを生成しておき、空いているものを貸し出すことで、実行時のヒープ確保とGCスパイクをゼロにします。' },
+          { id: 'o2', text: 'シングルトンパターン', isCorrect: false, explanation: '単一インスタンスを保証するのはシングルトンですが、複数実機の使い回しはオブジェクトプールです。' }
+        ],
+        soundContext: '同時発音ボイスプールの基本思想'
       }
     ]
   },
@@ -1448,7 +1994,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-38',
+        id: 'q-cs-38-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1460,6 +2006,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '警告が出るが値は変更できる', isCorrect: false, explanation: 'privateは外部から一切触れません。' }
         ],
         soundContext: '堅牢なオーディオシステム設計'
+      },
+      {
+        id: 'q-cs-38-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'Unityの [SerializeField] とカプセル化の両立',
+        question: '変数に `[SerializeField] private float fadeTime = 1.5f;` と書く最大のメリットは何ですか？',
+        options: [
+          { id: 'o1', text: 'Unityインスペクター上でサウンドデザイナーが調整できるようにしつつ、他クラスからの不正な書き換えを private で防ぐ', isCorrect: true, explanation: '正解！インスペクターの利便性とコードのカプセル化（安全性）を両立させる、Unity開発における最重要のベストプラクティスです。' },
+          { id: 'o2', text: 'フェード時間を自動的にゼロにする', isCorrect: false, explanation: 'インスペクター露出とカプセル化の両立が目的です。' }
+        ],
+        soundContext: 'Unityインスペクターとサウンド調整'
       }
     ]
   },
@@ -1482,7 +2042,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-39',
+        id: 'q-cs-39-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1494,6 +2054,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'input', isCorrect: false, explanation: 'C#の予約語は value です。' }
         ],
         soundContext: '自動リミッタープロパティ'
+      },
+      {
+        id: 'q-cs-39-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '自動実装プロパティとアクセス制限',
+        question: '外部からは読み取りのみ可能で、クラス内部からのみ書き込み可能にするプロパティのスマートな書き方はどれですか？',
+        options: [
+          { id: 'o1', text: 'public float MasterVolume { get; private set; }', isCorrect: true, explanation: '正解！`private set` を指定することで、外部からの代入をコンパイル時に禁止し、安全な読み取り専用プロパティを1行で定義できます。' },
+          { id: 'o2', text: 'public readonly float MasterVolume;', isCorrect: false, explanation: 'これは通常のフィールド宣言でありプロパティではありません。' }
+        ],
+        soundContext: '安全なマスターボリューム公開'
       }
     ]
   },
@@ -1523,7 +2097,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-40',
+        id: 'q-cs-40-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1535,6 +2109,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'void と書く', isCorrect: false, explanation: 'void と書くと通常のメソッドとみなされてしまいます。' }
         ],
         soundContext: 'ボイスクラスの安全な初期化'
+      },
+      {
+        id: 'q-cs-40-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'UnityのMonoBehaviourにおけるコンストラクタの禁止',
+        question: 'Unityの `MonoBehaviour` を継承したクラスで、`new` や通常のコンストラクタを使ってはいけない理由は何ですか？',
+        options: [
+          { id: 'o1', text: 'Unityエンジン自身がライフサイクルを管理するため、Awake() や Start() で初期化を行う必要がある', isCorrect: true, explanation: '正解！MonoBehaviourを new するとUnityの内部C++エンジンと紐付かず警告・不具合が出ます。初期化は必ず Awake / Start で行います。' },
+          { id: 'o2', text: 'MonoBehaviourには変数が一切定義できないため', isCorrect: false, explanation: '変数は定義できますが、生成方法が異なります。' }
+        ],
+        soundContext: 'Unity特有のコンポーネント初期化の掟'
       }
     ]
   },
@@ -1557,7 +2145,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-41',
+        id: 'q-cs-41-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1569,6 +2157,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '呼び出し元の別のクラス', isCorrect: false, explanation: '自分自身を指します。' }
         ],
         soundContext: 'クラス内パラメータ設定'
+      },
+      {
+        id: 'q-cs-41-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'this() によるコンストラクタ初期化子の連鎖',
+        question: '引数なしの `public SoundVoice() : this(44100)` と書いたとき、コロンの後の `: this(...)` は何を意味しますか？',
+        options: [
+          { id: 'o1', text: '自分自身の「引数付きコンストラクタ」を呼び出して初期値を委譲する', isCorrect: true, explanation: '正解！コンストラクタ初期化子（constructor chaining）を使うことで、共通の初期化処理を1箇所にまとめコードの重複をなくせます。' },
+          { id: 'o2', text: '親クラスのコンストラクタを呼ぶ', isCorrect: false, explanation: '親クラスを呼ぶのは `: base(...)` です。自分自身は `: this(...)` です。' }
+        ],
+        soundContext: '初期化ロジックの一元化'
       }
     ]
   },
@@ -1591,7 +2193,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-42',
+        id: 'q-cs-42-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1603,6 +2205,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '普通に書き換わる', isCorrect: false, explanation: 'readonlyなので書き換え不可です。' }
         ],
         soundContext: 'ゲームオーディオのマルチスレッド安全性'
+      },
+      {
+        id: 'q-cs-42-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '防御的コピー（Defensive Copy）の完全防止',
+        question: '通常のstructを `in` 引数で渡した際に発生することがある「防御的コピー（安全のための暗黙コピー）」を、C#コンパイラに完全に防止させる修飾子はどれですか？',
+        options: [
+          { id: 'o1', text: 'readonly struct', isCorrect: true, explanation: '正解！構造体自体を `readonly struct` と宣言することで、コンパイラは「中身が書き換わる心配が一切ない」と確信できるため、余計な防御的コピーを完全に排除して最速の参照渡しを実現します。' },
+          { id: 'o2', text: 'dynamic struct', isCorrect: false, explanation: 'そのような修飾子はありません。' }
+        ],
+        soundContext: '超高頻度DSPイベント通信の極限最適化'
       }
     ]
   },
@@ -1636,7 +2252,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-43',
+        id: 'q-cs-43-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1648,6 +2264,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '音質が劇的に向上する', isCorrect: false, explanation: '音質ではなくプログラムの安全性と可読性の向上です。' }
         ],
         soundContext: 'DAW・ゲームのオーディオバス設計'
+      },
+      {
+        id: 'q-cs-43-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '[Flags] enum による複数カテゴリのビット結合',
+        question: '「BGMとSEの両方を同時にミュート対象にする」ように複数フラグを組み合わせる属性と演算子はどれですか？',
+        options: [
+          { id: 'o1', text: '`[Flags]` 属性を付け、ビットOR演算子 `|`（例: AudioCategory.BGM | AudioCategory.SE）で結合する', isCorrect: true, explanation: '正解！`[Flags]` 属性と 1, 2, 4, 8 のビット値を割り当てることで、省メモリかつ高速に複数フラグの組み合わせ判定（`HasFlag`）が行えます。' },
+          { id: 'o2', text: '論理AND演算子 `&&` で結合する', isCorrect: false, explanation: 'enumのフラグ結合にはビットOR演算子 `|` を使用します。' }
+        ],
+        soundContext: 'サウンドカテゴリの複合フィルタリング'
       }
     ]
   },
@@ -1670,7 +2300,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-44',
+        id: 'q-cs-44-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1682,6 +2312,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '.Length', isCorrect: false, explanation: 'Length は固定長配列用です。' }
         ],
         soundContext: 'アクティブボイス数の監視'
+      },
+      {
+        id: 'q-cs-44-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '再生終了ボイスの削除と逆順forループ',
+        question: '再生が終わったボイスをリストから `RemoveAt(i)` して片付ける際、forループを逆順（`for (int i = list.Count - 1; i >= 0; i--)`）で回す理由は何ですか？',
+        options: [
+          { id: 'o1', text: '正順（0から）で削除すると、後続の要素が前詰めでズレて次の要素のチェックがスキップされるバグを防ぐため', isCorrect: true, explanation: '正解！コレクションから要素を削除しながらループを回す時は、後ろから逆順に回すのが現場の絶対鉄則です。' },
+          { id: 'o2', text: '逆順のほうがCPUのキャッシュヒット率が10倍高いため', isCorrect: false, explanation: 'インデックスのズレ防止が目的です。' }
+        ],
+        soundContext: '再生終了ボイスの確実なクリーンアップ'
       }
     ]
   },
@@ -1711,7 +2355,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-45',
+        id: 'q-cs-45-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1723,6 +2367,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'null が返ってくるだけでエラーにはならない', isCorrect: false, explanation: 'インデクサ直接アクセスは例外エラーを投げます。' }
         ],
         soundContext: 'サウンドバンク管理'
+      },
+      {
+        id: 'q-cs-45-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '文字列キーのGCスパイクと整数ハッシュ化',
+        question: '`Dictionary<string, AudioClip>` に対し、毎フレーム動的に生成した文字列で検索するとGCゴミが出る問題を解決するプロの対策はどれですか？',
+        options: [
+          { id: 'o1', text: '`Dictionary<int, AudioClip>` にし、文字列を事前ハッシュ値（整数ID）に変換して検索する', isCorrect: true, explanation: '正解！WwiseやCRIの内部でも文字列ではなく32-bit整数IDで管理されています。C#でも整数キーにすることで文字列生成のGCアロケーションを完全ゼロ化できます。' },
+          { id: 'o2', text: 'Dictionaryの代わりにListを使って毎フレーム全件検索する', isCorrect: false, explanation: 'Listの線形探索はO(N)でCPU負荷が激増します。' }
+        ],
+        soundContext: 'サウンドミドルウェアのIDハッシュ高速ルックアップ'
       }
     ]
   },
@@ -1752,7 +2410,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-46',
+        id: 'q-cs-46-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1764,6 +2422,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '音量が0になるのを防ぐため', isCorrect: false, explanation: 'null安全のための構文です。' }
         ],
         soundContext: 'サウンドイベント通知'
+      },
+      {
+        id: 'q-cs-46-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'イベント購読解除（-=）忘れによるメモリリーク',
+        question: 'シーン破棄時にイベントリスナーを `-=` で解除しないと発生する深刻な問題は何ですか？',
+        options: [
+          { id: 'o1', text: '破棄されたはずのオブジェクトへの参照がイベント側に残り続け、GC回収されずにメモリリーク＆MissingReferenceException を引き起こす', isCorrect: true, explanation: '正解！イベント購読（+=）は強い参照を保持するため、OnDestroy() などで必ず `-=` 解除するのがUnity・C#開発の鉄則です。' },
+          { id: 'o2', text: '音のピッチが徐々に狂う', isCorrect: false, explanation: 'ピッチではなくメモリリークと幽霊参照クラッシュが起きます。' }
+        ],
+        soundContext: 'イベント駆動オーディオのメモリ安全性'
       }
     ]
   },
@@ -1786,7 +2458,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-47',
+        id: 'q-cs-47-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1798,6 +2470,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '0.5 秒', isCorrect: false, explanation: '0.5秒になるのは BPM 120 のときです。' }
         ],
         soundContext: 'テンポ同期ディレイ・クオンタイズ'
+      },
+      {
+        id: 'q-cs-47-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '音楽ゲーム同期における AudioSettings.dspTime の必要性',
+        question: 'リズムゲームの判定や小節同期で、`Time.time` ではなく `AudioSettings.dspTime` を使うべき理由は何ですか？',
+        options: [
+          { id: 'o1', text: '`Time.time` は画面フレームレートの変動（カクつき）の影響を受けるが、`dspTime` はサウンドカードの正確なサンプル時計に完全同期しているため', isCorrect: true, explanation: '正解！音ゲーやBPM同期演出では、描画フレームレートに依存しない `AudioSettings.dspTime` を基準に判定するのが絶対的な業界標準です。' },
+          { id: 'o2', text: '`dspTime` のほうが桁数が少ないため', isCorrect: false, explanation: 'サウンドハードウェア直結の超高精度クロックであることが理由です。' }
+        ],
+        soundContext: '音ゲー・音楽連動エンジンの同期精度'
       }
     ]
   },
@@ -1820,7 +2506,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-48',
+        id: 'q-cs-48-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1832,6 +2518,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '約 0.1倍', isCorrect: false, explanation: '0.1倍は -20dB のときです。' }
         ],
         soundContext: 'ミキサーのフェーダーカーブ設計'
+      },
+      {
+        id: 'q-cs-48-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '音量スライダーの線形マッピングの罠',
+        question: 'UIのスライダー（0.0〜1.0）を直接 `AudioSource.volume` に代入した時、プレイヤーが「スライダーの中央（0.5）なのに音が小さく感じる」原因は何ですか？',
+        options: [
+          { id: 'o1', text: '人間の聴覚は音圧の増減を対数（dB）で感じるため、線形（リニア）変化だと半分以下に聴こえてしまう', isCorrect: true, explanation: '正解！人間の耳の特性に合わせるため、UIスライダーの数値は対数カーブ（`volume = Mathf.Pow(sliderValue, 3.0f)` や dB変換）を介してマッピングするのが音響UIの基本です。' },
+          { id: 'o2', text: 'スピーカーの電源電圧が半分に落ちるため', isCorrect: false, explanation: '聴覚特性（ウェーバー・フェヒナーの法則）によるものです。' }
+        ],
+        soundContext: '心地よい設定画面ボリュームスライダー設計'
       }
     ],
     audioExercise: {
@@ -1864,7 +2564,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-49',
+        id: 'q-cs-49-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1876,6 +2576,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: '前の曲を無視してもう1つAudioSourceを生成する', isCorrect: false, explanation: '二重再生になり音が濁ってしまいます。' }
         ],
         soundContext: 'BGMステートマシン設計'
+      },
+      {
+        id: 'q-cs-49-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: '等電力（Equal-Power）クロスフェードカーブ',
+        question: '曲Aから曲Bへのクロスフェードで、単純な線形フェード（A: 1-t, B: t）を使うと中間地点（t=0.5）で何が起こりますか？',
+        options: [
+          { id: 'o1', text: '合成エネルギーが3dB低下し、曲の切り替わり中間で全体の音量がフッと凹んで聴こえる', isCorrect: true, explanation: '正解！非相関な音楽信号同士のクロスフェードでは、エネルギー合計を一定に保つために等電力カーブ（平方根 √ または cos/sin カーブ）を使うのが音響エンジニアリングの基本常識です。' },
+          { id: 'o2', text: '音量が2倍に膨れ上がってクリッピングする', isCorrect: false, explanation: '線形クロスフェードでは中間で音量が凹んでしまいます。' }
+        ],
+        soundContext: 'プロ品質のBGMクロスフェードアルゴリズム'
       }
     ]
   },
@@ -1898,7 +2612,7 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
     ],
     quizzes: [
       {
-        id: 'q-cs-50',
+        id: 'q-cs-50-1',
         track: 'csharp',
         category: 'C# 基礎',
         difficulty: 'beginner',
@@ -1910,6 +2624,20 @@ export const CSHARP_50_TOPICS: CurriculumTopic[] = [
           { id: 'o2', text: 'とにかく動けば書き方は何でも良い', isCorrect: false, explanation: 'オーディオの世界ではリアルタイム性とメモリの掟が命です！' }
         ],
         soundContext: 'プロのサウンドプログラミングの境地'
+      },
+      {
+        id: 'q-cs-50-2',
+        track: 'csharp',
+        category: 'C# 基礎',
+        difficulty: 'intermediate',
+        type: 'choice',
+        title: 'プロファイラによるサウンド負荷デバッグ',
+        question: 'Unity Profilerでサウンド起因のフレーム落ちやプチノイズを調査する際、最も注視すべき2大項目はどれですか？',
+        options: [
+          { id: 'o1', text: '「GC Allocated（毎フレームのメモリ確保バイト数）」と「Audio ProfilerのTotal Voices（同時発音数とDSP CPU%）」', isCorrect: true, explanation: '正解！オーディオ更新コードがGCゴミを出していないか（GC.Alloc = 0B）、ボイス数が上限に達してCPUを食い潰していないかをプロファイラで監視することが、現場プログラマーの必須スキルです。' },
+          { id: 'o2', text: 'GPUの描画頂点数とテクスチャ解像度', isCorrect: false, explanation: 'それはグラフィックの調査項目です。' }
+        ],
+        soundContext: 'Unity Profilerによるオーディオパフォーマンス最適化'
       }
     ]
   }

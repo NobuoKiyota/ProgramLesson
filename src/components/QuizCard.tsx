@@ -7,7 +7,7 @@ import { QuizQuestion } from '@/types/learning';
 interface QuizCardProps {
   question: QuizQuestion;
   onAnswered?: (isCorrect: boolean, category: string) => void;
-  onRefreshQuiz?: () => Promise<void>;
+  onRefreshQuiz?: () => Promise<void> | void;
   isRefreshing?: boolean;
 }
 
