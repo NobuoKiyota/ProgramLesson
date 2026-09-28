@@ -1,0 +1,160 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Sparkles, Dices, RefreshCw, Trophy, Flame, ArrowRight, Lightbulb } from 'lucide-react';
+import { QuizQuestion, TrackType, DifficultyLevel } from '@/types/learning';
+import QuizCard from './QuizCard';
+
+interface EndlessQuizViewProps {
+  activeTrack: TrackType;
+}
+
+export default function EndlessQuizView({ activeTrack }: EndlessQuizViewProps) {
+  const [currentQuiz, setCurrentQuiz] = useState<QuizQuestion | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [difficulty, setDifficulty] = useState<DifficultyLevel>('beginner');
+  const [solvedCount, setSolvedCount] = useState(0);
+  const [streak, setStreak] = useState(0);
+
+  // 初回マウント時、またはトラック変更時にクイズを1問自動生成
+  useEffect(() => {
+    fetchNewQuiz();
+  }, [activeTrack, difficulty]);
+
+  const fetchNewQuiz = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/gemini/quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          track: activeTrack,
+          difficulty: difficulty,
+          topicTitle: activeTrack === 'csharp' ? 'Unityサウンドプログラミング / C#' : 'VST3・オーディオDSP / C++',
+        }),
+      });
+      const json = await res.json();
+      if (json.success && json.data) {
+        setCurrentQuiz(json.data);
+      }
+    } catch (err) {
+      console.error('Failed to generate quiz:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAnswered = (isCorrect: boolean) => {
+    setSolvedCount((prev) => prev + 1);
+    if (isCorrect) {
+      setStreak((prev) => prev + 1);
+    } else {
+      setStreak(0);
+    }
+  };
+
+  return (
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 md:p-8 shadow-xl flex flex-col gap-6">
+      {/* ヘッダー */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-800 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-gradient-to-tr from-amber-500 to-rose-500 text-white shadow-lg">
+            <Dices className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+                Infinite AI Quiz Generator
+              </span>
+              <span className="text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded-full font-bold">
+                完全自動生成
+              </span>
+            </div>
+            <h3 className="text-xl font-bold text-white mt-0.5">
+              Gemini 無限クイズ特訓モード
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              毎回AIが新しい現場シチュエーションを考案！同じ問題は二度と出ません。
+            </p>
+          </div>
+        </div>
+
+        {/* 成績バッジ */}
+        <div className="flex items-center gap-3 bg-slate-950 border border-slate-800 px-3.5 py-1.5 rounded-xl">
+          <div className="flex items-center gap-1.5 text-xs text-slate-300">
+            <Trophy className="w-4 h-4 text-amber-400" />
+            <span>回答数: <strong>{solvedCount}</strong></span>
+          </div>
+          <div className="w-[1px] h-4 bg-slate-800" />
+          <div className="flex items-center gap-1.5 text-xs text-amber-400 font-bold">
+            <Flame className="w-4 h-4 fill-amber-400" />
+            <span>連勝: {streak}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 難易度セレクター & 新問題生成ボタン */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-950/60 border border-slate-800 p-3 rounded-xl">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-slate-400">難易度:</span>
+          <button
+            onClick={() => setDifficulty('beginner')}
+            className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-all ${
+              difficulty === 'beginner'
+                ? 'bg-emerald-600 text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            🌱 超初歩・基礎
+          </button>
+          <button
+            onClick={() => setDifficulty('intermediate')}
+            className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-all ${
+              difficulty === 'intermediate'
+                ? 'bg-amber-600 text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            🚀 実践・中級
+          </button>
+        </div>
+
+        <button
+          onClick={fetchNewQuiz}
+          disabled={isLoading}
+          className="bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all shadow-md active:scale-95 disabled:opacity-50"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+          <span>{isLoading ? 'Geminiが新しい問題を考案中...' : '🎲 別の新問題を自動生成'}</span>
+        </button>
+      </div>
+
+      {/* クイズカードのレンダリング */}
+      {isLoading ? (
+        <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-12 flex flex-col items-center justify-center gap-3">
+          <Sparkles className="w-8 h-8 text-amber-400 animate-spin" />
+          <div className="text-sm font-bold text-white">Geminiが新しいオリジナルクイズを生成中...</div>
+          <div className="text-xs text-slate-400">現場のサウンドコーディングに役立つ問題を考案しています</div>
+        </div>
+      ) : currentQuiz ? (
+        <div className="flex flex-col gap-4">
+          <QuizCard
+            key={currentQuiz.id}
+            question={currentQuiz}
+            onAnswered={(isCorrect) => handleAnswered(isCorrect)}
+          />
+
+          <div className="flex justify-end pt-2">
+            <button
+              onClick={fetchNewQuiz}
+              className="bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs md:text-sm py-2.5 px-5 rounded-xl flex items-center gap-2 border border-slate-700 transition-all active:scale-95"
+            >
+              <span>次の新しい問題を自動生成して解く</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}

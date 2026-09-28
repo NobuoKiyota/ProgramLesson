@@ -7,9 +7,10 @@ import QuizCard from '@/components/QuizCard';
 import AudioRunner from '@/components/AudioRunner';
 import BugHuntView from '@/components/BugHuntView';
 import AiCustomStudio from '@/components/AiCustomStudio';
+import EndlessQuizView from '@/components/EndlessQuizView';
 import { INITIAL_CURRICULUM } from '@/data/curriculum';
-import { TrackType, DailyResumeData, CurriculumTopic, LevelFilter } from '@/types/learning';
-import { BookOpen, Headphones, ChevronDown, ChevronRight, Award, CheckCircle2, Sparkles, Wand2 } from 'lucide-react';
+import { TrackType, DailyResumeData, CurriculumTopic, LevelFilter, QuizQuestion } from '@/types/learning';
+import { BookOpen, Headphones, ChevronDown, ChevronRight, Award, CheckCircle2, Sparkles, Wand2, Dices, Plus } from 'lucide-react';
 
 export default function Home() {
   const [activeTrack, setActiveTrack] = useState<TrackType>('csharp');
@@ -18,6 +19,8 @@ export default function Home() {
   const [streakDays, setStreakDays] = useState(3);
   const [completedTopicIds, setCompletedTopicIds] = useState<string[]>([]);
   const [customTopics, setCustomTopics] = useState<CurriculumTopic[]>([]);
+  const [topicExtraQuizzes, setTopicExtraQuizzes] = useState<Record<string, QuizQuestion[]>>({});
+  const [generatingTopicQuizId, setGeneratingTopicQuizId] = useState<string | null>(null);
   const [weakCategories, setWeakCategories] = useState<string[]>([]);
   const [expandedTopicId, setExpandedTopicId] = useState<string | null>(null);
   const [isLoadingResume, setIsLoadingResume] = useState(false);
@@ -84,6 +87,34 @@ export default function Home() {
       // ignore
     }
     setExpandedTopicId(newTopic.id);
+  };
+
+  // 特定のトピックに対して新しいクイズをGeminiに自動生成させる
+  const handleGenerateQuizForTopic = async (topic: CurriculumTopic) => {
+    setGeneratingTopicQuizId(topic.id);
+    try {
+      const res = await fetch('/api/gemini/quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          track: topic.track,
+          category: topic.category,
+          difficulty: topic.quizzes[0]?.difficulty || 'beginner',
+          topicTitle: topic.title,
+        }),
+      });
+      const json = await res.json();
+      if (json.success && json.data) {
+        setTopicExtraQuizzes((prev) => ({
+          ...prev,
+          [topic.id]: [...(prev[topic.id] || []), json.data],
+        }));
+      }
+    } catch (err) {
+      console.error('Failed to generate extra quiz:', err);
+    } finally {
+      setGeneratingTopicQuizId(null);
+    }
   };
 
   // トラック切り替え時の追従
@@ -343,18 +374,44 @@ export default function Home() {
                         </div>
 
                         {/* クイズセクション */}
-                        {topic.quizzes.length > 0 && (
-                          <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-3">
+                          <div className="flex items-center justify-between">
                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                               📝 理解度チェッククイズ
                             </h4>
-                            <div className="grid grid-cols-1 gap-4">
-                              {topic.quizzes.map((q) => (
-                                <QuizCard key={q.id} question={q} onAnswered={handleAnswered} />
-                              ))}
-                            </div>
+                            <span className="text-[11px] text-cyan-400 font-semibold">
+                              全 {(topic.quizzes.length + (topicExtraQuizzes[topic.id]?.length || 0))} 問
+                            </span>
                           </div>
-                        )}
+
+                          <div className="grid grid-cols-1 gap-4">
+                            {/* 初期クイズ */}
+                            {topic.quizzes.map((q) => (
+                              <QuizCard key={q.id} question={q} onAnswered={handleAnswered} />
+                            ))}
+
+                            {/* Geminiがこのトピック用に自動生成した追加クイズ */}
+                            {topicExtraQuizzes[topic.id]?.map((q) => (
+                              <QuizCard key={q.id} question={q} onAnswered={handleAnswered} />
+                            ))}
+                          </div>
+
+                          {/* このトピックで新しい問題を生成するボタン */}
+                          <div className="mt-2 flex justify-center">
+                            <button
+                              onClick={() => handleGenerateQuizForTopic(topic)}
+                              disabled={generatingTopicQuizId === topic.id}
+                              className="bg-slate-900 hover:bg-slate-800 border border-cyan-800/80 hover:border-cyan-600 text-cyan-300 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 transition-all shadow-md active:scale-95 disabled:opacity-50"
+                            >
+                              <Sparkles className={`w-3.5 h-3.5 ${generatingTopicQuizId === topic.id ? 'animate-spin' : ''}`} />
+                              <span>
+                                {generatingTopicQuizId === topic.id
+                                  ? 'Geminiがこのテーマで新問題を自動生成中...'
+                                  : '⚡ Geminiにこのテーマで新しいクイズを1問自動生成させる'}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
 
                         {/* 音出し演習 */}
                         {topic.audioExercise && (
@@ -372,6 +429,11 @@ export default function Home() {
               })}
             </div>
           </div>
+        )}
+
+        {/* AI無限出題特訓 タブ */}
+        {activeTab === 'endless-quiz' && (
+          <EndlessQuizView activeTrack={activeTrack} />
         )}
 
         {/* 音出し演習 タブ */}
