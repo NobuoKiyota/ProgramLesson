@@ -35,3 +35,7 @@ next-env.d.ts
 
 # AI Archives (Rule)
 ai_archives/
+
+# Sensitive Security Codes
+RecoverCode/
+
