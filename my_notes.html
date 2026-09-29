@@ -340,6 +340,12 @@
             <span>「インプリメント（Implement）」ってどういう意味？ 日常会話とC#インターフェース実装の真意</span>
           </a>
         </li>
+        <li>
+          <a href="#qa-06">
+            <span style="color: var(--accent-cyan); font-weight: bold;">第6問:</span>
+            <span>「シングルトン（Singleton）」とは？ なぜサウンドマネージャーは世界に1つだけなのか</span>
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -1338,6 +1344,169 @@ Sound.<span class="c-fn">PlayVoiceWithCallback</span>(voiceClip, () => {
       </div>
     </article>
 
+    <!-- ======================================================== -->
+    <!-- 第6問: シングルトン（Singleton）徹底解剖 -->
+    <!-- ======================================================== -->
+    <article id="qa-06" class="qa-card">
+      <div class="qa-header">
+        <div class="qa-num">Q.06</div>
+        <div>
+          <h2 class="qa-title">「シングルトン（Singleton）」とは？<br>なぜサウンドマネージャーは世界に1つだけなのか</h2>
+          <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+            キーワード: 世界に1つだけ / static Instance / DontDestroyOnLoad / 2人目の自分を抹殺 / グローバルアクセス
+          </p>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート1: 音響のたとえ -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="section-title">🎛️ 音響スタジオでたとえると？</div>
+        <div class="analogy-box">
+          <div class="analogy-title">🎙️ 音響のたとえ: 「スタジオの中央マスターミキサー卓（PAコンソール）」</div>
+          <p style="margin: 0; font-size: 13px;">
+            レコーディングスタジオやライブハウスを思い浮かべてください。<br>
+            ボーカルブース、ドラムブース、ギターアンプ…部屋や楽器がたくさんあっても、<strong>音をまとめてスピーカーへ送り出す「マスターミキサー卓」は部屋に1台しかありませんよね</strong>。<br><br>
+            もしスタジオにミキサー卓が何台もあって、各自が勝手にマスターフェーダーを上げ下げしていたら音響は大パニックになります。<br>
+            <strong>「ゲームの世界（メモリ）の中にたった1つしか存在してはならず、どのオブジェクトからでも直接『あのミキサーに音を送って！』と指名できる唯一無二の存在」</strong>。<br>
+            この仕組みをプログラミングで<strong>シングルトン（Singleton = 単一のもの）</strong>と呼びます！
+          </p>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート2: なぜシングルトンにするのか？（2大メリット） -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="section-title">🌟 なぜサウンドマネージャーはシングルトンにするの？（2大メリット）</div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0;">
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+            <div style="font-weight: bold; color: var(--accent-cyan); font-size: 13px; margin-bottom: 8px;">
+              ① 多重生成・多重再生事故の100%防止
+            </div>
+            <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 0;">
+              SoundManagerが何個も生まれてしまうと、BGMが2重に重なって爆音で鳴ったり、ボイスプール配列が2重にメモリを食いつぶす大事故が起きます。シングルトンにすることで「絶対に世界に1つ」を保証します。
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+            <div style="font-weight: bold; color: var(--accent-green); font-size: 13px; margin-bottom: 8px;">
+              ② 面倒なケーブル配線ゼロ（全宇宙から直接呼べる）
+            </div>
+            <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 0;">
+              もしシングルトンでなければ、ボタン、プレイヤー、敵、弾…何百個ものスクリプトにインスペクター上でいちいち「サウンドマネージャーはこれだよ」とドラッグ＆ドロップ配線しなければなりません。シングルトンなら <code>SoundManager.Instance.PlaySE()</code> の1行でどこからでも呼べます！
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート3: Unity現場コードと自己防衛 -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="section-title">💻 Unityの現場コード: 「2人目の自分を抹殺する」自己防衛</div>
+        <p>
+          Unityでは、シーンが切り替わると（タイトル画面 → バトル画面）、画面内のオブジェクトがすべて消滅します。<br>
+          BGMが途切れないように <code>DontDestroyOnLoad(gameObject);</code> で生き残らせますが、
+          <strong>バトルが終わって再びタイトル画面に戻ったとき、タイトルシーンに元々置いてあった「2人目の自分」が新しく生まれてしまう</strong>という有名な問題が起きます！
+        </p>
+        <p>
+          そこで、世界中のUnityエンジニアが書く<strong>「2人目の自分を即死させる鉄板コード」</strong>がこちらです。
+        </p>
+
+        <pre><code><span class="c-kw">public class</span> <span class="c-type">SoundManager</span> : <span class="c-type">MonoBehaviour</span>
+{
+    <span class="c-cm">// 全世界からアクセスできる唯一の窓口（static変数）</span>
+    <span class="c-kw">public static</span> <span class="c-type">SoundManager</span> <span class="c-param">Instance</span> { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+
+    <span class="c-kw">private void</span> <span class="c-fn">Awake</span>()
+    {
+        <span class="c-kw">if</span> (<span class="c-param">Instance</span> == <span class="c-kw">null</span>)
+        {
+            <span class="c-cm">// 初めて生まれた自分なら、自分が「唯一無二のマスター」に就任！</span>
+            <span class="c-param">Instance</span> = <span class="c-kw">this</span>;
+
+            <span class="c-cm">// シーンを切り替えても自分を壊さない（BGMを鳴らし続ける）</span>
+            <span class="c-fn">DontDestroyOnLoad</span>(gameObject);
+        }
+        <span class="c-kw">else</span>
+        {
+            <span class="c-cm">// ★超重要: すでに世界に1人目がいるのに、自分が生まれてしまった場合！</span>
+            <span class="c-cm">// 重複した偽物の自分（2人目）を即座に破棄して消滅させる！</span>
+            <span class="c-fn">Destroy</span>(gameObject);
+        }
+    }
+
+    <span class="c-kw">public void</span> <span class="c-fn">PlayBGM</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>) { <span class="c-cm">/* 再生処理 */</span> }
+}
+</code></pre>
+
+        <h4 style="font-size: 14px; color: #ffffff; margin: 16px 0 6px;">✨ さらに美しいプロの設計: 「Sound.PlaySE」の極上ラッピング</h4>
+        <p>
+          呼び出すたびに <code>SoundManager.Instance.PlaySE(clip)</code> と書くのは、少し長くて面倒ですよね。<br>
+          自作の <code>Sound.cs</code> などでは、以下のように <strong>staticな短い関数</strong> を用意して <code>Instance</code> の存在すら隠蔽するのが最高峰の美学です！
+        </p>
+
+        <pre><code><span class="c-cm">// サウンドマネージャーの中に、さらに短いラッパーを用意する</span>
+<span class="c-kw">public static void</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>)
+{
+    <span class="c-param">Instance</span>?.<span class="c-fn">PlaySEInternal</span>(<span class="c-param">clip</span>); <span class="c-cm">// 内部でInstanceを呼んであげる</span>
+}
+
+<span class="c-cm">// 使う側（ゲームプログラマや演出担当）はたったこれだけで呼べる！</span>
+Sound.<span class="c-fn">PlaySE</span>(slashClip); <span class="c-cm">// 超シンプル＆直感的一目瞭然！</span>
+</code></pre>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート4: 注意点 -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="warning-box">
+          <div class="warning-title">⚠️ 現場の注意点: 「シングルトン病」に気をつけろ！</div>
+          <p style="margin: 0; font-size: 13px;">
+            どこからでも呼べて便利すぎるあまり、プレイヤーも敵もカメラもUIも何でもかんでもシングルトンにしてしまう初心者がいます。<br>
+            これを現場では<strong>「シングルトン病」</strong>と呼び、あちこちのコードがクモの巣のように絡まり合ってバグの温床になります。<br>
+            シングルトンにして良いのは、<strong>「サウンドマネージャー」「ゲーム進行マネージャー」「セーブデータ管理者」のように、ゲーム全体で本当に1つしか存在しない中央司令塔だけ</strong>です！
+          </p>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート5: 理解度クイズ -->
+      <!-- ======================================================== -->
+      <div class="quiz-box">
+        <div class="quiz-title">🎯 サウンドコーディング理解度チェック（第6問）</div>
+        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">
+          <strong>問題:</strong> シングルトンのサウンドマネージャーで、タイトル画面からバトル画面へ行き、再びタイトル画面に戻ってきたときにBGMが2重で鳴ってしまうバグが発生しました。原因として最も考えられるものはどれでしょう？
+        </p>
+
+        <button class="quiz-btn" onclick="checkAnswer6(1)">
+          A. 音量が自動的に+12dBブーストされたから。
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer6(2)">
+          B. Awake() で「すでにInstanceが存在する場合に2人目の自分をDestroyする」という自己防衛コードを書き忘れていたため、SoundManagerが2体同時に存在してしまったから。
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer6(3)">
+          C. AudioClipのサンプリングレートが44.1kHzから48kHzに変わったから。
+        </button>
+
+        <div id="feedback6-correct" class="quiz-feedback" style="background: rgba(52, 211, 153, 0.15); border: 1px solid var(--accent-green); color: #a7f3d0;">
+          🎉 <strong>大正解！ B です！</strong><br>
+          これぞUnityサウンド開発で誰もが一度は経験する伝説の「増殖バグ」です！<br>
+          1人目がDontDestroyOnLoadで生き残っているのに、再び開いたタイトルシーンから2人目が生まれてしまい、自己防衛コードがないと2人のサウンドマネージャーが同時にBGMを鳴らし始めてしまいます。
+        </div>
+
+        <div id="feedback6-wrong" class="quiz-feedback" style="background: rgba(248, 113, 113, 0.15); border: 1px solid var(--accent-red); color: #fca5a5;">
+          ❌ <strong>違います！</strong><br>
+          音量やサンプリングレートの問題ではありません。<br>
+          「シーンを戻ったときに、新しく生まれた2人目の自分をどう処理しなければならなかったか」をもう一度思い出してみましょう！
+        </div>
+      </div>
+    </article>
+
     <footer>
       AudioDev Academy • サウンドデザイナー専用プログラミング個人ノート
     </footer>
@@ -1401,6 +1570,19 @@ Sound.<span class="c-fn">PlayVoiceWithCallback</span>(voiceClip, () => {
       const wrongBox = document.getElementById('feedback5-wrong');
       
       if (choice === 1) {
+        correctBox.style.display = 'block';
+        wrongBox.style.display = 'none';
+      } else {
+        correctBox.style.display = 'none';
+        wrongBox.style.display = 'block';
+      }
+    }
+
+    function checkAnswer6(choice) {
+      const correctBox = document.getElementById('feedback6-correct');
+      const wrongBox = document.getElementById('feedback6-wrong');
+      
+      if (choice === 2) {
         correctBox.style.display = 'block';
         wrongBox.style.display = 'none';
       } else {
