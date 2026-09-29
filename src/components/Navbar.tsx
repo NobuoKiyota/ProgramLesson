@@ -80,8 +80,17 @@ export default function Navbar({
             })}
           </div>
 
-          {/* 右側: 進捗バッジ */}
+          {/* 右側: 個人ノートリンク & 進捗バッジ */}
           <div className="flex items-center gap-2 shrink-0">
+            <a
+              href="/my_notes.html"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 bg-gradient-to-r from-cyan-900/60 to-slate-900 border border-cyan-700/60 px-3 py-1.5 rounded-xl text-xs font-bold text-cyan-300 hover:text-white hover:border-cyan-500 transition-all shadow-sm"
+              title="あなた専用の個別Q&A蓄積HTMLノートを開く"
+            >
+              <span>📓 個人ノート</span>
+            </a>
             <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
               <Sparkles className="w-4 h-4 text-cyan-400" />
               <div className="text-xs">

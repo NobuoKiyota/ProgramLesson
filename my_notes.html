@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>サウンドデザイナーのためのプログラミング個人ノート</title>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #182234;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-purple: #c084fc;
+      --accent-red: #f87171;
+      --border-color: #334155;
+      --code-bg: #090d16;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.7;
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .header-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* 目次ナビ */
+    .toc-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 32px;
+    }
+
+    .toc-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toc-list li a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s;
+    }
+
+    .toc-list li a:hover {
+      color: var(--accent-cyan);
+    }
+
+    /* Q&Aカード */
+    .qa-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 36px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .qa-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+    }
+
+    .qa-num {
+      background: var(--accent-cyan);
+      color: #0f172a;
+      font-weight: 900;
+      font-size: 14px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      shrink-0: 0;
+    }
+
+    .qa-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.4;
+    }
+
+    /* セクションブロック */
+    .section-block {
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin-bottom: 14px;
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    /* サウンドたとえボックス */
+    .analogy-box {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 4px solid var(--accent-cyan);
+      padding: 16px 20px;
+      border-radius: 0 12px 12px 0;
+      margin: 16px 0;
+    }
+
+    .analogy-title {
+      font-weight: 800;
+      color: var(--accent-cyan);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    /* コードブロック */
+    pre {
+      background-color: var(--code-bg);
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 16px;
+      overflow-x: auto;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #e2e8f0;
+      margin: 14px 0;
+    }
+
+    code {
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #38bdf8;
+      font-size: 13px;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    /* シンタックス強調色 */
+    .c-kw { color: #f472b6; }     /* キーワード (public, void, int) */
+    .c-type { color: #38bdf8; }   /* 型 (AudioClip, Vector3) */
+    .c-fn { color: #34d399; }     /* 関数名 (PlaySE) */
+    .c-param { color: #fcd34d; }  /* 引数 */
+    .c-cm { color: #64748b; font-style: italic; } /* コメント */
+    .c-num { color: #fb923c; }    /* 数値 (1.0f) */
+
+    /* 注意・落とし穴ボックス */
+    .warning-box {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 16px 20px;
+      border-radius: 0 12px 12px 0;
+      margin: 16px 0;
+    }
+
+    .warning-title {
+      font-weight: 800;
+      color: var(--accent-amber);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    /* インタラクティブクイズ */
+    .quiz-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 24px;
+    }
+
+    .quiz-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-green);
+      margin-bottom: 10px;
+    }
+
+    .quiz-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quiz-btn:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .quiz-feedback {
+      display: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 24px 0;
+      border-top: 1px solid var(--border-color);
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge">🎧 Sound Designer × Sound Programmer</div>
+      <h1>プログラミング個人ノート（個別Q&A蓄積）</h1>
+      <p class="header-desc">
+        サウンドデザイナー・効果音制作者の感覚（Cubase、機材、波形、音響物理）をベースに、C#やUnityサウンドコーディングの初歩と疑問を1問1答形式で蓄積していく専用ノートです。
+      </p>
+    </header>
+
+    <!-- 目次 -->
+    <nav class="toc-box">
+      <div class="toc-title">📖 蓄積された質問・トピック一覧</div>
+      <ul class="toc-list">
+        <li>
+          <a href="#qa-01">
+            <span style="color: var(--accent-cyan); font-weight: bold;">第1問:</span>
+            <span>「オーバーロード（Overload）」って何？ なぜPlaySEが何種類もあるの？</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- ======================================================== -->
+    <!-- 第1問: オーバーロード解説 -->
+    <!-- ======================================================== -->
+    <article id="qa-01" class="qa-card">
+      <div class="qa-header">
+        <div class="qa-num">Q.01</div>
+        <div>
+          <h2 class="qa-title">オーバーロード（Overload）の基礎と実例</h2>
+          <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+            キーワード: 関数名が同じ / 引数の型・数が違う / デフォルト委譲
+          </p>
+        </div>
+      </div>
+
+      <!-- 1. サウンドたとえ -->
+      <div class="section-block">
+        <div class="section-title">💡 音響・機材でたとえると？</div>
+        <div class="analogy-box">
+          <div class="analogy-title">🎛️ 音響のたとえ: 「同じディレイプラグインなのに、ミリ秒指定もBPM同期指定もできる」</div>
+          <p style="margin: 0; font-size: 13px;">
+            DAWのディレイプラグインで、ディレイタイムを決めるときに：<br>
+            ① <strong>ミリ秒で指定する</strong>（<code>350ms</code> と入力）<br>
+            ② <strong>音符（拍数）とテンポで指定する</strong>（<code>付点8分音符</code>, <code>BPM 120</code> と指定）<br>
+            の2通りの設定方法がありますよね。<br>
+            どちらも「ディレイタイムを決める」という<strong>目的は同じ</strong>ですが、<strong>渡す材料（パラメータの種類）が違います</strong>。<br>
+            プログラミングでこの「同じ名前（<code>SetDelay</code>）のまま、渡す引数によって賢く振る舞いを変えられる仕組み」を<strong>オーバーロード（多重定義）</strong>と呼びます。
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. なぜ必要なのか？ -->
+      <div class="section-block">
+        <div class="section-title">❓ もしオーバーロードが無かったらどうなる？</div>
+        <p>
+          もしオーバーロードという仕組みが無かったら、引数の組み合わせごとに<strong>まったく別の関数名</strong>を作らなければなりません。
+        </p>
+        <pre><code><span class="c-cm">// ❌ オーバーロードが無い世界（地獄の関数名）</span>
+PlaySE_ClipOnly(clip);
+PlaySE_ClipAndVolume(clip, volume);
+PlaySE_ClipVolumeAndPitch(clip, volume, pitch);
+PlaySE_ClipVolumePitchAndPosition(clip, volume, pitch, position);
+PlaySE_ClipVolumePitchPositionAndFade(clip, volume, pitch, position, 0.5f);
+</code></pre>
+        <p>
+          これを呼び出す側（ゲームのプログラマやプランナー）は、「えーっと、3D座標だけ渡したいときはどの長い名前だっけ…？」と毎回悩みますし、コードも極めて読みにくくなります。<br>
+          オーバーロードを使えば、全部<strong><code>PlaySE(...)</code></strong>という1つの統一された名前で呼び出せます！
+        </p>
+      </div>
+
+      <!-- 3. C#での基本文法とルール -->
+      <div class="section-block">
+        <div class="section-title">📐 オーバーロードの絶対ルール（3つだけ）</div>
+        <p>コンパイラ（C#の判定役）が「あ、これはオーバーロードだな」と認識するための条件は以下の通りです。</p>
+        <ul style="padding-left: 20px; font-size: 14px; color: #cbd5e1; margin-bottom: 14px;">
+          <li style="margin-bottom: 6px;"><strong>① 関数名がまったく同じであること</strong></li>
+          <li style="margin-bottom: 6px;"><strong>② 引数（カッコの中身）の「個数」か「型」か「並び順」が違うこと</strong></li>
+          <li style="margin-bottom: 6px;"><strong>③ 戻り値（voidやintなど）を変えただけではNG！</strong>（引数が同じで戻り値だけ変えるとエラーになります）</li>
+        </ul>
+
+        <pre><code><span class="c-kw">public class</span> <span class="c-type">SoundManager</span>
+{
+    <span class="c-cm">// パターン1: AudioClip だけ渡す（超手軽な2D再生）</span>
+    <span class="c-kw">public void</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>)
+    {
+        <span class="c-cm">// 音量は1.0f、ピッチは1.0fとして再生</span>
+    }
+
+    <span class="c-cm">// パターン2: 音量も一緒に渡す</span>
+    <span class="c-kw">public void</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>, <span class="c-kw">float</span> <span class="c-param">volume</span>)
+    {
+        <span class="c-cm">// 指定された音量で再生</span>
+    }
+
+    <span class="c-cm">// パターン3: 3D座標（Vector3）を渡す</span>
+    <span class="c-kw">public void</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>, <span class="c-type">Vector3</span> <span class="c-param">worldPos</span>)
+    {
+        <span class="c-cm">// 敵が爆発した3D位置で再生</span>
+    }
+
+    <span class="c-cm">// パターン4: 音量と3D座標の両方を渡す</span>
+    <span class="c-kw">public void</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>, <span class="c-kw">float</span> <span class="c-param">volume</span>, <span class="c-type">Vector3</span> <span class="c-param">worldPos</span>)
+    {
+        <span class="c-cm">// 音量と位置を両方指定して再生</span>
+    }
+}
+</code></pre>
+      </div>
+
+      <!-- 4. プロの現場テクニック: カスケード委譲 -->
+      <div class="section-block">
+        <div class="section-title">🌟 プロの鉄則: 「オーバーロードは数珠つなぎ（委譲）にせよ」</div>
+        <p>
+          ここが一番大切です！<br>
+          それぞれの <code>PlaySE</code> の中に「AudioSourceを探して、音量を設定して、再生する」という処理を毎回コピペして書くと、
+          <strong>コードの重複（二重管理）</strong>が発生し、将来バグ修正するときに4箇所全部直さなければならなくなります。
+        </p>
+        <p>
+          プロのサウンドマネージャー（Sound.csなど）では、<strong>「引数が少ないメソッドは、デフォルト値を補って引数が多いメソッドを呼び出す」</strong>という数珠つなぎ（カスケード）構造を作ります。
+        </p>
+
+        <pre><code><span class="c-cm">// ① 一番シンプルな呼び出しは、②を呼び出す（volume=1.0f を補う）</span>
+<span class="c-kw">public void</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>)
+{
+    <span class="c-fn">PlaySE</span>(<span class="c-param">clip</span>, <span class="c-num">1.0f</span>); <span class="c-cm">// 自分より詳しいPlaySEに丸投げ！</span>
+}
+
+<span class="c-cm">// ② 音量付きの呼び出しは、③を呼び出す（2D音なので位置はゼロを補う）</span>
+<span class="c-kw">public void</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>, <span class="c-kw">float</span> <span class="c-param">volume</span>)
+{
+    <span class="c-fn">PlaySE</span>(<span class="c-param">clip</span>, <span class="c-param">volume</span>, <span class="c-type">Vector3</span>.zero); <span class="c-cm">// さらに丸投げ！</span>
+}
+
+<span class="c-cm">// ③ 全部の情報が揃った「真の再生関数（PlayCore）」が実際の再生を行う！</span>
+<span class="c-kw">public void</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>, <span class="c-kw">float</span> <span class="c-param">volume</span>, <span class="c-type">Vector3</span> <span class="c-param">pos</span>)
+{
+    <span class="c-cm">// ここにだけ本物の再生処理（ボイス確保やAudioSource設定）を書く！</span>
+    <span class="c-fn">PlayCore</span>(<span class="c-param">clip</span>, <span class="c-param">volume</span>, <span class="c-param">pos</span>);
+}
+</code></pre>
+        <p style="font-size: 13px; color: var(--accent-green);">
+          ✅ この構造にしておけば、再生の仕組みを改造したいときも「一番詳しい1箇所」だけを書き換えれば、すべての <code>PlaySE</code> に自動で修正が反映されます！
+        </p>
+      </div>
+
+      <!-- 5. よくある落とし穴 -->
+      <div class="section-block">
+        <div class="warning-box">
+          <div class="warning-title">⚠️ 現場の注意点: 「オーバーライド」と名前が似ていて紛らわしい！</div>
+          <p style="margin: 0; font-size: 13px;">
+            現場の会話でよく混同される単語です：<br>
+            • <strong>オーバーロード（Overload）</strong>: <strong>「同じ名前で引数違いの窓口を複数用意すること」</strong>（今回の内容）<br>
+            • <strong>オーバーライド（Override）</strong>: <strong>「親クラス（元祖）が持っている処理を、子クラスが上書きすること」</strong><br>
+            語源で覚えると簡単です。「ロード（荷物・引数をたくさん積む＝多重定義）」と「ライド（乗っかる・上書きする＝上書き）」です。
+          </p>
+        </div>
+      </div>
+
+      <!-- 6. 理解度ミニクイズ -->
+      <div class="quiz-box">
+        <div class="quiz-title">🎯 サウンドコーディング理解度チェック</div>
+        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">
+          <strong>問題:</strong> 次のうち、C#でコンパイルエラー（禁止）になるオーバーロードの組み合わせはどれでしょう？
+        </p>
+
+        <button class="quiz-btn" onclick="checkAnswer(1)">
+          A. <code>void Play(AudioClip clip)</code> と <code>void Play(AudioClip clip, float volume)</code>
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer(2)">
+          B. <code>void Play(AudioClip clip, float pitch)</code> と <code>void Play(AudioClip clip, Vector3 pos)</code>
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer(3)">
+          C. <code>void Play(AudioClip clip)</code> と <code>int Play(AudioClip clip)</code>
+        </button>
+
+        <div id="feedback-correct" class="quiz-feedback" style="background: rgba(52, 211, 153, 0.15); border: 1px solid var(--accent-green); color: #a7f3d0;">
+          🎉 <strong>正解！ C です！</strong><br>
+          引数がどちらも <code>(AudioClip clip)</code> で全く同じなのに、戻り値（<code>void</code> と <code>int</code>）だけを変えています。<br>
+          C#では、呼び出す側が <code>Play(myClip);</code> と書いたときに「どっちを呼びたいのか区別がつかない」ため、戻り値だけの違いはオーバーロードとして認められずエラーになります。
+        </div>
+
+        <div id="feedback-wrong" class="quiz-feedback" style="background: rgba(248, 113, 113, 0.15); border: 1px solid var(--accent-red); color: #fca5a5;">
+          ❌ <strong>惜しい！</strong><br>
+          Aは引数の「個数」が違います（1個 vs 2個）。<br>
+          Bは引数の「型」が違います（2番目がfloat vs Vector3）。これらはどちらも正しいオーバーロードです。<br>
+          もう一度考えてみましょう！
+        </div>
+      </div>
+    </article>
+
+    <footer>
+      AudioDev Academy • サウンドデザイナー専用プログラミング個人ノート
+    </footer>
+  </div>
+
+  <script>
+    function checkAnswer(choice) {
+      const correctBox = document.getElementById('feedback-correct');
+      const wrongBox = document.getElementById('feedback-wrong');
+      
+      if (choice === 3) {
+        correctBox.style.display = 'block';
+        wrongBox.style.display = 'none';
+      } else {
+        correctBox.style.display = 'none';
+        wrongBox.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
