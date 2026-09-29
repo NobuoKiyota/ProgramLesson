@@ -328,6 +328,12 @@
             <span>Addressables導入の「非同期」って何？ async / await / コールバック / コルーチン徹底比較</span>
           </a>
         </li>
+        <li>
+          <a href="#qa-04">
+            <span style="color: var(--accent-cyan); font-weight: bold;">第4問:</span>
+            <span>「コールバック」と「コルーチン」を徹底深掘り！ 仕組み・コード・現場での使い分け</span>
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -910,6 +916,217 @@ Sound.<span class="c-fn">PlayAsync</span>(bossBgmRef, (<span class="c-param">han
       </div>
     </article>
 
+    <!-- ======================================================== -->
+    <!-- 第4問: コールバック & コルーチン徹底解剖 -->
+    <!-- ======================================================== -->
+    <article id="qa-04" class="qa-card">
+      <div class="qa-header">
+        <div class="qa-num">Q.04</div>
+        <div>
+          <h2 class="qa-title">「コールバック」と「コルーチン」徹底解剖！<br>仕組み・コードの書き方・サウンド現場での使い分け</h2>
+          <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+            キーワード: Action / ラムダ式 (() => {}) / IEnumerator / yield return / フェード処理 / シーン遷移の罠
+          </p>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート1: コールバック -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="section-title">📞 パート1: コールバック（Callback）の正体</div>
+        <div class="analogy-box">
+          <div class="analogy-title">🎛️ 音響のたとえ: 「Wwise / CRIWAREのマーカー通知」や「スタジオアシスタントへの指示書」</div>
+          <p style="margin: 0; font-size: 13px;">
+            英語の <strong>"Call me back"</strong> は「あとで折り返し電話して！」という意味です。<br>
+            「この長尺ボイスを鳴らしておいて。<strong>鳴り終わったら（あるいはサビのループポイントに来たら）、この指定した関数を呼び出してね！</strong>」と、
+            <strong>「未来にやってほしい処理（連絡先）」をあらかじめ予約しておく仕組み</strong>がコールバックです。
+          </p>
+        </div>
+
+        <h4 style="font-size: 14px; color: #ffffff; margin: 16px 0 6px;">💡 コールバックの最大の秘密: 「引数に『関数』を渡す」</h4>
+        <p>
+          今までの関数は、引数として「数値（<code>float volume</code>）」や「データ（<code>AudioClip clip</code>）」を渡していました。<br>
+          しかしコールバックでは、<strong>「関数（やること・処理そのもの）」を引数として渡します！</strong>
+        </p>
+
+        <pre><code><span class="c-cm">// C#では、コールバック関数を受け取るときに「Action」という型を使います</span>
+<span class="c-kw">public void</span> <span class="c-fn">PlayVoiceWithCallback</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>, <span class="c-type">Action</span> <span class="c-param">onFinished</span>)
+{
+    <span class="c-cm">// 1. 音声を再生開始...</span>
+    voiceSource.clip = <span class="c-param">clip</span>;
+    voiceSource.Play();
+
+    <span class="c-cm">// 2. 音声が鳴り終わった未来のタイミングで、渡された関数を実行（Call back）する！</span>
+    <span class="c-param">onFinished</span>?.Invoke(); <span class="c-cm">// 「予約されていた処理を実行せよ！」の合図</span>
+}
+</code></pre>
+
+        <h4 style="font-size: 14px; color: #ffffff; margin: 16px 0 6px;">📝 呼び出し側の書き方: 「ラムダ式 (() => { ... })」の読み解き方</h4>
+        <p>
+          現場のコードでよく見かける <code>() =&gt; { ... }</code> という記号（ラムダ式）。<br>
+          難しそうに見えますが、意味は単純で<strong>「その場でサッと作った使い捨ての小さな関数（名無しの処理）」</strong>です。
+        </p>
+        <pre><code><span class="c-cm">// ボイスが鳴り終わったら、会話ウィンドウを非表示にする</span>
+Sound.<span class="c-fn">PlayVoiceWithCallback</span>(voiceClip, () => {
+    dialogWindow.SetActive(<span class="c-kw">false</span>); <span class="c-cm">// ← 鳴り終わった瞬間にここが動く！</span>
+    Debug.Log(<span class="c-num">"ボイス終了！会話枠を閉じました。"</span>);
+});
+</code></pre>
+
+        <div class="warning-box">
+          <div class="warning-title">⚠️ コールバックの現場あるあるバグ: 「シーン移動でのNull参照」</div>
+          <p style="margin: 0; font-size: 13px;">
+            5秒のボイスを鳴らして「終わったらUIを消す」とコールバックを予約したのに、<strong>ボイス再生中の3秒目にプレイヤーが「スキップ」を押して次のシーンへ移動</strong>してしまったら？<br>
+            5秒後にコールバックが実行された瞬間、UIオブジェクトは前のシーンと一緒に消滅しているため、<strong>NullReferenceException（存在しないものを触ったエラー）</strong>が発生してゲームが落ちます！<br>
+            対策: コールバックを実行する前に「対象のUIがまだ生きているか（<code>if (dialogWindow != null)</code>）」を必ず確認する習慣をつけましょう。
+          </p>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート2: コルーチン -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="section-title">⏱️ パート2: コルーチン（Coroutine）の正体</div>
+        <div class="analogy-box" style="border-left-color: var(--accent-amber); background: rgba(251, 191, 36, 0.08);">
+          <div class="analogy-title" style="color: var(--accent-amber);">🎛️ 音響のたとえ: 「ステップシーケンサー」や「フェーダーのオートメーション」</div>
+          <p style="margin: 0; font-size: 13px;">
+            普通の関数は、一度呼び出されたら<strong>1フレーム（1瞬・0.0001秒）で最初から最後まで一気に駆け抜けて終了</strong>します。<br>
+            それに対してコルーチンは、<strong>「途中で一時停止（ポーズ）して、数フレーム後や2秒後にその続きから再開できる」</strong>という特殊な関数です！<br>
+            語源は <strong>Co（協調する）+ Routine（日課・処理）</strong>。メインのゲーム画面の進行（毎フレームの描画）と協調しながら、少しずつ処理を進めます。
+          </p>
+        </div>
+
+        <h4 style="font-size: 14px; color: #ffffff; margin: 16px 0 6px;">📐 コルーチンを書くときの「3大呪文」</h4>
+        <ul style="padding-left: 20px; font-size: 14px; color: #cbd5e1; margin-bottom: 14px;">
+          <li style="margin-bottom: 6px;">
+            <strong>① 戻り値の型は必ず <code>IEnumerator</code>（アイ・エニュメレーター）にする</strong>
+          </li>
+          <li style="margin-bottom: 6px;">
+            <strong>② 関数の中に <code>yield return ...</code>（イールド・リターン＝ここで一旦待つ！）を書く</strong><br>
+            • <code>yield return null;</code> → 「次のフレーム（1/60秒後）まで一旦休む！」<br>
+            • <code>yield return new WaitForSeconds(1.5f);</code> → 「実時間で1.5秒待つ！」
+          </li>
+          <li style="margin-bottom: 6px;">
+            <strong>③ 呼び出すときは <code>StartCoroutine(...)</code> で起動する</strong>
+          </li>
+        </ul>
+
+        <h4 style="font-size: 14px; color: #ffffff; margin: 16px 0 6px;">🎚️ サウンド現場の定番実例: 「2秒かけてBGMをフェードアウト」</h4>
+        <p>
+          Update関数で毎フレーム時間を監視しなくても、コルーチンを使えば「ループの中で1フレームずつ休みながら音量を下げる」という処理が綺麗に書けます。
+        </p>
+
+        <pre><code><span class="c-cm">// 2秒かけて音量を 1.0f から 0.0f へフェードアウトさせるコルーチン</span>
+<span class="c-kw">public IEnumerator</span> <span class="c-fn">FadeOutBGM</span>(<span class="c-type">AudioSource</span> <span class="c-param">src</span>, <span class="c-kw">float</span> <span class="c-param">duration</span>)
+{
+    <span class="c-kw">float</span> <span class="c-param">startVol</span> = <span class="c-param">src</span>.volume;
+    <span class="c-kw">float</span> <span class="c-param">timer</span> = <span class="c-num">0f</span>;
+
+    <span class="c-kw">while</span> (<span class="c-param">timer</span> < <span class="c-param">duration</span>)
+    {
+        <span class="c-param">timer</span> += Time.deltaTime; <span class="c-cm">// 経過時間を加算</span>
+        <span class="c-param">src</span>.volume = Mathf.Lerp(<span class="c-param">startVol</span>, <span class="c-num">0f</span>, <span class="c-param">timer</span> / <span class="c-param">duration</span>);
+
+        <span class="c-kw">yield return null</span>; <span class="c-cm">// ★超重要: 1フレーム休んでUnityに処理を返す！（画面フリーズ防止）</span>
+    }
+
+    <span class="c-param">src</span>.Stop();
+    <span class="c-param">src</span>.volume = <span class="c-param">startVol</span>; <span class="c-cm">// 音量を元に戻しておく</span>
+    Debug.Log(<span class="c-num">"フェードアウト完了！"</span>);
+}
+
+<span class="c-cm">// 呼び出し側</span>
+<span class="c-fn">StartCoroutine</span>(<span class="c-fn">FadeOutBGM</span>(bgmSource, <span class="c-num">2.0f</span>));
+</code></pre>
+
+        <div class="warning-box">
+          <div class="warning-title">⚠️ コルーチンの最大の弱点: 「GameObjectが消えると勝手に死ぬ」</div>
+          <p style="margin: 0; font-size: 13px;">
+            コルーチンは、それを実行しているゲームオブジェクト（<code>MonoBehaviour</code>）に命を依存しています。<br>
+            フェードアウト中に、そのオブジェクトが <code>SetActive(false)</code> で非アクティブになったり、シーン切り替えで破棄されると、
+            <strong>コルーチンはその瞬間、音量が半分のまま勝手に消滅（中断）してしまいます！</strong><br>
+            だからこそ、永続して動くサウンドマネージャー（<code>DontDestroyOnLoad</code> を持つSingleton）の上でコルーチンを走らせる必要があります。
+          </p>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート3: 使い分け比較表 -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="section-title">📊 サウンド現場での使い分け（どっちを使う？）</div>
+        
+        <div style="overflow-x: auto; margin: 14px 0;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border-color); color: var(--accent-cyan);">
+                <th style="padding: 10px;">やりたいこと</th>
+                <th style="padding: 10px;">最適な手段</th>
+                <th style="padding: 10px;">理由</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 10px;"><strong>「音が鳴り終わったら1回だけ教えて！」</strong></td>
+                <td style="padding: 10px; color: var(--accent-green); font-weight: bold;">コールバック</td>
+                <td style="padding: 10px; color: var(--text-muted);">時間をかけて何かをするわけではなく、「終わった瞬間」の通知が欲しいだけだから。</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 10px;"><strong>「2秒かけて音量を徐々にフェードさせたい」</strong></td>
+                <td style="padding: 10px; color: var(--accent-amber); font-weight: bold;">コルーチン</td>
+                <td style="padding: 10px; color: var(--text-muted);">フレームごとに少しずつ音量を計算して待つ（時間の経過を伴う）処理だから。</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 10px;"><strong>「ピ・ピ・ピと0.3秒おきに3回警告音を鳴らす」</strong></td>
+                <td style="padding: 10px; color: var(--accent-amber); font-weight: bold;">コルーチン</td>
+                <td style="padding: 10px; color: var(--text-muted);"><code>WaitForSeconds(0.3f)</code> で一定時間待ちながらループを回せるから。</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px;"><strong>「Addressablesで非同期ロードが終わったら鳴らす」</strong></td>
+                <td style="padding: 10px; color: var(--accent-cyan); font-weight: bold;">コールバック または async/await</td>
+                <td style="padding: 10px; color: var(--text-muted);">ロード完了時にチケットを1回手渡すだけなので、コールバック（または現代のUniTask）が最軽量。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート4: 理解度クイズ -->
+      <!-- ======================================================== -->
+      <div class="quiz-box">
+        <div class="quiz-title">🎯 サウンドコーディング理解度チェック（第4問）</div>
+        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">
+          <strong>問題:</strong> 「プレイヤーが毒沼に入っている間、1秒ごとにダメージ効果音（ジクジク音）を鳴らし続けたい」場合、最も自然に書ける仕組みはどれでしょう？
+        </p>
+
+        <button class="quiz-btn" onclick="checkAnswer4(1)">
+          A. コルーチンを使って、<code>while(isPoisoned)</code> の中でSEを鳴らしたあと <code>yield return new WaitForSeconds(1.0f);</code> で1秒待つ。
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer4(2)">
+          B. オーバーロードを使って、引数を100個並べたPlaySEを呼び出す。
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer4(3)">
+          C. void型の通常の関数の中で、forループを回して一瞬で100回PlaySEを呼ぶ。
+        </button>
+
+        <div id="feedback4-correct" class="quiz-feedback" style="background: rgba(52, 211, 153, 0.15); border: 1px solid var(--accent-green); color: #a7f3d0;">
+          🎉 <strong>大正解！ A です！</strong><br>
+          「1秒待って鳴らす」という時間経過の待機（インターバル再生）は、コルーチンの最も得意な領域です！<br>
+          Cを選んでしまうと、1フレーム（一瞬）の間に100回音が重なって再生され、強烈な音割れ（クリッピング）とボイスプールの即死を引き起こしてしまいます。
+        </div>
+
+        <div id="feedback4-wrong" class="quiz-feedback" style="background: rgba(248, 113, 113, 0.15); border: 1px solid var(--accent-red); color: #fca5a5;">
+          ❌ <strong>違います！</strong><br>
+          Bは引数の多重定義なので「時間を待つ」ことはできません。<br>
+          Cの通常の関数でループを回すと、「1秒待つ」ことができず1フレームの間に何十回も音が同時に鳴って大音量のノイズになります。<br>
+          「時間を待つ（一時停止する）」ができる仕組みはどれだったか、もう一度思い出してみましょう！
+        </div>
+      </div>
+    </article>
+
     <footer>
       AudioDev Academy • サウンドデザイナー専用プログラミング個人ノート
     </footer>
@@ -947,6 +1164,19 @@ Sound.<span class="c-fn">PlayAsync</span>(bossBgmRef, (<span class="c-param">han
       const wrongBox = document.getElementById('feedback3-wrong');
       
       if (choice === 2) {
+        correctBox.style.display = 'block';
+        wrongBox.style.display = 'none';
+      } else {
+        correctBox.style.display = 'none';
+        wrongBox.style.display = 'block';
+      }
+    }
+
+    function checkAnswer4(choice) {
+      const correctBox = document.getElementById('feedback4-correct');
+      const wrongBox = document.getElementById('feedback4-wrong');
+      
+      if (choice === 1) {
         correctBox.style.display = 'block';
         wrongBox.style.display = 'none';
       } else {
