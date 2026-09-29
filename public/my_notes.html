@@ -322,6 +322,12 @@
             <span>「戻り値（Return Value）」とは？ voidとの違いやサウンドでの実用例</span>
           </a>
         </li>
+        <li>
+          <a href="#qa-03">
+            <span style="color: var(--accent-cyan); font-weight: bold;">第3問:</span>
+            <span>Addressables導入の「非同期」って何？ async / await / コールバック / コルーチン徹底比較</span>
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -711,6 +717,199 @@ Sound.<span class="c-fn">FadeOut</span>(<span class="c-param">laserSound</span>,
       </div>
     </article>
 
+    <!-- ======================================================== -->
+    <!-- 第3問: 非同期ロード（async/await / コールバック / コルーチン） -->
+    <!-- ======================================================== -->
+    <article id="qa-03" class="qa-card">
+      <div class="qa-header">
+        <div class="qa-num">Q.03</div>
+        <div>
+          <h2 class="qa-title">Addressables導入の「非同期」って何？<br>async / await / コールバック / コルーチン徹底比較</h2>
+          <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+            キーワード: 同期 vs 非同期 / フレーム落ち防止 / コールバック(Action) / コルーチン(IEnumerator) / async await(Task)
+          </p>
+        </div>
+      </div>
+
+      <!-- 1. そもそも同期と非同期の違い -->
+      <div class="section-block">
+        <div class="section-title">💡 そもそも「同期（Sync）」と「非同期（Async）」の違いは？</div>
+        <div class="analogy-box">
+          <div class="analogy-title">🎛️ DAWのたとえ: 「画面フリーズ書き出し」vs「バックグラウンド書き出し」</div>
+          <p style="margin: 0; font-size: 13px;">
+            • <strong>同期（Synchronous）</strong>: DAWでオーディオをバウンス（書き出し）している間、マウスカーソルが虹色や砂時計になり、<strong>DAWの画面が完全にフリーズして何も触れなくなる状態</strong>。<br>
+            • <strong>非同期（Asynchronous）</strong>: オーディオ書き出しを裏側（バックグラウンド）で行わせ、<strong>自分はDAWのタイムラインで他のトラックを自由に編集し続けられる状態</strong>。<br><br>
+            ゲーム開発（Unity）では、重いオーディオファイル（10MB〜20MBのBGMやボイス）をストレージやネットから読み込むとき、もし<strong>同期</strong>で読み込むと、<strong>ゲーム画面がカクッと一瞬止まる（フレーム落ち・プチフリーズ）</strong>が発生します。<br>
+            この画面フリーズを根絶するために、裏でこっそり読み込ませる仕組みが<strong>「非同期ロード（Addressables）」</strong>です！
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. 画像の4大方式を音響と身近なたとえで完全分解 -->
+      <div class="section-block">
+        <div class="section-title">📦 画像に出てきた4つの方式を徹底解説</div>
+        <p>
+          「非同期で裏で読み込む」と決めたあと、<strong>「じゃあ読み込みが終わったことをどうやって受け取るか？」</strong>という連絡方法の違いが以下の4つです。
+        </p>
+
+        <!-- 方式1: コールバック方式 -->
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="font-weight: bold; color: var(--accent-cyan); font-size: 14px;">
+              ① コールバック方式（フードコートの呼び出しベル型）★画像での推奨
+            </div>
+            <span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.3);">
+              Action&lt;SoundPlayback&gt;
+            </span>
+          </div>
+          <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 10px;">
+            「このBGMを裏で読み込んどいて！ <strong>読み込みが終わったら、この電話番号（関数）に連絡して（Call backして）ね！</strong>」と、終わった後の処理を引数として手渡しておく方式です。
+          </p>
+          <pre style="margin: 0;"><code><span class="c-cm">// 呼び出し側: 「鳴り始めたら(onStarted)、チケットhandleを受け取る」</span>
+Sound.<span class="c-fn">PlayAsync</span>(bossBgmRef, (<span class="c-param">handle</span>) => {
+    Debug.Log(<span class="c-num">"読み込み完了！BGMが鳴り始めました。チケットID: "</span> + <span class="c-param">handle</span>.id);
+});
+<span class="c-cm">// ※読み込み中もゲーム画面は一切フリーズせず60fpsで動き続ける！</span></code></pre>
+          <div style="margin-top: 10px; font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="color: var(--accent-green);">
+              <strong>⭕ メリット:</strong> コルーチンもasync/awaitも強制せず、誰でも手軽に1行で呼べる。
+            </div>
+            <div style="color: var(--accent-amber);">
+              <strong>⚠️ デメリット:</strong> 「読み込み中にプレイヤーが部屋を出てしまったので再生をキャンセルしたい」という場合の管理が少し面倒。
+            </div>
+          </div>
+        </div>
+
+        <!-- 方式2: コルーチン方式 -->
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="font-weight: bold; color: var(--accent-amber); font-size: 14px;">
+              ② コルーチン方式（パラパラ漫画・フレーム監視員型）
+            </div>
+            <span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(251, 191, 36, 0.15); color: var(--accent-amber); border: 1px solid rgba(251, 191, 36, 0.3);">
+              IEnumerator / yield return
+            </span>
+          </div>
+          <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 10px;">
+            Unityが昔から持っている仕組みです。<code>yield return ...</code> を使って、1フレーム進むごとに「まだ読み込み終わらないかな？…あ、終わった！」と少しずつ処理を進めます。
+          </p>
+          <pre style="margin: 0;"><code><span class="c-kw">IEnumerator</span> <span class="c-fn">StartBossBattle</span>()
+{
+    Debug.Log(<span class="c-num">"BGM読み込み開始..."</span>);
+    <span class="c-kw">yield return</span> Sound.<span class="c-fn">PlayAsyncRoutine</span>(bossBgmRef); <span class="c-cm">// 読み込み完了まで待機</span>
+    Debug.Log(<span class="c-num">"再生開始されたので、ボス出現アニメーションを再生！"</span>);
+}</code></pre>
+          <div style="margin-top: 10px; font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="color: var(--accent-green);">
+              <strong>⭕ メリット:</strong> Unityで昔から使われているため、ゲームプランナーやUnity初心者に馴染みがある。
+            </div>
+            <div style="color: var(--accent-red);">
+              <strong>⚠️ デメリット:</strong> <code>MonoBehaviour</code>（ゲームオブジェクト）がないと <code>StartCoroutine</code> できない。静的クラス（<code>Sound.PlayAsync()</code>）から呼びにくく、現代では時代遅れになりつつある。
+            </div>
+          </div>
+        </div>
+
+        <!-- 方式3: async / await 方式 -->
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="font-weight: bold; color: var(--accent-purple); font-size: 14px;">
+              ③ async / await 方式（現代の標準: 置き配待ち＆自動再開型）
+            </div>
+            <span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(192, 132, 252, 0.15); color: var(--accent-purple); border: 1px solid rgba(192, 132, 252, 0.3);">
+              async Task&lt;SoundPlayback&gt;
+            </span>
+          </div>
+          <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 10px;">
+            C#や現代プログラミングの世界で最も推奨される、美しく直感的な書き方です。<br>
+            • <strong><code>async</code>（エイシンク）</strong>: 「この関数は途中で待たされる（時間がかかる）非同期関数だよ」という宣言。<br>
+            • <strong><code>await</code>（エウェイト）</strong>: 「ここでロードが終わるまで待つ！でも<strong>ゲーム画面は止めないでね！</strong>」という合図。<br>
+            まるで同期コードのように上から下へ自然に書けるのが最大の特徴です。
+          </p>
+          <pre style="margin: 0;"><code><span class="c-kw">public async</span> <span class="c-type">UniTask</span> <span class="c-fn">PlayStageBGM</span>()
+{
+    <span class="c-cm">// await で読み込み完了を待つ（でも画面は60fpsで滑らかに動いたまま！）</span>
+    <span class="c-type">SoundPlayback</span> <span class="c-param">handle</span> = <span class="c-kw">await</span> Sound.<span class="c-fn">PlayAsync</span>(stageBgmRef);
+    
+    <span class="c-cm">// 読み込み完了後にそのまま直下の行が実行される！</span>
+    Debug.Log(<span class="c-num">"BGM再生開始！ チケットID: "</span> + <span class="c-param">handle</span>.id);
+}</code></pre>
+          <div style="margin-top: 10px; font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="color: var(--accent-green);">
+              <strong>⭕ メリット:</strong> コードが上から下へ素直に読めて、戻り値（チケット）もそのまま直感的に受け取れる。キャンセル処理（CancellationToken）も強力。
+            </div>
+            <div style="color: var(--accent-amber);">
+              <strong>⚠️ デメリット:</strong> 呼び出し側の関数にも <code>async</code> を付ける必要がある。
+            </div>
+          </div>
+        </div>
+
+        <!-- 方式4: AsyncOperationHandleをそのまま返す -->
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="font-weight: bold; color: var(--text-main); font-size: 14px;">
+              ④ AsyncOperationHandleをそのまま返す（生チケット丸投げ型）
+            </div>
+            <span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid var(--border-color);">
+              AsyncOperationHandle&lt;AudioClip&gt;
+            </span>
+          </div>
+          <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 10px;">
+            サウンドマネージャー側では何も隠蔽せず、Addressablesが発行した生のロードハンドル（引換券）をそのまま返して「あとは呼び出し側が好きに <code>.Completed</code> で待つか <code>.Task</code> で待つか決めてね」という方式です。
+          </p>
+          <div style="margin-top: 10px; font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="color: var(--accent-green);">
+              <strong>⭕ メリット:</strong> 自由度が最も高く、サウンドマネージャー側の実装コードが少なくて済む。
+            </div>
+            <div style="color: var(--accent-red);">
+              <strong>⚠️ デメリット:</strong> 呼び出し側がAddressablesの細かい使い方を知らないと使えない（サウンドマネージャーとしての親切心・カプセル化が薄い）。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 画像の質問への回答判断 -->
+      <div class="section-block">
+        <div class="section-title">🎯 サウンドデザイナーとしてどう選ぶべき？</div>
+        <div class="analogy-box" style="border-left-color: var(--accent-green); background: rgba(52, 211, 153, 0.08);">
+          <div class="analogy-title" style="color: var(--accent-green);">結論: 現場では「コールバック方式」または「async/await (UniTask)」が2大主流！</div>
+          <p style="margin: 0; font-size: 13px;">
+            • <strong>一番手軽にしたいなら</strong>: 選択肢1の<strong>「コールバック方式(推奨)」</strong>が最適です。ゲームの演出担当者が <code>Sound.PlayAsync(ref, (handle) => { ... });</code> と書くだけで誰でも簡単に使えます。<br>
+            • <strong>C#の最先端でスマートにいきたいなら</strong>: <strong>「async/await (UniTask) 方式」</strong>です。<code>await Sound.PlayAsync(ref)</code> でチケットが手元に返ってくるため、コードが一番綺麗になります。
+          </p>
+        </div>
+      </div>
+
+      <!-- 4. 理解度ミニクイズ -->
+      <div class="quiz-box">
+        <div class="quiz-title">🎯 サウンドコーディング理解度チェック（第3問）</div>
+        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">
+          <strong>問題:</strong> Unityで、なぜ10MBある大容量BGMを「同期（従来のやり方）」ではなく「非同期（Addressables）」で読み込むべきなのでしょう？
+        </p>
+
+        <button class="quiz-btn" onclick="checkAnswer3(1)">
+          A. 非同期で読み込むと、音質（ハイレゾ音質）が向上するから。
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer3(2)">
+          B. 同期で読み込むと、読み込みが終わるまでゲーム画面が一瞬止まる（フレーム落ちする）のを防ぐため。
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer3(3)">
+          C. Unityの規約で、AudioClipは同期ロードが禁止されているから。
+        </button>
+
+        <div id="feedback3-correct" class="quiz-feedback" style="background: rgba(52, 211, 153, 0.15); border: 1px solid var(--accent-green); color: #a7f3d0;">
+          🎉 <strong>大正解！ B です！</strong><br>
+          大容量ファイルを同期で読み込むと、CPUがストレージからデータを吸い出し終わるまでメインスレッド（描画処理）がフリーズし、プレイヤーにとって不快なプチフリーズ（カクつき）が発生します。<br>
+          非同期にすることで、画面を60fpsで滑らかに動かしたまま、裏で読み込んで準備ができた瞬間に音を鳴らすことができます！
+        </div>
+
+        <div id="feedback3-wrong" class="quiz-feedback" style="background: rgba(248, 113, 113, 0.15); border: 1px solid var(--accent-red); color: #fca5a5;">
+          ❌ <strong>惜しい！</strong><br>
+          音質が変わるわけでも、同期ロードが禁止されているわけでもありません。<br>
+          「ゲームの滑らかな描画（フレームレート）」と「ストレージからの重いデータ読み込み」の関係をもう一度考えてみましょう！
+        </div>
+      </div>
+    </article>
+
     <footer>
       AudioDev Academy • サウンドデザイナー専用プログラミング個人ノート
     </footer>
@@ -733,6 +932,19 @@ Sound.<span class="c-fn">FadeOut</span>(<span class="c-param">laserSound</span>,
     function checkAnswer2(choice) {
       const correctBox = document.getElementById('feedback2-correct');
       const wrongBox = document.getElementById('feedback2-wrong');
+      
+      if (choice === 2) {
+        correctBox.style.display = 'block';
+        wrongBox.style.display = 'none';
+      } else {
+        correctBox.style.display = 'none';
+        wrongBox.style.display = 'block';
+      }
+    }
+
+    function checkAnswer3(choice) {
+      const correctBox = document.getElementById('feedback3-correct');
+      const wrongBox = document.getElementById('feedback3-wrong');
       
       if (choice === 2) {
         correctBox.style.display = 'block';
