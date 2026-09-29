@@ -316,6 +316,12 @@
             <span>「オーバーロード（Overload）」って何？ なぜPlaySEが何種類もあるの？</span>
           </a>
         </li>
+        <li>
+          <a href="#qa-02">
+            <span style="color: var(--accent-cyan); font-weight: bold;">第2問:</span>
+            <span>「戻り値（Return Value）」とは？ voidとの違いやサウンドでの実用例</span>
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -488,6 +494,223 @@ PlaySE_ClipVolumePitchPositionAndFade(clip, volume, pitch, position, 0.5f);
       </div>
     </article>
 
+    <!-- ======================================================== -->
+    <!-- 第2問: 戻り値（Return Value）解説 -->
+    <!-- ======================================================== -->
+    <article id="qa-02" class="qa-card">
+      <div class="qa-header">
+        <div class="qa-num">Q.02</div>
+        <div>
+          <h2 class="qa-title">戻り値（Return Value）とは？ voidとの違いとサウンドでの実例</h2>
+          <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+            キーワード: エフェクターのOUTPUT端子 / return文 / void（返り値なし） / 状態取得 / 整理券（ハンドル）
+          </p>
+        </div>
+      </div>
+
+      <!-- 1. 音響のたとえ -->
+      <div class="section-block">
+        <div class="section-title">💡 音響・機材でたとえると？</div>
+        <div class="analogy-box">
+          <div class="analogy-title">🎛️ 音響のたとえ: 「OUTPUT端子から出てくる音」や「ラウドネスメーターに表示される数値」</div>
+          <p style="margin: 0; font-size: 13px;">
+            関数（メソッド）を1台の<strong>「ラックマウント機材」</strong>だと思ってください。<br>
+            • <strong>引数（INPUT）</strong>: 機材のINPUT端子に差し込む音声信号ケーブルや、フロントパネルの調整ツマミ（材料）<br>
+            • <strong>関数の中身</strong>: 機材の内部回路（EQ、コンプ、演算処理）<br>
+            • <strong>戻り値（OUTPUT）</strong>: 機材の<strong>OUTPUT端子から吐き出されて手元に返ってくる音声信号</strong>や、<strong>画面にポンと表示される測定数値</strong>（結果）<br><br>
+            「計算や処理をやらせて、その<strong>結果を呼び出し元（手元）に持ち帰ってくる値</strong>」のことを<strong>戻り値（返り値 / Return Value）</strong>と呼びます。
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. void との違い -->
+      <div class="section-block">
+        <div class="section-title">❓ よく見る「void」って何？ 戻り値と何が違うの？</div>
+        <p>
+          英語の <code>void</code> は<strong>「空っぽ」「何もない」</strong>という意味です。<br>
+          プログラミングでは<strong>「この関数は仕事をしたら終わり！ 手元には何も返さないよ（戻り値なし）」</strong>という意味になります。
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0;">
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+            <div style="font-weight: bold; color: var(--accent-amber); font-size: 13px; margin-bottom: 8px;">
+              ⚡ 戻り値なし: void の場合（一方通行の命令）
+            </div>
+            <pre style="margin: 0;"><code><span class="c-kw">public void</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>)
+{
+    <span class="c-cm">// 音を鳴らすだけで終了！</span>
+    <span class="c-cm">// 「鳴らしといたよ！」の返事・結果は不要</span>
+}
+
+<span class="c-cm">// 呼び出す側（ただ実行するだけ）</span>
+<span class="c-fn">PlaySE</span>(explosionClip);</code></pre>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px; margin-bottom: 0;">
+              例: 「ドアのインターホンを押す」「照明のスイッチを入れる」のように、実行するだけで結果の数値を受け取る必要がないとき。
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+            <div style="font-weight: bold; color: var(--accent-green); font-size: 13px; margin-bottom: 8px;">
+              ✨ 戻り値あり: 型名（floatなど）の場合（結果を受け取る）
+            </div>
+            <pre style="margin: 0;"><code><span class="c-kw">public float</span> <span class="c-fn">GetBGMVolume</span>()
+{
+    <span class="c-kw">return</span> currentVolume; <span class="c-cm">// float数値を手元に返す！</span>
+}
+
+<span class="c-cm">// 呼び出す側（返ってきた値を受け取って使う）</span>
+<span class="c-kw">float</span> <span class="c-param">vol</span> = <span class="c-fn">GetBGMVolume</span>();
+slider.value = <span class="c-param">vol</span>; <span class="c-cm">// UIスライダーに反映！</span></code></pre>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px; margin-bottom: 0;">
+              例: 「いま何時？」「この波形のピーク音量は何dB？」のように、答えを聞いてその後の処理に使いたいとき。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. サウンド現場での実例3選 -->
+      <div class="section-block">
+        <div class="section-title">🎚️ サウンドコーディングで戻り値を使う3大実例</div>
+
+        <!-- 実例1: 状態の問い合わせ (bool) -->
+        <div style="margin-bottom: 20px;">
+          <h4 style="font-size: 14px; color: #ffffff; margin-bottom: 6px;">① 状態の問い合わせ（<code>bool</code> を返す: YESかNOか）</h4>
+          <p>
+            「今BGMって鳴ってる？」を判定して、二重再生を防いだり、演出を切り替えたりします。
+          </p>
+          <pre><code><span class="c-cm">// BGMが再生中なら true、止まっていれば false を返す</span>
+<span class="c-kw">public bool</span> <span class="c-fn">IsPlayingBGM</span>()
+{
+    <span class="c-kw">return</span> bgmSource.isPlaying;
+}
+
+<span class="c-cm">// 呼び出す側（演出スクリプトなど）</span>
+<span class="c-kw">if</span> (!soundManager.<span class="c-fn">IsPlayingBGM</span>())
+{
+    soundManager.<span class="c-fn">PlayBGM</span>(bossBattleBGM); <span class="c-cm">// 鳴っていなければ再生！</span>
+}
+</code></pre>
+        </div>
+
+        <!-- 実例2: 音響計算・単位変換 (float/int) -->
+        <div style="margin-bottom: 20px;">
+          <h4 style="font-size: 14px; color: #ffffff; margin-bottom: 6px;">② 音響計算・単位変換（<code>float</code> や <code>int</code> を返す）</h4>
+          <p>
+            デシベル（dB）からリニア音量倍率（0.0〜1.0）を計算したり、秒数からサンプル数を計算して結果を受け取ります。
+          </p>
+          <pre><code><span class="c-cm">// デシベル（-6dBなど）を渡すと、リニア倍率（約0.501）を計算して返してくれる関数</span>
+<span class="c-kw">public float</span> <span class="c-fn">DecibelToLinear</span>(<span class="c-kw">float</span> <span class="c-param">dB</span>)
+{
+    <span class="c-kw">float</span> <span class="c-param">linear</span> = Mathf.Pow(<span class="c-num">10.0f</span>, <span class="c-param">dB</span> / <span class="c-num">20.0f</span>);
+    <span class="c-kw">return</span> <span class="c-param">linear</span>; <span class="c-cm">// 計算結果を持ち帰る！</span>
+}
+
+<span class="c-cm">// 呼び出す側</span>
+<span class="c-kw">float</span> <span class="c-param">vol</span> = <span class="c-fn">DecibelToLinear</span>(-<span class="c-num">6.0f</span>); <span class="c-cm">// vol に約 0.5f が入る</span>
+audioSource.volume = <span class="c-param">vol</span>;
+</code></pre>
+        </div>
+
+        <!-- 実例3: 整理券・チケット (SoundPlayback / Handle) -->
+        <div>
+          <h4 style="font-size: 14px; color: #ffffff; margin-bottom: 6px;">③ 再生後の操作チケット（<code>SoundPlayback</code> ハンドルを返す）★一番重要！</h4>
+          <p>
+            CRIWAREや独自サウンドマネージャー（Sound.csなど）の設計で最も美しいパターンです。<br>
+            「音を鳴らすと同時に、<strong>その音専用の整理券（チケット / ハンドル）</strong>を手元に返してくれる」という使い方です。
+          </p>
+          <pre><code><span class="c-cm">// 鳴らすと同時に、音の識別チケット（SoundPlayback）を返す</span>
+<span class="c-kw">public</span> <span class="c-type">SoundPlayback</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>)
+{
+    <span class="c-cm">// ボイスプールから空きを探して再生...</span>
+    <span class="c-type">SoundPlayback</span> <span class="c-param">ticket</span> = <span class="c-kw">new</span> <span class="c-type">SoundPlayback</span>(voiceId, generation);
+    <span class="c-kw">return</span> <span class="c-param">ticket</span>; <span class="c-cm">// 呼び出し元に整理券を渡す！</span>
+}
+
+<span class="c-cm">// 呼び出す側（レーザー光線発射など）</span>
+<span class="c-type">SoundPlayback</span> <span class="c-param">laserSound</span> = Sound.<span class="c-fn">PlaySE</span>(laserLoopClip);
+
+<span class="c-cm">// 3秒後、ボタンを離したときに「そのチケットの音だけ」を狙い撃ちでフェードアウト！</span>
+Sound.<span class="c-fn">FadeOut</span>(<span class="c-param">laserSound</span>, <span class="c-num">0.5f</span>);
+</code></pre>
+          <p style="font-size: 13px; color: var(--accent-cyan); margin-top: 6px;">
+            💡 もし <code>PlaySE</code> が <code>void</code>（何も返さない）だったら、鳴らした音の整理番号がわからないため、「今鳴らしたレーザー音だけを止める」という芸当ができなくなってしまいます！
+          </p>
+        </div>
+      </div>
+
+      <!-- 4. return 文のルール -->
+      <div class="section-block">
+        <div class="section-title">📐 C#での書き方と「return」の掟</div>
+        <ul style="padding-left: 20px; font-size: 14px; color: #cbd5e1; margin-bottom: 14px;">
+          <li style="margin-bottom: 6px;">
+            <strong>関数の左側に「返すデータの型」を書く</strong>: <code>public float CalcFreq()</code>
+          </li>
+          <li style="margin-bottom: 6px;">
+            <strong>関数の中で <code>return 値;</code> を書く</strong>: 約束した型と同じ型の値を返さないとコンパイルエラーになります。
+          </li>
+          <li style="margin-bottom: 6px;">
+            <strong><code>return</code> を通過した瞬間に、関数は即座に終了する</strong>: <code>return</code> の下に書いたコードは実行されません（強制脱出）。
+          </li>
+        </ul>
+
+        <pre><code><span class="c-kw">public float</span> <span class="c-fn">CalculatePitch</span>(<span class="c-kw">float</span> <span class="c-param">semitones</span>)
+{
+    <span class="c-kw">if</span> (<span class="c-param">semitones</span> == <span class="c-num">0f</span>)
+    {
+        <span class="c-kw">return</span> <span class="c-num">1.0f</span>; <span class="c-cm">// 半音差がゼロなら、即座に原音ピッチ（1.0）を持ち帰って終了！</span>
+    }
+
+    <span class="c-cm">// 半音差がある場合だけ複雑な対数計算を行う</span>
+    <span class="c-kw">float</span> <span class="c-param">pitch</span> = Mathf.Pow(<span class="c-num">2f</span>, <span class="c-param">semitones</span> / <span class="c-num">12f</span>);
+    <span class="c-kw">return</span> <span class="c-param">pitch</span>; <span class="c-cm">// 計算結果を持ち帰って終了！</span>
+}
+</code></pre>
+      </div>
+
+      <!-- 5. よくある落とし穴 -->
+      <div class="section-block">
+        <div class="warning-box">
+          <div class="warning-title">⚠️ 初心者がよくハマる落とし穴: 「受け取った戻り値を変数に入れ忘れる」</div>
+          <p style="margin: 0; font-size: 13px;">
+            <code>DecibelToLinear(-6.0f);</code> とだけ書いて、結果を変数に入れない（<code>float v = ...</code> と書かない）と、
+            せっかく機材が計算してOUTPUT端子から出してくれた数値を<strong>地面に垂れ流して捨てている</strong>状態になります。<br>
+            戻り値がある関数を使うときは、必ず左側に変数（<code>float vol = ...</code> や <code>var handle = ...</code>）を用意して受け取りましょう！
+          </p>
+        </div>
+      </div>
+
+      <!-- 6. 理解度ミニクイズ -->
+      <div class="quiz-box">
+        <div class="quiz-title">🎯 サウンドコーディング理解度チェック（第2問）</div>
+        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">
+          <strong>問題:</strong> サウンドマネージャーで、「現在のマスター音量（0.0〜1.0）をゲームの設定画面UIに渡して表示させたい」場合、関数の宣言として最もふさわしいのはどれでしょう？
+        </p>
+
+        <button class="quiz-btn" onclick="checkAnswer2(1)">
+          A. <code>public void GetMasterVolume()</code>
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer2(2)">
+          B. <code>public float GetMasterVolume()</code>
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer2(3)">
+          C. <code>public AudioClip GetMasterVolume()</code>
+        </button>
+
+        <div id="feedback2-correct" class="quiz-feedback" style="background: rgba(52, 211, 153, 0.15); border: 1px solid var(--accent-green); color: #a7f3d0;">
+          🎉 <strong>大正解！ B です！</strong><br>
+          音量は <code>0.0f 〜 1.0f</code> のような小数値なので、手元に受け取る型は <code>float</code> が適切です。<br>
+          Aの <code>void</code> だと「何も返さない」ためUI側が音量の値を受け取れず、Cだと波形データそのものを返すことになってしまいます。
+        </div>
+
+        <div id="feedback2-wrong" class="quiz-feedback" style="background: rgba(248, 113, 113, 0.15); border: 1px solid var(--accent-red); color: #fca5a5;">
+          ❌ <strong>惜しい！</strong><br>
+          Aを選んだ場合: <code>void</code> は「戻り値なし」なので、UIがマスター音量の数値を知ることができません。<br>
+          Cを選んだ場合: <code>AudioClip</code> は音源ファイルそのもの（波形）なので、音量の数値とは型が合いません。<br>
+          音量（0.0〜1.0の小数）を返すにはどの型が必要か、もう一度考えてみましょう！
+        </div>
+      </div>
+    </article>
+
     <footer>
       AudioDev Academy • サウンドデザイナー専用プログラミング個人ノート
     </footer>
@@ -499,6 +722,19 @@ PlaySE_ClipVolumePitchPositionAndFade(clip, volume, pitch, position, 0.5f);
       const wrongBox = document.getElementById('feedback-wrong');
       
       if (choice === 3) {
+        correctBox.style.display = 'block';
+        wrongBox.style.display = 'none';
+      } else {
+        correctBox.style.display = 'none';
+        wrongBox.style.display = 'block';
+      }
+    }
+
+    function checkAnswer2(choice) {
+      const correctBox = document.getElementById('feedback2-correct');
+      const wrongBox = document.getElementById('feedback2-wrong');
+      
+      if (choice === 2) {
         correctBox.style.display = 'block';
         wrongBox.style.display = 'none';
       } else {
