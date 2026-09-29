@@ -334,6 +334,12 @@
             <span>「コールバック」と「コルーチン」を徹底深掘り！ 仕組み・コード・現場での使い分け</span>
           </a>
         </li>
+        <li>
+          <a href="#qa-05">
+            <span style="color: var(--accent-cyan); font-weight: bold;">第5問:</span>
+            <span>「インプリメント（Implement）」ってどういう意味？ 日常会話とC#インターフェース実装の真意</span>
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -1127,6 +1133,211 @@ Sound.<span class="c-fn">PlayVoiceWithCallback</span>(voiceClip, () => {
       </div>
     </article>
 
+    <!-- ======================================================== -->
+    <!-- 第5問: インプリメント（Implement / 実装）徹底解剖 -->
+    <!-- ======================================================== -->
+    <article id="qa-05" class="qa-card">
+      <div class="qa-header">
+        <div class="qa-num">Q.05</div>
+        <div>
+          <h2 class="qa-title">「インプリメント（Implement）」ってどういう意味？<br>日常会話の使われ方と C#インターフェース実装の真意</h2>
+          <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+            キーワード: 実装する / インターフェース (interface) / VSTプラグイン規格のたとえ / 契約書 / 継承との違い
+          </p>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート1: 2つの意味 -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="section-title">💡 「インプリメント」には2つの使われ方がある！</div>
+        <p>
+          英語の <strong>implement</strong> は「道具」や<strong>「実行する・具現化する・形にする」</strong>という意味です。<br>
+          現場では、以下の2つの文脈で使われます。
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0;">
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+            <div style="font-weight: bold; color: var(--accent-cyan); font-size: 13px; margin-bottom: 8px;">
+              ① 現場の日常会話: 「企画や設計をコード化すること（実装）」
+            </div>
+            <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 0;">
+              「BGMのクロスフェード機能をインプリメント（実装）しておきました！」<br>
+              → 「頭の中のアイデアや仕様書を、実際に動くプログラムコードに落とし込んで完成させましたよ」という意味。
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+            <div style="font-weight: bold; color: var(--accent-green); font-size: 13px; margin-bottom: 8px;">
+              ② C#文法の専門用語: 「インターフェースの約束を果たすこと」★本命！
+            </div>
+            <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 0;">
+              「このクラスは <code>IAudioEffect</code> インターフェースをインプリメントしている」<br>
+              → 決められたルール・規格書に従って、必要な関数の中身をちゃんとプログラミングしているという意味。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート2: 音響のたとえ -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="section-title">🎛️ 音響のたとえ: 「Steinbergが決めた VST3 プラグイン規格」</div>
+        <div class="analogy-box">
+          <div class="analogy-title">🔌 VST規格書（インターフェース）と、各社のエフェクター（インプリメント）</div>
+          <p style="margin: 0; font-size: 13px;">
+            Steinberg社がCubaseを作ったとき、世界中のプラグイン開発者に向けてこう宣言しました：<br>
+            <strong>「Cubaseのスロットに挿したければ、必ず <code>ProcessAudio(buffer)</code> という関数を用意しなさい。中身がディレイだろうがリバーブだろうが好きにしていいけど、この端子の形（規格書）だけは絶対に守りなさい」</strong><br><br>
+            この「端子の形と名前だけを決めたルールブック」をプログラミングで<strong>インターフェース（Interface）</strong>と呼び、<br>
+            Waves社やFabFilter社がその規格書に合わせて<strong>「よし、言われた通り <code>ProcessAudio</code> の中身を実際にプログラミングしよう！」と中身を書くこと</strong>を<strong>「インターフェースをインプリメント（実装）する」</strong>と言います！
+          </p>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート3: C#コードでの実例 -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="section-title">💻 C#コードでの書き方（サウンドエフェクトの実例）</div>
+        <p>
+          C#では、インターフェース名の頭に「I（アイ）」をつける慣習があります（例: <code>IAudioProcessor</code>）。<br>
+          インターフェース側には<strong>「中身（処理）」は一切書かず、関数の名前と型だけ</strong>を並べます。
+        </p>
+
+        <pre><code><span class="c-cm">// 1. 【規格書】音響プロセッサの共通インターフェース（中身は空っぽ！）</span>
+<span class="c-kw">public interface</span> <span class="c-type">IAudioProcessor</span>
+{
+    <span class="c-kw">void</span> <span class="c-fn">Process</span>(<span class="c-kw">float</span>[] <span class="c-param">buffer</span>); <span class="c-cm">// 「音声を加工する関数を必ず用意すること！」という契約</span>
+}
+
+<span class="c-cm">// 2. 【ディレイクラス】インターフェースを「インプリメント」する！</span>
+<span class="c-kw">public class</span> <span class="c-type">DelayEffect</span> : <span class="c-type">IAudioProcessor</span>
+{
+    <span class="c-cm">// 契約書に従って、本物の処理（中身）をプログラミングする</span>
+    <span class="c-kw">public void</span> <span class="c-fn">Process</span>(<span class="c-kw">float</span>[] <span class="c-param">buffer</span>)
+    {
+        <span class="c-cm">// ディレイ音をフィードバック合成する本物の計算コード...</span>
+    }
+}
+
+<span class="c-cm">// 3. 【ディストーションクラス】こちらも「インプリメント」する！</span>
+<span class="c-kw">public class</span> <span class="c-type">DistortionEffect</span> : <span class="c-type">IAudioProcessor</span>
+{
+    <span class="c-kw">public void</span> <span class="c-fn">Process</span>(<span class="c-kw">float</span>[] <span class="c-param">buffer</span>)
+    {
+        <span class="c-cm">// 波形をクリッピング歪みさせる本物の計算コード...</span>
+    }
+}
+</code></pre>
+
+        <div class="warning-box">
+          <div class="warning-title">⚠️ インプリメントの絶対の掟: 「1つでも書き忘れるとコンパイルエラー！」</div>
+          <p style="margin: 0; font-size: 13px;">
+            もし <code>DelayEffect : IAudioProcessor</code> と書いたのに、クラスの中に <code>Process(...)</code> 関数を書き忘れたら？<br>
+            C#のコンパイラが<strong>「契約違反！ IAudioProcessorを名乗るならProcess関数を実装しなさい！」</strong>と怒り、エラーになります。<br>
+            インターフェースで約束した関数は、1つ残らず中身を書き切る（インプリメントする）義務があります。
+          </p>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート4: なぜインプリメントすると嬉しいのか？ -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="section-title">🌟 なぜわざわざインプリメントするの？（サウンドマネージャーでの威力）</div>
+        <p>
+          最大のメリットは、<strong>「中身が何であれ、同じスロット（配列）にひとまとめにして扱える（ポリモーフィズム）」</strong>ことです！
+        </p>
+
+        <pre><code><span class="c-cm">// サウンドマネージャーのエフェクトラック（配列）</span>
+<span class="c-type">List</span>&lt;<span class="c-type">IAudioProcessor</span>&gt; <span class="c-param">effectRack</span> = <span class="c-kw">new</span> <span class="c-type">List</span>&lt;<span class="c-type">IAudioProcessor</span>&gt;();
+
+<span class="c-cm">// ディレイでも歪みでも、同じ規格（IAudioProcessor）だから何でもラックに挿せる！</span>
+<span class="c-param">effectRack</span>.Add(<span class="c-kw">new</span> <span class="c-type">DelayEffect</span>());
+<span class="c-param">effectRack</span>.Add(<span class="c-kw">new</span> <span class="c-type">DistortionEffect</span>());
+
+<span class="c-cm">// ループを回すだけで、全部のエフェクトを順番に一括処理できる！</span>
+<span class="c-kw">foreach</span> (<span class="c-kw">var</span> <span class="c-param">effect</span> <span class="c-kw">in</span> <span class="c-param">effectRack</span>)
+{
+    <span class="c-param">effect</span>.<span class="c-fn">Process</span>(audioBuffer); <span class="c-cm">// 中身が何であれ、必ずProcess関数を持っていると保証されている！</span>
+}
+</code></pre>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート5: 継承との違い -->
+      <!-- ======================================================== -->
+      <div class="section-block">
+        <div class="section-title">🔍 「継承（Inheritance）」と「インプリメント（Implementation）」の違い</div>
+        
+        <div style="overflow-x: auto; margin: 14px 0;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border-color); color: var(--accent-cyan);">
+                <th style="padding: 10px;">比較項目</th>
+                <th style="padding: 10px;">継承（クラスの継承）</th>
+                <th style="padding: 10px;">インプリメント（インターフェース実装）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 10px;"><strong>イメージ</strong></td>
+                <td style="padding: 10px;">親の血を受け継ぐ（親子関係）</td>
+                <td style="padding: 10px;">資格・ライセンスを取得する（契約関係）</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 10px;"><strong>中身のコード</strong></td>
+                <td style="padding: 10px;">親がすでに書いたコードを<strong>そのままもらえる</strong></td>
+                <td style="padding: 10px;">中身は空っぽ。<strong>自分で全部書く約束</strong></td>
+              </tr>
+              <tr>
+                <td style="padding: 10px;"><strong>複数できるか？</strong></td>
+                <td style="padding: 10px; color: var(--accent-red);">親は1人だけ（単一継承）</td>
+                <td style="padding: 10px; color: var(--accent-green); font-weight: bold;">何個でも持てる（多重実装OK！）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted);">
+          ※Unityで <code>class MySound : MonoBehaviour, IAudioProcessor, IDisposable</code> のように書けるのは、「MonoBehaviourの子どもでありながら、オーディオ加工資格と破棄資格の2つのインターフェースをインプリメントしている」という意味です。
+        </p>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- パート6: 理解度クイズ -->
+      <!-- ======================================================== -->
+      <div class="quiz-box">
+        <div class="quiz-title">🎯 サウンドコーディング理解度チェック（第5問）</div>
+        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">
+          <strong>問題:</strong> C#でインターフェースをクラスに「インプリメント（実装）」したとき、絶対に守らなければならないルールはどれでしょう？
+        </p>
+
+        <button class="quiz-btn" onclick="checkAnswer5(1)">
+          A. インターフェースに書かれている関数を、クラスの中で1つ残らず中身を記述（プログラミング）しなければならない。
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer5(2)">
+          B. インターフェースをインプリメントすると、自動的に音量が2倍（+6dB）になる。
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer5(3)">
+          C. インターフェースに書かれた関数は、クラスの中で1つも書いてはいけない。
+        </button>
+
+        <div id="feedback5-correct" class="quiz-feedback" style="background: rgba(52, 211, 153, 0.15); border: 1px solid var(--accent-green); color: #a7f3d0;">
+          🎉 <strong>大正解！ A です！</strong><br>
+          インターフェースは「この規格を守りなさい」という厳格な契約書です。<br>
+          約束された関数を1つでも書き忘れるとコンパイルエラーになり、すべて中身を記述し切って初めて「インプリメント完了」となります！
+        </div>
+
+        <div id="feedback5-wrong" class="quiz-feedback" style="background: rgba(248, 113, 113, 0.15); border: 1px solid var(--accent-red); color: #fca5a5;">
+          ❌ <strong>違います！</strong><br>
+          Bのような音量変化はありません。<br>
+          インターフェース（規格書・契約）に書かれた関数を、クラス側でどう扱わなければならなかったか、もう一度思い出してみましょう！
+        </div>
+      </div>
+    </article>
+
     <footer>
       AudioDev Academy • サウンドデザイナー専用プログラミング個人ノート
     </footer>
@@ -1175,6 +1386,19 @@ Sound.<span class="c-fn">PlayVoiceWithCallback</span>(voiceClip, () => {
     function checkAnswer4(choice) {
       const correctBox = document.getElementById('feedback4-correct');
       const wrongBox = document.getElementById('feedback4-wrong');
+      
+      if (choice === 1) {
+        correctBox.style.display = 'block';
+        wrongBox.style.display = 'none';
+      } else {
+        correctBox.style.display = 'none';
+        wrongBox.style.display = 'block';
+      }
+    }
+
+    function checkAnswer5(choice) {
+      const correctBox = document.getElementById('feedback5-correct');
+      const wrongBox = document.getElementById('feedback5-wrong');
       
       if (choice === 1) {
         correctBox.style.display = 'block';
