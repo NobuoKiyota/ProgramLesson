@@ -630,14 +630,20 @@
       </p>
     </header>
 
-    <!-- ビュー切り替えタブバー -->
-    <div class="view-switch-bar">
+    <!-- ビュー切り替えタブバー & 総合ナビゲーション -->
+    <div class="view-switch-bar" style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <a href="index.html" class="tab-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: var(--accent-cyan); font-weight: 800;">
+        🏠 総合INDEX (ポータル)
+      </a>
       <button id="tab-btn-qa" class="tab-btn active" onclick="switchView('qa')">
-        📝 Q&A蓄積ノート (1問1答)
+        📝 Q&A蓄積ノート (全7問)
       </button>
       <button id="tab-btn-dict" class="tab-btn" onclick="switchView('dict')">
-        📖 C#用語大辞典 (A-Z検索 & 関係性)
+        📖 C#用語大辞典 (全47語)
       </button>
+      <a href="/" class="tab-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; background: rgba(192, 132, 252, 0.15); border-color: rgba(192, 132, 252, 0.4); color: var(--accent-purple); font-weight: 800; margin-left: auto;">
+        🎛️ Sound.cs実践アプリ
+      </a>
     </div>
 
     <!-- ========================================== -->
@@ -682,6 +688,12 @@
           <a href="#qa-06">
             <span style="color: var(--accent-cyan); font-weight: bold;">第6問:</span>
             <span>「シングルトン（Singleton）」とは？ なぜサウンドマネージャーは世界に1つだけなのか</span>
+          </a>
+        </li>
+        <li>
+          <a href="#qa-07">
+            <span style="color: var(--accent-cyan); font-weight: bold;">第7問:</span>
+            <span>C#の「演算子・計算・記号」徹底深掘り！ 音量フェード、整数の罠、null安全記号</span>
           </a>
         </li>
       </ul>

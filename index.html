@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AudioDev Academy - C#サウンドプログラミング総合ポータル (INDEX)</title>
+  <style>
+    :root {
+      --bg-primary: #0a0f1d;
+      --bg-card: #131d31;
+      --bg-card-hover: #1c2942;
+      --border-color: #243552;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-purple: #c084fc;
+      --accent-red: #f87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+
+    /* ヘッダー・ヒーロー */
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      border-bottom: 1px solid var(--border-color);
+      padding: 48px 20px;
+      text-align: center;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green), var(--accent-amber), var(--accent-purple));
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: var(--accent-cyan);
+      padding: 4px 14px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .header-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto 24px auto;
+    }
+
+    /* クイックリンクボタンバー */
+    .quick-nav-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn-portal {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-portal:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
+    .btn-portal.primary {
+      background: var(--accent-cyan);
+      color: #0f172a;
+      border-color: var(--accent-cyan);
+    }
+
+    .btn-portal.primary:hover {
+      background: #7dd3fc;
+      color: #0f172a;
+    }
+
+    /* セクションブロック */
+    .portal-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 32px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-badge {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: rgba(52, 211, 153, 0.15);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    /* Q&A グリッド */
+    .qa-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .qa-link-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+
+    .qa-link-card:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .qa-card-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .qa-badge {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent-cyan);
+      font-weight: 800;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+    .qa-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.4;
+    }
+
+    .qa-card-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .qa-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 8px;
+    }
+
+    /* 辞書カテゴリグリッド */
+    .dict-category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .dict-cat-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+    }
+
+    .dict-cat-card:hover {
+      border-color: var(--accent-green);
+      background: rgba(52, 211, 153, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .dict-cat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .dict-cat-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .dict-cat-count {
+      font-size: 11px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 9999px;
+      color: var(--text-muted);
+    }
+
+    .dict-cat-samples {
+      font-size: 12px;
+      color: var(--accent-green);
+      font-family: monospace;
+    }
+
+    /* フッター */
+    footer {
+      text-align: center;
+      padding: 32px 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-color);
+      margin-top: 40px;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 24px; }
+      .portal-section { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー / ヒーロー -->
+  <header>
+    <div class="header-badge">🎧 AUDIO DEV ACADEMY • PORTAL</div>
+    <h1>C# サウンドプログラミング 総合ポータル (INDEX)</h1>
+    <p class="header-sub">
+      Cubase / DAW / ゲームオーディオ経験者のための完全学習ポータル。<br>
+      質問と回答の蓄積ノート、C#音響用語大辞典、実践アプリへこの1ページから直接アクセスできます。
+    </p>
+
+    <div class="quick-nav-bar">
+      <a href="my_notes.html#qa" class="btn-portal primary">
+        📝 Q&A蓄積ノートを開く (Q.01〜Q.07)
+      </a>
+      <a href="my_notes.html#dictionary" class="btn-portal">
+        📖 C#音響用語大辞典を開く (47語収録)
+      </a>
+      <a href="/" class="btn-portal">
+        🎛️ Sound.cs 解読アプリを開く (Web版)
+      </a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ========================================== -->
+    <!-- セクション1: Q&A蓄積ノート 目次 -->
+    <!-- ========================================== -->
+    <section class="portal-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span>📝 Q&A蓄積ノート（個人レッスン完全録）</span>
+        </div>
+        <a href="my_notes.html#qa" class="section-badge" style="text-decoration: none;">
+          全7問 すべて読む →
+        </a>
+      </div>
+
+      <div class="qa-grid">
+        <!-- Q.01 -->
+        <a href="my_notes.html#qa-01" class="qa-link-card">
+          <div>
+            <div class="qa-card-top">
+              <span class="qa-badge">Q.01</span>
+              <span class="qa-card-title">オーバーロード（多重定義）</span>
+            </div>
+            <p class="qa-card-desc">
+              なぜ同じ「PlaySE」という名前の関数が何個もあるのか？ 引数違いの窓口と、カスケード委譲による二重管理防止の極意。
+            </p>
+          </div>
+          <div class="qa-card-footer">
+            <span>🎛️ ミキサーのマルチ入力端子</span>
+            <span>記事を読む ➔</span>
+          </div>
+        </a>
+
+        <!-- Q.02 -->
+        <a href="my_notes.html#qa-02" class="qa-link-card">
+          <div>
+            <div class="qa-card-top">
+              <span class="qa-badge">Q.02</span>
+              <span class="qa-card-title">戻り値（return と void）</span>
+            </div>
+            <p class="qa-card-desc">
+              「戻り値」とはどんなもの？ 値を返す関数と一方通行のvoid命令の違いを、エフェクターのOUTPUT端子にたとえて解剖。
+            </p>
+          </div>
+          <div class="qa-card-footer">
+            <span>🎛️ エフェクターのOUTPUT端子</span>
+            <span>記事を読む ➔</span>
+          </div>
+        </a>
+
+        <!-- Q.03 -->
+        <a href="my_notes.html#qa-03" class="qa-link-card">
+          <div>
+            <div class="qa-card-top">
+              <span class="qa-badge">Q.03</span>
+              <span class="qa-card-title">Addressable & 非同期用語</span>
+            </div>
+            <p class="qa-card-desc">
+              Addressables導入時に必ず出る単語（async, await, コールバック, コルーチン）。画面をフリーズさせずに音を鳴らす仕組み。
+            </p>
+          </div>
+          <div class="qa-card-footer">
+            <span>🎛️ バックヤードへの音源発注</span>
+            <span>記事を読む ➔</span>
+          </div>
+        </a>
+
+        <!-- Q.04 -->
+        <a href="my_notes.html#qa-04" class="qa-link-card">
+          <div>
+            <div class="qa-card-top">
+              <span class="qa-badge">Q.04</span>
+              <span class="qa-card-title">コールバック vs コルーチン</span>
+            </div>
+            <p class="qa-card-desc">
+              「呼び鈴」と「一時待機・時間経過」。BGMのクロスフェードや毒沼ダメージ音を綺麗に制御するための2大方式を徹底比較。
+            </p>
+          </div>
+          <div class="qa-card-footer">
+            <span>🎛️ 呼び鈴 vs 一時停止ボタン</span>
+            <span>記事を読む ➔</span>
+          </div>
+        </a>
+
+        <!-- Q.05 -->
+        <a href="my_notes.html#qa-05" class="qa-link-card">
+          <div>
+            <div class="qa-card-top">
+              <span class="qa-badge">Q.05</span>
+              <span class="qa-card-title">インプリメント（実装・interface）</span>
+            </div>
+            <p class="qa-card-desc">
+              現場の「実装した」とC#文法の「interface実装」。SteinbergのVST3規格書をたとえに、プラグイン共通端子の約束を解説。
+            </p>
+          </div>
+          <div class="qa-card-footer">
+            <span>🎛️ Steinberg VST3 規格書</span>
+            <span>記事を読む ➔</span>
+          </div>
+        </a>
+
+        <!-- Q.06 -->
+        <a href="my_notes.html#qa-06" class="qa-link-card">
+          <div>
+            <div class="qa-card-top">
+              <span class="qa-badge">Q.06</span>
+              <span class="qa-card-title">シングルトン（Singleton）</span>
+            </div>
+            <p class="qa-card-desc">
+              スタジオ中央マスターミキサー卓の唯一無二性。シーン移動時のBGM継続と、誰もが一度はハマる「増殖バグ」の自己防衛コード。
+            </p>
+          </div>
+          <div class="qa-card-footer">
+            <span>🎛️ スタジオ中央マスター卓</span>
+            <span>記事を読む ➔</span>
+          </div>
+        </a>
+
+        <!-- Q.07 -->
+        <a href="my_notes.html#qa-07" class="qa-link-card" style="border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.05);">
+          <div>
+            <div class="qa-card-top">
+              <span class="qa-badge" style="background: var(--accent-cyan); color: #0f172a;">Q.07 NEW</span>
+              <span class="qa-card-title">演算子・計算・プロ記号のすべて</span>
+            </div>
+            <p class="qa-card-desc">
+              音量フェードの乗算、整数の割り算事故（int / int の罠）、%モジュロによる4拍子ループ、?. や ?? などのプロ御用達null安全記号。
+            </p>
+          </div>
+          <div class="qa-card-footer">
+            <span>🎛️ 音響数学 & null安全記号</span>
+            <span>記事を読む ➔</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- セクション2: C#音響用語大辞典 クイック逆引き -->
+    <!-- ========================================== -->
+    <section class="portal-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span>📖 C# 音響プログラミング用語大辞典（全47語）</span>
+        </div>
+        <a href="my_notes.html#dictionary" class="section-badge" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: var(--accent-cyan); text-decoration: none;">
+          辞書ビューを開く (2カラム追従UI) →
+        </a>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+        各文法カテゴリをクリックすると、大辞典の該当カテゴリへ直接ジャンプして閲覧できます。
+      </p>
+
+      <div class="dict-category-grid">
+        <!-- 演算子・記号 -->
+        <a href="my_notes.html#dictionary" class="dict-cat-card">
+          <div class="dict-cat-header">
+            <span class="dict-cat-name">⚡ 演算子・記号</span>
+            <span class="dict-cat-count">10語</span>
+          </div>
+          <div class="dict-cat-samples">+ - * / %, ++, == !=, < >, &&, ||, !, ?., ??, =></div>
+        </a>
+
+        <!-- 条件分岐 -->
+        <a href="my_notes.html#dictionary" class="dict-cat-card">
+          <div class="dict-cat-header">
+            <span class="dict-cat-name">🔀 条件分岐</span>
+            <span class="dict-cat-count">3語</span>
+          </div>
+          <div class="dict-cat-samples">if / else, switch / case, ? : (三項演算子)</div>
+        </a>
+
+        <!-- ループ構文 -->
+        <a href="my_notes.html#dictionary" class="dict-cat-card">
+          <div class="dict-cat-header">
+            <span class="dict-cat-name">🔄 ループ構文</span>
+            <span class="dict-cat-count">5語</span>
+          </div>
+          <div class="dict-cat-samples">for, foreach, while, break, continue</div>
+        </a>
+
+        <!-- 基本型・変数 -->
+        <a href="my_notes.html#dictionary" class="dict-cat-card">
+          <div class="dict-cat-header">
+            <span class="dict-cat-name">📦 基本型・変数</span>
+            <span class="dict-cat-count">8語</span>
+          </div>
+          <div class="dict-cat-samples">bool, float, int, string, var, const, List&lt;T&gt;, Array []</div>
+        </a>
+
+        <!-- 関数・プロパティ -->
+        <a href="my_notes.html#dictionary" class="dict-cat-card">
+          <div class="dict-cat-header">
+            <span class="dict-cat-name">🛠️ 関数・プロパティ</span>
+            <span class="dict-cat-count">6語</span>
+          </div>
+          <div class="dict-cat-samples">get, set, return, void, overload, override</div>
+        </a>
+
+        <!-- クラス・構造体 -->
+        <a href="my_notes.html#dictionary" class="dict-cat-card">
+          <div class="dict-cat-header">
+            <span class="dict-cat-name">🏛️ クラス・構造体</span>
+            <span class="dict-cat-count">10語</span>
+          </div>
+          <div class="dict-cat-samples">class, struct, interface, public, private, static, Instance, this, new, null</div>
+        </a>
+
+        <!-- コルーチン・非同期 -->
+        <a href="my_notes.html#dictionary" class="dict-cat-card">
+          <div class="dict-cat-header">
+            <span class="dict-cat-name">⏱️ コルーチン・非同期</span>
+            <span class="dict-cat-count">5語</span>
+          </div>
+          <div class="dict-cat-samples">yield, IEnumerator, async, await, DontDestroyOnLoad</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- セクション3: Sound.cs 実践Webアプリ -->
+    <!-- ========================================== -->
+    <section class="portal-section" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 27, 75, 0.4) 100%);">
+      <div class="section-header">
+        <div class="section-title">
+          <span>🎛️ Sound.cs 実践Web学習アプリ</span>
+        </div>
+        <a href="/" class="section-badge" style="background: rgba(192, 132, 252, 0.15); border-color: rgba(192, 132, 252, 0.4); color: var(--accent-purple); text-decoration: none;">
+          Webアプリを開く →
+        </a>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        自作Unity用サウンドマネージャー「Sound.cs」の2,069行完全理解を目指す実践Webアプリケーション。
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+        <a href="/" style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; text-decoration: none; color: inherit;">
+          <div style="font-size: 13px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 4px;">📂 Sound.cs 10大モジュール解読</div>
+          <p style="font-size: 11px; color: var(--text-muted); margin: 0;">初期化、BGM/SE/ME/Voice再生、ボイスプール、フェード処理を行別解読。</p>
+        </a>
+
+        <a href="/" style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; text-decoration: none; color: inherit;">
+          <div style="font-size: 13px; font-weight: bold; color: var(--accent-green); margin-bottom: 4px;">📐 設計相関図 & 音響数学</div>
+          <p style="font-size: 11px; color: var(--text-muted); margin: 0;">クラス相関図、dB変換数式、時間軸シーケンスをインタラクティブ確認。</p>
+        </a>
+
+        <a href="/" style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; text-decoration: none; color: inherit;">
+          <div style="font-size: 13px; font-weight: bold; color: var(--accent-amber); margin-bottom: 4px;">🚨 現場トラブルシューティング特訓</div>
+          <p style="font-size: 11px; color: var(--text-muted); margin: 0;">音割れ、GCゴミ、発音遅延、音飛びなどの現場あるあるバグ退治演習。</p>
+        </a>
+
+        <a href="/" style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; text-decoration: none; color: inherit;">
+          <div style="font-size: 13px; font-weight: bold; color: var(--accent-purple); margin-bottom: 4px;">🎧 WebAudio 波形実験ランナー</div>
+          <p style="font-size: 11px; color: var(--text-muted); margin: 0;">ブラウザ上でオシレーターやゲインフェードを鳴らして音響挙動を検証。</p>
+        </a>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    AudioDev Academy • C#サウンドプログラミング総合ポータル (INDEX)<br>
+    © 2026 Nobuo Kiyota. All Rights Reserved.
+  </footer>
+
+</body>
+</html>
