@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 統一デザインシステム共通CSS -->
+  <link rel="stylesheet" href="common.css">
   <title>サウンドデザイナーのためのプログラミング個人ノート</title>
   <style>
     :root {
@@ -340,8 +342,7 @@
 
     /* 左側: 固定サイドバー (検索・カテゴリ・A-Z・関係性) */
     .dict-sidebar {
-      position: sticky;
-      top: 20px;
+      position: sticky; top: calc(var(--header-height, 64px) + 20px);
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 16px;
@@ -621,7 +622,35 @@
 </head>
 <body>
 
-  <div class="container">
+  <!-- 全ページ統一グローバルヘッダー -->
+  <header class="global-header">
+    <div class="global-header-inner">
+      <a href="index.html" class="global-logo">
+        <div class="global-logo-icon">🎧</div>
+        <div class="global-logo-text">
+          <span>AudioDev Academy</span>
+          <span class="global-logo-badge">Sound.cs 完全理解</span>
+        </div>
+      </a>
+
+      <nav class="global-nav">
+        <a href="index.html" class="global-nav-link">
+          <span>🏠 総合INDEX</span>
+        </a>
+        <button id="nav-link-qa" class="global-nav-link active" onclick="switchView('qa')" style="background: transparent; border: 1px solid transparent; cursor: pointer; font-family: inherit;">
+          <span>📝 Q&A蓄積ノート</span>
+        </button>
+        <button id="nav-link-dict" class="global-nav-link" onclick="switchView('dict')" style="background: transparent; border: 1px solid transparent; cursor: pointer; font-family: inherit;">
+          <span>📖 C#用語大辞典</span>
+        </button>
+        <a href="/" class="global-nav-link accent-app">
+          <span>🎛️ Sound.cs実践アプリ</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container" style="padding-top: 24px;">
     <header>
       <div class="badge">🎧 Sound Designer × Sound Programmer</div>
       <h1>プログラミング個人ノート（個別Q&A蓄積）</h1>
@@ -2230,19 +2259,25 @@ Sound.<span class="c-fn">PlaySE</span>(slashClip); <span class="c-cm">// 超シ�
       const dictView = document.getElementById('view-dict');
       const qaBtn = document.getElementById('tab-btn-qa');
       const dictBtn = document.getElementById('tab-btn-dict');
+      const navQa = document.getElementById('nav-link-qa');
+      const navDict = document.getElementById('nav-link-dict');
 
       if (viewName === 'dict') {
         qaView.style.display = 'none';
         dictView.style.display = 'block';
-        qaBtn.classList.remove('active');
-        dictBtn.classList.add('active');
+        if (qaBtn) qaBtn.classList.remove('active');
+        if (dictBtn) dictBtn.classList.add('active');
+        if (navQa) navQa.classList.remove('active');
+        if (navDict) navDict.classList.add('active');
         window.location.hash = 'dictionary';
         renderDictionary();
       } else {
         qaView.style.display = 'block';
         dictView.style.display = 'none';
-        qaBtn.classList.add('active');
-        dictBtn.classList.remove('active');
+        if (qaBtn) qaBtn.classList.add('active');
+        if (dictBtn) dictBtn.classList.remove('active');
+        if (navQa) navQa.classList.add('active');
+        if (navDict) navDict.classList.remove('active');
         window.location.hash = 'qa';
       }
     }

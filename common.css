@@ -1,0 +1,463 @@
+/**
+ * AudioDev Academy - Unified Design System (common.css)
+ * 全ページ共通のデザイントークン、ヘッダー、サイドバー、レイアウト、コンポーネントを定義
+ */
+
+:root {
+  /* 背景カラーパレット */
+  --bg-primary: #0a0f1d;
+  --bg-header: #0f172a;
+  --bg-card: #131d31;
+  --bg-card-hover: #1c2942;
+  --bg-secondary: #162035;
+  --code-bg: #070b14;
+
+  /* 枠線・セパレータ */
+  --border-color: #243552;
+  --border-focus: #38bdf8;
+
+  /* テキストカラー */
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-sub: #cbd5e1;
+
+  /* 音響アクセントカラー */
+  --accent-cyan: #38bdf8;
+  --accent-green: #34d399;
+  --accent-amber: #fbbf24;
+  --accent-purple: #c084fc;
+  --accent-red: #f87171;
+
+  /* レイアウト寸法 */
+  --header-height: 64px;
+  --sidebar-width: 310px;
+  --container-max-width: 1240px;
+}
+
+/* ==========================================
+   リセット & ベーススタイル
+   ========================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-cyan);
+}
+
+/* ==========================================
+   全ページ統一グローバルヘッダー
+   ========================================== */
+.global-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: var(--header-height);
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.global-header-inner {
+  max-width: var(--container-max-width);
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ブランドロゴ */
+.global-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #ffffff;
+  shrink: 0;
+}
+
+.global-logo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0284c7 0%, #14b8a6 50%, #10b981 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+.global-logo-text {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.global-logo-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+/* ナビゲーションメニュー */
+.global-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.global-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+}
+
+.global-nav-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border-color);
+}
+
+.global-nav-link.active {
+  color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.global-nav-link.accent-app {
+  color: var(--accent-purple);
+  background: rgba(192, 132, 252, 0.1);
+  border-color: rgba(192, 132, 252, 0.3);
+}
+
+.global-nav-link.accent-app:hover {
+  background: rgba(192, 132, 252, 0.2);
+  border-color: var(--accent-purple);
+  color: #ffffff;
+}
+
+/* ==========================================
+   コンテナ & レイアウト
+   ========================================== */
+.app-container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+/* 2カラムレイアウト（サイドバー + メインコンテンツ） */
+.app-2col-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* 統一サイドバー（追従） */
+.app-sidebar {
+  position: sticky;
+  top: calc(var(--header-height) + 20px);
+  max-height: calc(100vh - var(--header-height) - 40px);
+  overflow-y: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.app-sidebar-section {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.app-sidebar-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.app-sidebar-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+/* メインコンテンツエリア */
+.app-main {
+  min-width: 0; /* flex/grid overflow防止 */
+}
+
+/* ==========================================
+   共通カード & コンポーネント
+   ========================================== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+/* ヒーローセクション */
+.hero-box {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #0f172a 100%);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 36px 28px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.hero-box::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green), var(--accent-amber), var(--accent-purple));
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.hero-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.hero-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ボックス・コールアウト */
+.analogy-box {
+  background: rgba(56, 189, 248, 0.08);
+  border-left: 4px solid var(--accent-cyan);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  margin: 14px 0;
+}
+
+.analogy-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.warning-box {
+  background: rgba(251, 191, 36, 0.08);
+  border-left: 4px solid var(--accent-amber);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  margin: 14px 0;
+}
+
+.warning-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent-amber);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* クイズボックス */
+.quiz-box {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0 0 0;
+}
+
+.quiz-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent-purple);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quiz-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.quiz-btn:hover {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: var(--accent-cyan);
+  color: #ffffff;
+}
+
+.quiz-feedback {
+  display: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* コードブロック */
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px 18px;
+  overflow-x: auto;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 12px 0;
+}
+
+code {
+  font-family: "Consolas", "Courier New", monospace;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+pre code {
+  color: inherit;
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* シンタックスハイライト */
+.c-kw { color: #f43f5e; font-weight: bold; }
+.c-type { color: #38bdf8; font-weight: bold; }
+.c-fn { color: #a855f7; }
+.c-param { color: #fdba74; }
+.c-num { color: #34d399; }
+.c-str { color: #fef08a; }
+.c-cm { color: #64748b; font-style: italic; }
+
+/* 統一フッター */
+.global-footer {
+  text-align: center;
+  padding: 36px 20px;
+  color: var(--text-muted);
+  font-size: 12px;
+  border-top: 1px solid var(--border-color);
+  margin-top: 48px;
+  background: var(--bg-header);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 900px) {
+  .app-2col-layout {
+    grid-template-columns: 1fr;
+  }
+  .app-sidebar {
+    position: static;
+    max-height: none;
+    margin-bottom: 24px;
+  }
+  .global-nav {
+    overflow-x: auto;
+  }
+  .global-logo-text span:last-child {
+    display: none;
+  }
+}
