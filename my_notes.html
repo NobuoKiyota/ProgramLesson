@@ -285,6 +285,214 @@
       line-height: 1.6;
     }
 
+    /* ビュー切り替えタブバー */
+    .view-switch-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: var(--bg-secondary);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-cyan);
+      color: #0f172a;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    /* 辞書用コントロールエリア */
+    .dict-controls {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .dict-search-input {
+      width: 100%;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .dict-search-input:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .alphabet-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .alpha-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .alpha-btn:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .alpha-btn.active {
+      background: var(--accent-cyan);
+      color: #0f172a;
+      border-color: var(--accent-cyan);
+    }
+
+    .relation-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .relation-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
+    .pair-filter-btn {
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: var(--accent-green);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .pair-filter-btn:hover, .pair-filter-btn.active {
+      background: var(--accent-green);
+      color: #0f172a;
+    }
+
+    /* 辞書カード */
+    .dict-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .dict-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 22px;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    .dict-card:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    .dict-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 12px;
+    }
+
+    .dict-word-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dict-alpha-badge {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-cyan);
+      font-size: 12px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+
+    .dict-cat-badge {
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    .dict-relation-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .dict-pair-badge {
+      font-size: 11px;
+      background: rgba(192, 132, 252, 0.12);
+      color: var(--accent-purple);
+      border: 1px solid rgba(192, 132, 252, 0.3);
+      padding: 2px 8px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
     footer {
       text-align: center;
       color: var(--text-muted);
@@ -306,6 +514,20 @@
       </p>
     </header>
 
+    <!-- ビュー切り替えタブバー -->
+    <div class="view-switch-bar">
+      <button id="tab-btn-qa" class="tab-btn active" onclick="switchView('qa')">
+        📝 Q&A蓄積ノート (1問1答)
+      </button>
+      <button id="tab-btn-dict" class="tab-btn" onclick="switchView('dict')">
+        📖 C#用語大辞典 (A-Z検索 & 関係性)
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ビュー1: Q&A蓄積ノート -->
+    <!-- ========================================== -->
+    <div id="view-qa">
     <!-- 目次 -->
     <nav class="toc-box">
       <div class="toc-title">📖 蓄積された質問・トピック一覧</div>
@@ -1506,88 +1728,575 @@ Sound.<span class="c-fn">PlaySE</span>(slashClip); <span class="c-cm">// 超シ�
         </div>
       </div>
     </article>
+    </div> <!-- /view-qa -->
+
+    <!-- ========================================== -->
+    <!-- ビュー2: C#音響用語大辞典 -->
+    <!-- ========================================== -->
+    <div id="view-dict" style="display: none;">
+      <!-- 辞書操作パネル -->
+      <div class="dict-controls">
+        <div style="font-weight: 800; font-size: 16px; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+          <span>🔍 C# 音響プログラミング用語大辞典</span>
+          <span id="dict-count-badge" style="font-size: 11px; padding: 2px 8px; border-radius: 9999px; background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.4);">
+            21語 収録
+          </span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+          サウンドデザイナーの直感（音響機材・DAW）で理解できるC#超重要用語集。リアルタイム検索や関係性ペアで逆引きできます。
+        </p>
+
+        <!-- 検索入力 -->
+        <input
+          type="text"
+          id="dict-search-input"
+          class="dict-search-input"
+          placeholder="単語名、音響たとえ、機能で検索（例: get, set, 音量, フェード, static, yield...）"
+          oninput="handleDictSearch(this.value)"
+        />
+
+        <!-- A-Z インデックスバー -->
+        <div style="font-size: 11px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 6px;">
+          アルファベット順 INDEX:
+        </div>
+        <div class="alphabet-bar" id="alphabet-bar">
+          <!-- JSで自動生成 -->
+        </div>
+
+        <!-- 関係性ペアクイックフィルター -->
+        <div class="relation-bar" style="margin-top: 10px;">
+          <span class="relation-label">⚡ 関係性ペア:</span>
+          <button class="pair-filter-btn active" onclick="filterByPair('ALL')">すべて</button>
+          <button class="pair-filter-btn" onclick="filterByPair('get/set')">get ⇄ set</button>
+          <button class="pair-filter-btn" onclick="filterByPair('return/void')">return ⇄ void</button>
+          <button class="pair-filter-btn" onclick="filterByPair('yield/coroutine')">yield ⇄ coroutine</button>
+          <button class="pair-filter-btn" onclick="filterByPair('static/instance')">static ⇄ instance</button>
+          <button class="pair-filter-btn" onclick="filterByPair('async/await')">async ⇄ await</button>
+          <button class="pair-filter-btn" onclick="filterByPair('class/struct')">class ⇄ struct</button>
+          <button class="pair-filter-btn" onclick="filterByPair('public/private')">public ⇄ private</button>
+          <button class="pair-filter-btn" onclick="filterByPair('overload/override')">overload ⇄ override</button>
+        </div>
+      </div>
+
+      <!-- 辞書カード一覧 -->
+      <div id="dict-list" class="dict-list">
+        <!-- JSで動的にレンダリング -->
+      </div>
+    </div> <!-- /view-dict -->
 
     <footer>
-      AudioDev Academy • サウンドデザイナー専用プログラミング個人ノート
+      AudioDev Academy • サウンドデザイナー専用プログラミング個人ノート & 用語大辞典
     </footer>
   </div>
 
   <script>
+    // ==========================================
+    // ビュー切り替えロジック
+    // ==========================================
+    function switchView(viewName) {
+      const qaView = document.getElementById('view-qa');
+      const dictView = document.getElementById('view-dict');
+      const qaBtn = document.getElementById('tab-btn-qa');
+      const dictBtn = document.getElementById('tab-btn-dict');
+
+      if (viewName === 'dict') {
+        qaView.style.display = 'none';
+        dictView.style.display = 'block';
+        qaBtn.classList.remove('active');
+        dictBtn.classList.add('active');
+        window.location.hash = 'dictionary';
+        renderDictionary();
+      } else {
+        qaView.style.display = 'block';
+        dictView.style.display = 'none';
+        qaBtn.classList.add('active');
+        dictBtn.classList.remove('active');
+        window.location.hash = 'qa';
+      }
+    }
+
+    // ==========================================
+    // 辞書マスターデータ
+    // ==========================================
+    const DICTIONARY_DATA = [
+      {
+        word: "get",
+        letter: "G",
+        category: "プロパティ / 読み出し",
+        pairs: ["set", "property"],
+        analogy: "🎛️ 音響のたとえ: 「音量メーターやフェーダーの目盛りを見る（値を取得する）」",
+        desc: "クラス内の変数を外部から『安全に読み出す』ための窓口。直接変数をいじらせず、現在のマスター音量や再生状態を教えてあげる時に使います。",
+        code: `public float Volume
+{
+    get { return currentVolume; } // 現在の音量を返す
+}`,
+        warning: "get だけを書いて set を書かないと、外部からは『読み取り専用（書き換え禁止）』の安全なパラメータになります。"
+      },
+      {
+        word: "set",
+        letter: "S",
+        category: "プロパティ / 書き込み",
+        pairs: ["get", "property"],
+        analogy: "🎛️ 音響のたとえ: 「フェーダーのツマミを新しい位置へ動かす（値を変更する）」",
+        desc: "クラス内の変数を外部から『変更・設定する』ための窓口。受け取った新しい値（value）をチェックして、0.0〜1.0の範囲にクランプする等の安全装置を挟めます。",
+        code: `public float Volume
+{
+    set { currentVolume = Mathf.Clamp01(value); } // 0〜1に安全制限して代入
+}`,
+        warning: "private set と書くと『外からは値を見られるけど、変更できるのはこのクラス内部だけ！』というプロ御用達のカプセル化ができます。"
+      },
+      {
+        word: "return",
+        letter: "R",
+        category: "関数の結果 / 脱出",
+        pairs: ["void"],
+        analogy: "🎛️ 音響のたとえ: 「OUTPUT端子から加工された音を吐き出す / メーターに数値を表示する」",
+        desc: "関数の計算結果や再生チケットを呼び出し元（手元）に持ち帰る命令。また、return を通過した瞬間にその関数はその行で即座に終了します。",
+        code: `public float DecibelToLinear(float dB)
+{
+    return Mathf.Pow(10f, dB / 20f); // 計算結果を手元に持ち帰って終了！
+}`,
+        warning: "return の下に書いた処理は絶対に実行されません。条件分岐（if文）で素早く抜け出すガード節（Early Return）にも多用されます。"
+      },
+      {
+        word: "void",
+        letter: "V",
+        category: "戻り値なし / 命令",
+        pairs: ["return"],
+        analogy: "🎛️ 音響のたとえ: 「一方通行のトリガーボタン（インターホンを押して鳴らしっぱなし）」",
+        desc: "『この関数は仕事をしたら終わり！ 手元には何も返さないよ』という宣言。音を鳴らすだけ、値をリセットするだけなど、結果を受け取る必要がない関数に使います。",
+        code: `public void PlayOneShot(AudioClip clip)
+{
+    audioSource.PlayOneShot(clip); // 鳴らして終わり（返事は不要）
+}`,
+        warning: "void の関数の中で値を return しようとすると（例: return 1.0f;）コンパイルエラーになります。"
+      },
+      {
+        word: "yield",
+        letter: "Y",
+        category: "コルーチン / 待機・ポーズ",
+        pairs: ["IEnumerator", "WaitForSeconds", "coroutine"],
+        analogy: "🎛️ 音響のたとえ: 「シーケンサーのステップ休符 / オートメーションカーブのコマ送り」",
+        desc: "コルーチン（IEnumerator）の中で『ここで一旦処理を一時停止し、Unityに制御を返す！』と命じるキーワード。1フレーム待ったり数秒待ったりできます。",
+        code: `yield return null; // 次のフレーム（1/60秒後）まで休む！
+yield return new WaitForSeconds(1.5f); // 1.5秒休む！`,
+        warning: "普通の void や int の関数の中では yield は使えません。必ず戻り値が IEnumerator のコルーチンの中で使います。"
+      },
+      {
+        word: "IEnumerator",
+        letter: "I",
+        category: "コルーチン / 戻り値の型",
+        pairs: ["yield", "coroutine"],
+        analogy: "🎛️ 音響のたとえ: 「パラパラ漫画の進行役 / 1ステップずつ進めるシーケンス進行表」",
+        desc: "コルーチン関数の戻り値として絶対に指定する型名。『この関数はコマ送り（yield）で進行しますよ』というUnityへの合図です。",
+        code: `public IEnumerator FadeOutRoutine(float duration)
+{
+    // yield return で少しずつ進む処理...
+}`,
+        warning: "IEnumeratorの関数を呼ぶときは、普通に FadeOutRoutine() と書くだけでは動かず、StartCoroutine(FadeOutRoutine()) で起動する必要があります。"
+      },
+      {
+        word: "static",
+        letter: "S",
+        category: "静的 / 共有メモリ",
+        pairs: ["Instance", "Singleton"],
+        analogy: "🎛️ 音響のたとえ: 「スタジオ中央のマスター卓 / 全員が共有する1台だけの電源」",
+        desc: "『new しなくても、全宇宙のどこからでも直接アクセスできる1つだけの共有メンバ』。Sound.PlaySE(clip) のようにクラス名から直接呼べるようになります。",
+        code: `public static void PlaySE(AudioClip clip)
+{
+    // new SoundManager() しなくても Sound.PlaySE() で呼べる！
+}`,
+        warning: "static な関数の中からは、static がついていない普通（インスタンス）の変数や関数を直接触ることはできません。"
+      },
+      {
+        word: "Instance",
+        letter: "I",
+        category: "実体 / シングルトン窓口",
+        pairs: ["static", "Singleton"],
+        analogy: "🎛️ 音響のたとえ: 「部屋に1台だけ置かれたミキサー本体への直通ケーブル」",
+        desc: "シングルトンパターンで、唯一無二の本体オブジェクトを static 変数として保持する慣例の名前。SoundManager.Instance で本体にアクセスします。",
+        code: `public static SoundManager Instance { get; private set; }
+
+void Awake() {
+    if (Instance == null) Instance = this;
+}`,
+        warning: "シーン遷移の重複で2人目の自分が生まれたときは、Instance を上書きせず新しく生まれた側を Destroy して殺すのが鉄則です。"
+      },
+      {
+        word: "async",
+        letter: "A",
+        category: "非同期 / 宣言",
+        pairs: ["await", "Task"],
+        analogy: "🎛️ 音響のたとえ: 「バックグラウンド書き出し対応トラック」",
+        desc: "『この関数は途中で待たされる処理（大容量音源ロードや通信）が含まれる非同期関数ですよ』という合図。await を使う関数には必ず付けます。",
+        code: `public async UniTask PlayBgmAsync(string bgmKey)
+{
+    // この中で await が使える！
+}`,
+        warning: "async を付けた関数は、通常 Task や UniTask、または void を返します。"
+      },
+      {
+        word: "await",
+        letter: "A",
+        category: "非同期 / 完了待機",
+        pairs: ["async", "Task"],
+        analogy: "🎛️ 音響のたとえ: 「置き配の配達完了待ち（でも自分は部屋で別の作業を続けられる）」",
+        desc: "『非同期ロードが終わるまで待つ！ でもゲーム画面（メインスレッド）はフリーズさせないでね！』という合図。上から下へ素直にコードが書けます。",
+        code: `AudioClip clip = await Addressables.LoadAssetAsync<AudioClip>(key);
+Sound.PlayBGM(clip); // ロードが終わったらそのまま次の行へ！`,
+        warning: "await は async が付いた関数の中でしか使えません。"
+      },
+      {
+        word: "class",
+        letter: "C",
+        category: "参照型 / ヒープ領域",
+        pairs: ["struct"],
+        analogy: "🎛️ 音響のたとえ: 「スタジオに据え置きされた大型ラックマウント機材」",
+        desc: "C#の基本となる設計図。ヒープメモリという広大な場所に作られ、参照（ポインタ・住所）でやり取りされます。大規模なマネージャーやコンポーネント向き。",
+        code: `public class SoundManager : MonoBehaviour
+{
+    // 据え置きの司令塔
+}`,
+        warning: "毎フレーム new Class() するとゴミ（GC Allocation）が発生し、一定量溜まるとGCスパイクで音飛び（プチノイズ）が起きます。"
+      },
+      {
+        word: "struct",
+        letter: "S",
+        category: "値型 / スタック領域",
+        pairs: ["class"],
+        analogy: "🎛️ 音響のたとえ: 「パッチケーブルの中を流れる軽量な音声信号・パラメータの束」",
+        desc: "構造体。スタックメモリに作られ、使い終わったら一瞬で自動消滅するためGCゴミが一切出ません（ゼロアロケーション）。SoundPlayback や LoopPointSettings に最適。",
+        code: `public struct SoundPlayback
+{
+    public int id;
+    public byte generation;
+}`,
+        warning: "巨大すぎるデータを struct にすると、関数に渡すたびに丸ごとコピーが発生して逆に遅くなることがあります（16〜64バイト程度が理想）。"
+      },
+      {
+        word: "public",
+        letter: "P",
+        category: "アクセス修飾子 / 公開",
+        pairs: ["private"],
+        analogy: "🎛️ 音響のたとえ: 「機材のフロントパネルにある操作ツマミや端子」",
+        desc: "他のどのスクリプトからでも自由に呼び出したり値を変更できる公開設定。Unityのインスペクターにも表示されます。",
+        code: `public float masterVolume = 1.0f;
+public void Play() { }`,
+        warning: "何でもかんでも public にすると、あちこちから勝手に音量を上書きされてバグの温床になります。基本は private かプロパティにしましょう。"
+      },
+      {
+        word: "private",
+        letter: "P",
+        category: "アクセス修飾子 / 非公開",
+        pairs: ["public"],
+        analogy: "🎛️ 音響のたとえ: 「機材の裏蓋を開けた中にある基盤回路・内部配線」",
+        desc: "そのクラス自身の中からしか触れない非公開設定。外部の人間がいじってはいけない秘密の変数や内部計算関数を隠蔽（カプセル化）します。",
+        code: `private AudioSource bgmSource;
+private void CalculateVolume() { }`,
+        warning: "修飾子を何も書かずに void Test() と書いた場合、C#では自動的に private になります。"
+      },
+      {
+        word: "overload",
+        letter: "O",
+        category: "多重定義 / 引数違い",
+        pairs: ["override"],
+        analogy: "🎛️ 音響のたとえ: 「ディレイ時間をミリ秒指定もBPM同期指定もできるマルチ対応ノブ」",
+        desc: "『同じ名前の関数で、引数の数や型が違うものを複数用意すること』。PlaySE(clip) と PlaySE(clip, volume) など。",
+        code: `public void Play(AudioClip c) { Play(c, 1f); }
+public void Play(AudioClip c, float v) { /* 実体 */ }`,
+        warning: "戻り値（voidとintなど）を変えただけではオーバーロードにならずコンパイルエラーになります。"
+      },
+      {
+        word: "override",
+        letter: "O",
+        category: "上書き / 継承ポリモーフィズム",
+        pairs: ["overload"],
+        analogy: "🎛️ 音響のたとえ: 「既存の機材の回路をハックして、独自のカスタムサウンドに上書き改造する」",
+        desc: "『親クラスが持っている virtual 関数を、子クラスが自分好みに上書きして置き換えること』。基本の再生ロジックを特殊なBGM用に上書きしたい時などに使います。",
+        code: `public override void Play()
+{
+    base.Play(); // 親の処理も呼びつつ...
+    Debug.Log("独自のクロスフェード演出！");
+}`,
+        warning: "親側の関数に virtual や abstract が付いていないと override できません。"
+      },
+      {
+        word: "interface",
+        letter: "I",
+        category: "規格書 / 契約",
+        pairs: ["implement"],
+        analogy: "🎛️ 音響のたとえ: 「Steinbergが決めた VST3 プラグインの接続端子規格書」",
+        desc: "『中身は空っぽで、関数の名前と型ルールだけを決めた契約書』。どんなエフェクトや音源であっても、同じラックに挿して一括管理するために使います。",
+        code: `public interface IAudioProcessor
+{
+    void Process(float[] buffer);
+}`,
+        warning: "インターフェースをクラスにインプリメントしたら、契約書に書いてあるすべての関数の中身を1つ残らずプログラミングしなければなりません。"
+      },
+      {
+        word: "Action",
+        letter: "A",
+        category: "コールバック / 委譲",
+        pairs: ["Func", "callback"],
+        analogy: "🎛️ 音響のたとえ: 「アシスタントへの作業完了時チェックリスト指示書」",
+        desc: "戻り値なし（void）の関数を引数として渡すためのC#標準デリゲート。再生終了コールバックやフェード完了通知の予約に使います。",
+        code: `public void PlayVoice(AudioClip clip, Action onComplete)
+{
+    // 再生完了時に onComplete?.Invoke();
+}`,
+        warning: "シーン遷移でコールバックを受け取る相手が先に破壊されるとNullReferenceExceptionになるため防御が必要です。"
+      },
+      {
+        word: "Mathf.Lerp",
+        letter: "M",
+        category: "音響数学 / 線形補間",
+        pairs: ["Mathf.Clamp", "Mathf.Pow"],
+        analogy: "🎛️ 音響のたとえ: 「ボリュームフェーダーを一定速度で滑らかに動かすオートメーション」",
+        desc: "A地点からB地点まで、割合 t（0.0〜1.0）で滑らかに数値を移り変わらせる補間関数。音量のフェードイン・フェードアウトのド定番です。",
+        code: `float currentVol = Mathf.Lerp(startVol, targetVol, timer / duration);`,
+        warning: "音量は人間の耳の特性上、本来はリニアではなく対数（dB）でフェードさせた方が自然に聴こえます。"
+      },
+      {
+        word: "DontDestroyOnLoad",
+        letter: "D",
+        category: "Unity機能 / シーン永続化",
+        pairs: ["Destroy", "Singleton"],
+        analogy: "🎛️ 音響のたとえ: 「ステージ転換で大道具を片付けても、PA卓とスピーカーだけは片付けずに残す」",
+        desc: "シーンを切り替えても、そのGameObjectを破棄せずに次のシーンへ引き継ぐUnityの特殊命令。BGMを途切れさせないサウンドマネージャーの必須テクニックです。",
+        code: `DontDestroyOnLoad(gameObject);`,
+        warning: "再び最初のシーンに戻ったとき、シーン内に置いてあった2体目のマネージャーが新しく生まれてしまうので、重複Destroyの自己防衛コードが必須です。"
+      },
+      {
+        word: "new",
+        letter: "N",
+        category: "インスタンス生成 / メモリ確保",
+        pairs: ["null", "GC"],
+        analogy: "🎛️ 音響のたとえ: 「工場から新しい機材を発注してスタジオに運び込む」",
+        desc: "クラスの新しい実体（インスタンス）をヒープメモリ上に生成するキーワード。オブジェクトプールを使わずにUpdateループ内で new すると即死します。",
+        code: `SoundPlayback playback = new SoundPlayback(id, gen);`,
+        warning: "リアルタイムオーディオ（OnAudioFilterReadや毎フレーム）で class を new してはいけません！ GCスパイクによる音飛びの元凶です。"
+      }
+    ];
+
+    // ==========================================
+    // 辞書描画エンジン
+    // ==========================================
+    let currentFilterLetter = 'ALL';
+    let currentSearchQuery = '';
+    let currentPairFilter = 'ALL';
+
+    function initDictionary() {
+      // アルファベットバーの生成
+      const letters = ['ALL', 'A', 'C', 'D', 'G', 'I', 'M', 'N', 'O', 'P', 'R', 'S', 'V', 'Y'];
+      const bar = document.getElementById('alphabet-bar');
+      bar.innerHTML = letters.map(l => 
+        `<button class="alpha-btn \${l === currentFilterLetter ? 'active' : ''}" onclick="filterByLetter('\${l}')">\${l}</button>`
+      ).join('');
+      
+      renderDictionary();
+    }
+
+    function filterByLetter(letter) {
+      currentFilterLetter = letter;
+      currentPairFilter = 'ALL';
+      document.querySelectorAll('.alpha-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === letter);
+      });
+      document.querySelectorAll('.pair-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === 'すべて');
+      });
+      renderDictionary();
+    }
+
+    function filterByPair(pairKey) {
+      currentPairFilter = pairKey;
+      currentFilterLetter = 'ALL';
+      document.querySelectorAll('.pair-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(pairKey));
+      });
+      document.querySelectorAll('.alpha-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === 'ALL');
+      });
+      renderDictionary();
+    }
+
+    function handleDictSearch(query) {
+      currentSearchQuery = query.toLowerCase().trim();
+      renderDictionary();
+    }
+
+    function renderDictionary() {
+      const container = document.getElementById('dict-list');
+      if (!container) return;
+
+      const filtered = DICTIONARY_DATA.filter(item => {
+        // アルファベットフィルター
+        if (currentFilterLetter !== 'ALL' && item.letter !== currentFilterLetter) {
+          return false;
+        }
+
+        // ペアフィルター
+        if (currentPairFilter !== 'ALL') {
+          const pairsMap = {
+            'get/set': ['get', 'set'],
+            'return/void': ['return', 'void'],
+            'yield/coroutine': ['yield', 'IEnumerator'],
+            'static/instance': ['static', 'Instance'],
+            'async/await': ['async', 'await'],
+            'class/struct': ['class', 'struct'],
+            'public/private': ['public', 'private'],
+            'overload/override': ['overload', 'override']
+          };
+          const targetWords = pairsMap[currentPairFilter] || [];
+          if (!targetWords.includes(item.word)) return false;
+        }
+
+        // 検索クエリ
+        if (currentSearchQuery) {
+          const inWord = item.word.toLowerCase().includes(currentSearchQuery);
+          const inDesc = item.desc.toLowerCase().includes(currentSearchQuery);
+          const inAnalogy = item.analogy.toLowerCase().includes(currentSearchQuery);
+          const inCat = item.category.toLowerCase().includes(currentSearchQuery);
+          return inWord || inDesc || inAnalogy || inCat;
+        }
+
+        return true;
+      });
+
+      // カウント更新
+      const badge = document.getElementById('dict-count-badge');
+      if (badge) badge.textContent = `\${filtered.length} / \${DICTIONARY_DATA.length} 語 表示中`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: var(--text-muted); background: var(--bg-card); border-radius: 12px;">
+            該当する用語が見つかりませんでした。「A」などのボタンを押すか、別のキーワードで検索してみてください。
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => `
+        <div id="word-\${item.word}" class="dict-card">
+          <div class="dict-card-header">
+            <div>
+              <div class="dict-word-title">
+                <span class="dict-alpha-badge">[\${item.letter}]</span>
+                <span>\${item.word}</span>
+              </div>
+            </div>
+            <span class="dict-cat-badge">\${item.category}</span>
+          </div>
+
+          <!-- 関連語・ペア -->
+          \${item.pairs && item.pairs.length > 0 ? `
+            <div class="dict-relation-links">
+              <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">⚡ 関連・ペア:</span>
+              \${item.pairs.map(p => `
+                <span class="dict-pair-badge" onclick="handleDictSearch('\${p}')">🔗 \${p}</span>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <!-- サウンドたとえ -->
+          <div class="analogy-box" style="margin: 10px 0;">
+            <div style="font-size: 13px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 4px;">
+              \${item.analogy}
+            </div>
+            <p style="margin: 0; font-size: 13px;">\${item.desc}</p>
+          </div>
+
+          <!-- コード例 -->
+          \${item.code ? `
+            <pre style="margin: 10px 0;"><code>\${escapeHtml(item.code)}</code></pre>
+          ` : ''}
+
+          <!-- 注意点 -->
+          \${item.warning ? `
+            <div class="warning-box" style="margin: 10px 0 0 0; padding: 12px 16px;">
+              <span class="warning-title" style="font-size: 12px;">⚠️ 現場の掟:</span>
+              <p style="margin: 0; font-size: 12px; color: var(--accent-amber);">\${item.warning}</p>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    // 初期化
+    window.addEventListener('DOMContentLoaded', () => {
+      initDictionary();
+      if (window.location.hash === '#dictionary') {
+        switchView('dict');
+      }
+    });
+
+    // ==========================================
+    // 既存クイズ判定関数群 (第1問〜第6問)
+    // ==========================================
     function checkAnswer(choice) {
       const correctBox = document.getElementById('feedback-correct');
       const wrongBox = document.getElementById('feedback-wrong');
-      
       if (choice === 3) {
-        correctBox.style.display = 'block';
-        wrongBox.style.display = 'none';
+        correctBox.style.display = 'block'; wrongBox.style.display = 'none';
       } else {
-        correctBox.style.display = 'none';
-        wrongBox.style.display = 'block';
+        correctBox.style.display = 'none'; wrongBox.style.display = 'block';
       }
     }
 
     function checkAnswer2(choice) {
       const correctBox = document.getElementById('feedback2-correct');
       const wrongBox = document.getElementById('feedback2-wrong');
-      
       if (choice === 2) {
-        correctBox.style.display = 'block';
-        wrongBox.style.display = 'none';
+        correctBox.style.display = 'block'; wrongBox.style.display = 'none';
       } else {
-        correctBox.style.display = 'none';
-        wrongBox.style.display = 'block';
+        correctBox.style.display = 'none'; wrongBox.style.display = 'block';
       }
     }
 
     function checkAnswer3(choice) {
       const correctBox = document.getElementById('feedback3-correct');
       const wrongBox = document.getElementById('feedback3-wrong');
-      
       if (choice === 2) {
-        correctBox.style.display = 'block';
-        wrongBox.style.display = 'none';
+        correctBox.style.display = 'block'; wrongBox.style.display = 'none';
       } else {
-        correctBox.style.display = 'none';
-        wrongBox.style.display = 'block';
+        correctBox.style.display = 'none'; wrongBox.style.display = 'block';
       }
     }
 
     function checkAnswer4(choice) {
       const correctBox = document.getElementById('feedback4-correct');
       const wrongBox = document.getElementById('feedback4-wrong');
-      
       if (choice === 1) {
-        correctBox.style.display = 'block';
-        wrongBox.style.display = 'none';
+        correctBox.style.display = 'block'; wrongBox.style.display = 'none';
       } else {
-        correctBox.style.display = 'none';
-        wrongBox.style.display = 'block';
+        correctBox.style.display = 'none'; wrongBox.style.display = 'block';
       }
     }
 
     function checkAnswer5(choice) {
       const correctBox = document.getElementById('feedback5-correct');
       const wrongBox = document.getElementById('feedback5-wrong');
-      
       if (choice === 1) {
-        correctBox.style.display = 'block';
-        wrongBox.style.display = 'none';
+        correctBox.style.display = 'block'; wrongBox.style.display = 'none';
       } else {
-        correctBox.style.display = 'none';
-        wrongBox.style.display = 'block';
+        correctBox.style.display = 'none'; wrongBox.style.display = 'block';
       }
     }
 
     function checkAnswer6(choice) {
       const correctBox = document.getElementById('feedback6-correct');
       const wrongBox = document.getElementById('feedback6-wrong');
-      
       if (choice === 2) {
-        correctBox.style.display = 'block';
-        wrongBox.style.display = 'none';
+        correctBox.style.display = 'block'; wrongBox.style.display = 'none';
       } else {
-        correctBox.style.display = 'none';
-        wrongBox.style.display = 'block';
+        correctBox.style.display = 'none'; wrongBox.style.display = 'block';
       }
     }
   </script>
