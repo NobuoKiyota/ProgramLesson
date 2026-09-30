@@ -35,7 +35,7 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1240px;
       margin: 0 auto;
     }
 
@@ -324,14 +324,140 @@
       box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
     }
 
-    /* 辞書用コントロールエリア */
-    .dict-controls {
+    /* 2カラム 辞書レイアウト */
+    .dict-layout {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .dict-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 左側: 固定サイドバー (検索・カテゴリ・A-Z・関係性) */
+    .dict-sidebar {
+      position: sticky;
+      top: 20px;
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 16px;
       padding: 20px;
-      margin-bottom: 24px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar-section {
+      margin-bottom: 20px;
+    }
+
+    .sidebar-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .cat-btn-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .cat-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: #cbd5e1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+
+    .cat-btn:hover {
+      border-color: var(--accent-cyan);
+      color: #ffffff;
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .cat-btn.active {
+      background: var(--accent-cyan);
+      color: #0f172a;
+      border-color: var(--accent-cyan);
+      font-weight: 800;
+    }
+
+    .cat-btn-count {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .reset-filter-btn {
+      width: 100%;
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      color: var(--accent-red);
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .reset-filter-btn:hover {
+      background: var(--accent-red);
+      color: #0f172a;
+    }
+
+    .dict-status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 14px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .dict-status-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-right: 8px;
+    }
+
+    .dict-filter-desc {
+      font-size: 12px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    .dict-count-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      font-weight: bold;
     }
 
     .dict-search-input {
@@ -339,10 +465,9 @@
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
       color: #ffffff;
-      padding: 12px 18px;
-      border-radius: 10px;
-      font-size: 14px;
-      margin-bottom: 16px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
       outline: none;
       transition: border-color 0.2s;
     }
@@ -355,17 +480,16 @@
     .alphabet-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 14px;
+      gap: 4px;
     }
 
     .alpha-btn {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 6px 10px;
+      padding: 5px 8px;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
       cursor: pointer;
       transition: all 0.15s;
@@ -385,24 +509,16 @@
     .relation-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .relation-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-right: 4px;
+      gap: 5px;
     }
 
     .pair-filter-btn {
       background: rgba(52, 211, 153, 0.1);
       border: 1px solid rgba(52, 211, 153, 0.3);
       color: var(--accent-green);
-      padding: 4px 10px;
+      padding: 4px 8px;
       border-radius: 9999px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s;
@@ -417,7 +533,7 @@
     .dict-list {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
 
     .dict-card {
@@ -1734,53 +1850,75 @@ Sound.<span class="c-fn">PlaySE</span>(slashClip); <span class="c-cm">// 超シ�
     <!-- ビュー2: C#音響用語大辞典 -->
     <!-- ========================================== -->
     <div id="view-dict" style="display: none;">
-      <!-- 辞書操作パネル -->
-      <div class="dict-controls">
-        <div style="font-weight: 800; font-size: 16px; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-          <span>🔍 C# 音響プログラミング用語大辞典</span>
-          <span id="dict-count-badge" style="font-size: 11px; padding: 2px 8px; border-radius: 9999px; background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.4);">
-            21語 収録
-          </span>
-        </div>
-        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
-          サウンドデザイナーの直感（音響機材・DAW）で理解できるC#超重要用語集。リアルタイム検索や関係性ペアで逆引きできます。
-        </p>
+      <div class="dict-layout">
+        <!-- 左側サイドバー（スクロール追従ナビゲーション） -->
+        <aside class="dict-sidebar">
+          <!-- 1. リアルタイム検索 -->
+          <div class="sidebar-section">
+            <div class="sidebar-title">
+              <span>🔍 キーワード・記号検索</span>
+            </div>
+            <input
+              type="text"
+              id="dict-search-input"
+              class="dict-search-input"
+              placeholder="単語、音響たとえ、記号 (例: if, for, +, ?, get, static...)"
+              oninput="handleDictSearch(this.value)"
+            />
+          </div>
 
-        <!-- 検索入力 -->
-        <input
-          type="text"
-          id="dict-search-input"
-          class="dict-search-input"
-          placeholder="単語名、音響たとえ、機能で検索（例: get, set, 音量, フェード, static, yield...）"
-          oninput="handleDictSearch(this.value)"
-        />
+          <!-- 2. 文法カテゴリ一覧 -->
+          <div class="sidebar-section">
+            <div class="sidebar-title">
+              <span>📂 文法カテゴリ</span>
+            </div>
+            <div class="cat-filter-list" id="cat-filter-list">
+              <!-- JSで動的生成 -->
+            </div>
+          </div>
 
-        <!-- A-Z インデックスバー -->
-        <div style="font-size: 11px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 6px;">
-          アルファベット順 INDEX:
-        </div>
-        <div class="alphabet-bar" id="alphabet-bar">
-          <!-- JSで自動生成 -->
-        </div>
+          <!-- 3. A-Z / 記号 索引 -->
+          <div class="sidebar-section">
+            <div class="sidebar-title">
+              <span>🔤 索引 (A-Z / #記号)</span>
+            </div>
+            <div class="alphabet-bar" id="alphabet-bar">
+              <!-- JSで動的生成 -->
+            </div>
+          </div>
 
-        <!-- 関係性ペアクイックフィルター -->
-        <div class="relation-bar" style="margin-top: 10px;">
-          <span class="relation-label">⚡ 関係性ペア:</span>
-          <button class="pair-filter-btn active" onclick="filterByPair('ALL')">すべて</button>
-          <button class="pair-filter-btn" onclick="filterByPair('get/set')">get ⇄ set</button>
-          <button class="pair-filter-btn" onclick="filterByPair('return/void')">return ⇄ void</button>
-          <button class="pair-filter-btn" onclick="filterByPair('yield/coroutine')">yield ⇄ coroutine</button>
-          <button class="pair-filter-btn" onclick="filterByPair('static/instance')">static ⇄ instance</button>
-          <button class="pair-filter-btn" onclick="filterByPair('async/await')">async ⇄ await</button>
-          <button class="pair-filter-btn" onclick="filterByPair('class/struct')">class ⇄ struct</button>
-          <button class="pair-filter-btn" onclick="filterByPair('public/private')">public ⇄ private</button>
-          <button class="pair-filter-btn" onclick="filterByPair('overload/override')">overload ⇄ override</button>
-        </div>
-      </div>
+          <!-- 4. 関係性・対比ペア -->
+          <div class="sidebar-section">
+            <div class="sidebar-title">
+              <span>⚡ 関係性・対比ペア</span>
+            </div>
+            <div class="relation-bar" id="relation-bar">
+              <!-- JSで動的生成 -->
+            </div>
+          </div>
 
-      <!-- 辞書カード一覧 -->
-      <div id="dict-list" class="dict-list">
-        <!-- JSで動的にレンダリング -->
+          <!-- フィルター全解除ボタン -->
+          <button class="filter-reset-btn" onclick="resetAllFilters()">
+            🔄 すべての絞り込みをリセット
+          </button>
+        </aside>
+
+        <!-- 右側メインコンテンツ（単語カード一覧） -->
+        <main class="dict-main">
+          <!-- ステータスバー -->
+          <div class="dict-status-bar">
+            <div>
+              <span id="dict-status-title" style="font-size: 15px; font-weight: 700; color: #ffffff;">すべての単語</span>
+              <span id="dict-active-filter-badge" style="margin-left: 8px; font-size: 12px; color: var(--accent-cyan); font-weight: 600;"></span>
+            </div>
+            <span id="dict-count-badge" class="dict-count-badge">50語 収録</span>
+          </div>
+
+          <!-- 単語カード一覧 -->
+          <div id="dict-list" class="dict-list">
+            <!-- JSで動的にレンダリング -->
+          </div>
+        </main>
       </div>
     </div> <!-- /view-dict -->
 
@@ -1816,13 +1954,409 @@ Sound.<span class="c-fn">PlaySE</span>(slashClip); <span class="c-cm">// 超シ�
     }
 
     // ==========================================
-    // 辞書マスターデータ
+    // 辞書マスターデータ（47語 網羅）
     // ==========================================
     const DICTIONARY_DATA = [
+      // --- 演算子・記号 ---
+      {
+        word: "+ - * / %",
+        letter: "#",
+        category: "演算子・記号",
+        pairs: ["++ / --", "float"],
+        analogy: "🎛️ 音響のたとえ: 「ゲイン増減 (+/-)、ボリューム乗算 (*)、パン分配 (/)、テンポ拍頭ループ (%)」",
+        desc: "算術演算子。数値同士の足し算・引き算・掛け算・割り算・剰余（余り）を行います。音量フェードの加算やdB変換の乗算、小節内ビートの割り出し（モジュロ演算）などで日常的に使用します。",
+        code: `float nextVol = currentVol + (fadeSpeed * Time.deltaTime); // フェード加算
+float stereoPan = (panKnob - 0.5f) * 2.0f; // -1.0〜+1.0 に正規化
+int currentBeat = tickCount % 4; // 4拍子の拍頭（0, 1, 2, 3）をループ検出`,
+        warning: "整数同士の割り算（例: 1 / 2）は 0.5 ではなく 0 に切り捨てられます！小数にしたい場合は必ず 1.0f / 2.0f のように f を付けましょう。"
+      },
+      {
+        word: "++ / --",
+        letter: "#",
+        category: "演算子・記号",
+        pairs: ["+ - * / %", "for"],
+        analogy: "🎛️ 音響のたとえ: 「発音数ボイスカウンターの+1インクリメント / デクリメント」",
+        desc: "インクリメント（+1）・デクリメント（-1）演算子。変数の値を素早く1増やす、または1減らす時に使います。forループのカウントアップや、現在再生中の効果音数を数える時に必須です。",
+        code: `activeVoiceCount++; // 音が1個再生されたので同時発音数を+1
+if (activeVoiceCount > maxVoices) StopOldestVoice();
+
+activeVoiceCount--; // 再生終了したので同時発音数を-1`,
+        warning: "++count（前置）と count++（後置）で代入されるタイミングが違いますが、通常の1行処理なら count++ で問題ありません。"
+      },
+      {
+        word: "== / !=",
+        letter: "#",
+        category: "演算子・記号",
+        pairs: ["< > <= >=", "bool"],
+        analogy: "🎛️ 音響のたとえ: 「セレクターが指定トラックと一致しているか (==) / 不一致か (!=) の比較」",
+        desc: "等価比較演算子。左右の値やオブジェクトが『等しい (==)』か『異なる (!=)』かを判定し、結果として true または false（bool型）を返します。",
+        code: `if (currentBgmName == "BGM_Boss")
+{
+    // すでにボス曲が流れていれば二重再生しない！
+    return;
+}
+if (audioSource.clip != null)
+{
+    audioSource.Play(); // 音源が空っぽでなければ鳴らす
+}`,
+        warning: "代入（=）と等価比較（==）は別物です！ if (x = y) と書いてしまうとバグやコンパイルエラーの元になります。"
+      },
+      {
+        word: "< > <= >=",
+        letter: "#",
+        category: "演算子・記号",
+        pairs: ["== / !=", "if / else"],
+        analogy: "🎛️ 音響のたとえ: 「コンプレッサーの閾値（Threshold）やピークリミッターのレベル超過判定」",
+        desc: "比較演算子。左右の数値を比較して『より小さい (<)』『より大きい (>)』『以下 (<=)』『以上 (>=)』を判定します。音量が上限を超えていないか、残り再生時間がゼロ以下になったかのチェックに使います。",
+        code: `if (currentVolume >= 1.0f)
+{
+    currentVolume = 1.0f; // 0dB（1.0）を超えないようリミッターをかける
+}
+if (fadeTimer <= 0f)
+{
+    StopBGM(); // フェード時間がゼロ以下になったら完全停止
+}`,
+        warning: "小数（float）の比較では、微小な誤差（0.999999f）が発生するため、厳密な一致判定よりも <= や >= などの不等号を使うのが現場のセオリーです。"
+      },
+      {
+        word: "&& (AND)",
+        letter: "#",
+        category: "演算子・記号",
+        pairs: ["|| (OR)", "! (NOT)"],
+        analogy: "🎛️ 音響のたとえ: 「直列パッチ接続（『電源ON』かつ『ミュート解除』のときだけ音が出る）」",
+        desc: "論理積（AND）演算子。左右の条件が『両方とも true』のときだけ全体が true になります。1つでも false があれば全体が false になります。",
+        code: `// 「BGMが再生中」かつ「ボス戦フラグがON」のときだけ曲を切り替える
+if (isPlaying && isBossBattle)
+{
+    CrossFadeToBossBGM();
+}`,
+        warning: "左側の条件が false の場合、右側の判定はスキップされます（ショートサーキット評価）。"
+      },
+      {
+        word: "|| (OR)",
+        letter: "#",
+        category: "演算子・記号",
+        pairs: ["&& (AND)", "! (NOT)"],
+        analogy: "🎛️ 音響のたとえ: 「パラレル分岐（『マスターミュート』または『音量0』なら無音にする）」",
+        desc: "論理和（OR）演算子。左右の条件の『どちらか一方でも true』であれば全体が true になります。両方とも false のときだけ false になります。",
+        code: `// 「ミュート設定されている」または「ボリュームがゼロ」なら処理をスキップ
+if (isMuted || masterVolume <= 0.0f)
+{
+    return; // 音を鳴らさずに帰る
+}`,
+        warning: "キーボードの [Shift] + [￥]（縦線パイプ2本）で入力します。"
+      },
+      {
+        word: "! (NOT)",
+        letter: "#",
+        category: "演算子・記号",
+        pairs: ["&& (AND)", "bool"],
+        analogy: "🎛️ 音響のたとえ: 「フェーズ・インバーター（位相反転スイッチ Ø: プラスをマイナスへ）」",
+        desc: "論理否定（NOT）演算子。bool値の true と false を真逆にひっくり返します。『〜ではない場合』『まだ〜していない場合』という条件を書くときに大活躍します。",
+        code: `// 「まだロードが完了していない（!isLoaded）」なら待機
+if (!isLoaded)
+{
+    Debug.Log("音源をロード中です...");
+    return;
+}`,
+        warning: "「!」が小さくて見落としやすいため、現場では if (isLoaded == false) とあえて明記する流派もあります。"
+      },
+      {
+        word: "?. (Null条件演算子)",
+        letter: "#",
+        category: "演算子・記号",
+        pairs: ["?? (Null合体)", "null"],
+        analogy: "🎛️ 音響のたとえ: 「セーフティ・リレー（機材の電源が入っているときだけ信号を送る安全回路）」",
+        desc: "左側のオブジェクトが null でない場合だけ右側の関数やプロパティを実行し、null の場合はエラーを起こさず何もしない（nullを返す）超便利演算子。",
+        code: `// InstanceがnullでなければPlaySEを実行（NullReferenceException事故を完全防止！）
+SoundManager.Instance?.PlaySE(slashClip);
+
+// sourceが存在する場合だけstop
+audioSource?.Stop();`,
+        warning: "Unityの独自オブジェクト（MonoBehaviour等）の一部では、Destroy後の判定で意図通りにならない特殊仕様があるため、Instanceなどの通常チェックで使うのが最適です。"
+      },
+      {
+        word: "?? (Null合体演算子)",
+        letter: "#",
+        category: "演算子・記号",
+        pairs: ["?. (Null条件)", "null"],
+        analogy: "🎛️ 音響のたとえ: 「バックアップ回線（メイン回線が切れていたら予備回線に自動切り替え）」",
+        desc: "左側の値が null の場合に、代わりに右側のデフォルト値を代入する演算子。音源クリップが指定されていなかった場合の代替音設定などに重宝します。",
+        code: `// 指定クリップがnullなら、デフォルトの警告音を採用する
+AudioClip clipToPlay = customClip ?? defaultBeepClip;`,
+        warning: "三項演算子 (customClip != null ? customClip : defaultBeepClip) を極限まで短く書いた構文です。"
+      },
+      {
+        word: "=> (ラムダ式 / アロー)",
+        letter: "#",
+        category: "演算子・記号",
+        pairs: ["get", "void"],
+        analogy: "🎛️ 音響のたとえ: 「直結ジャンパー線（入力信号を1行でバイパス出力する）」",
+        desc: "「〜を入力して、結果を返す」という処理を1行で超コンパクトに書く構文（式形式のメンバー）。プロパティの get やコールバック関数を極限までシンプルに記述できます。",
+        code: `// 従来の書き方:
+// public bool IsMuted { get { return masterVolume <= 0f; } }
+
+// => を使ったプロの1行書き方:
+public bool IsMuted => masterVolume <= 0f;
+
+// 1行の短いメソッドも => で書ける！
+public void Play() => audioSource.Play();`,
+        warning: "複数行にわたる複雑な処理を書くときは、無理に => を使わず通常の波カッコ { ... } を使いましょう。"
+      },
+
+      // --- 条件分岐 ---
+      {
+        word: "if / else",
+        letter: "I",
+        category: "条件分岐",
+        pairs: ["switch / case", "? : (三項演算子)"],
+        analogy: "🎛️ 音響のたとえ: 「A/Bスイッチ（草むらならザッザッ、石畳ならカツカツと足音を切り替える）」",
+        desc: "プログラミングの最基本となる条件分岐構文。「もし○○ならばAを実行し、そうでなければBを実行する」というロジックを組み立てます。",
+        code: `if (groundType == "Grass")
+{
+    PlayFootstep(grassClip); // 草むらの足音
+}
+else if (groundType == "Water")
+{
+    PlayFootstep(waterSplashClip); // 水たまりのバシャ音
+}
+else
+{
+    PlayFootstep(concreteClip); // その他はコンクリート音
+}`,
+        warning: "else if が5個も10個も連なるときは、switch文を使った方がコードがスッキリして実行速度も速くなります。"
+      },
+      {
+        word: "switch / case",
+        letter: "S",
+        category: "条件分岐",
+        pairs: ["if / else", "break"],
+        analogy: "🎛️ 音響のたとえ: 「ロータリー・セレクター（カチカチ回してBGMシーンや発音チャンネルを選ぶ）」",
+        desc: "1つの変数の値に応じて、多数の分岐先をキレイに整理して並べる構文。地形タイプ、武器の種類、ゲームステートなどの分岐に絶大な威力を発揮します。",
+        code: `switch (gameState)
+{
+    case GameState.Title:
+        PlayBGM(titleBGM);
+        break; // 各分岐の最後には必ず break を書く！
+    case GameState.Battle:
+        PlayBGM(battleBGM);
+        break;
+    case GameState.GameOver:
+        PlayBGM(gameOverJingle);
+        break;
+    default:
+        StopBGM(); // どれにも当てはまらない場合
+        break;
+}`,
+        warning: "case ごとに break を書き忘れるとコンパイルエラーになります。必ず各ブロックを break で締めくくりましょう。"
+      },
+      {
+        word: "? : (三項演算子)",
+        letter: "#",
+        category: "条件分岐",
+        pairs: ["if / else", "bool"],
+        analogy: "🎛️ 音響のたとえ: 「トグルスイッチの1行切り替え（ONなら0dB、OFFなら無音）」",
+        desc: "条件 ? A : B の形で、if / else 文を1行に凝縮して値を代入する超スマートな演算子。「条件が true なら A、false なら B」を返します。",
+        code: `// isMutedがtrueなら音量0.0f、falseなら通常音量1.0fをセット
+float volume = isMuted ? 0.0f : 1.0f;
+
+// ピッチの正転・逆転判定
+audioSource.pitch = isReverse ? -1.0f : 1.0f;`,
+        warning: "三項演算子の中にさらに三項演算子を入れ子（ネスト）にすると極めて読みにくくなるので、単純な2択の代入にとどめましょう。"
+      },
+
+      // --- ループ構文 ---
+      {
+        word: "for",
+        letter: "F",
+        category: "ループ構文",
+        pairs: ["foreach", "while"],
+        analogy: "🎛️ 音響のたとえ: 「マルチトラックフェーダー（CH.1からCH.16まで番号順にツマミを初期化する）」",
+        desc: "回数を指定して決まった回数だけ繰り返し処理を行う構文。初期値（i=0）、継続条件（i < 16）、カウントアップ（i++）の3点セットでループします。",
+        code: `// ボイスプール（16チャンネル分のAudioSource）を一気に生成！
+for (int i = 0; i < 16; i++)
+{
+    AudioSource src = gameObject.AddComponent<AudioSource>();
+    src.playOnAwake = false;
+    voicePool.Add(src);
+}`,
+        warning: "配列のサイズを越えるインデックスにアクセスすると IndexOutOfRangeException エラーで即死します。条件は必ず i < array.Length としましょう。"
+      },
+      {
+        word: "foreach",
+        letter: "F",
+        category: "ループ構文",
+        pairs: ["for", "List<T>"],
+        analogy: "🎛️ 音響のたとえ: 「ラック内の全プラグインを一括バイパス / 全トラック一斉フェードアウト」",
+        desc: "リストや配列に含まれる『すべての要素』を、インデックス番号を気にせず先頭から順番に1個ずつ取り出して処理する安全なループ構文。",
+        code: `// 再生中のすべてのAudioSourceを一括で音量ゼロ（フェードアウト）にする
+foreach (AudioSource source in voicePool)
+{
+    if (source.isPlaying)
+    {
+        source.volume = 0f;
+    }
+}`,
+        warning: "foreach ループの実行中に、そのリストの要素を追加したり削除（Remove）したりするとエラーになります！要素数を変えたいときは通常の for ループを後ろから回します。"
+      },
+      {
+        word: "while",
+        letter: "W",
+        category: "ループ構文",
+        pairs: ["for", "yield"],
+        analogy: "🎛️ 音響のたとえ: 「LFOオシレーター（条件が満たされている間、波形を揺らし続ける）」",
+        desc: "「指定した条件が true である間ずっと」処理を繰り返す構文。Unityのコルーチンと組み合わせて、時間経過によるボリュームフェードを行う時の鉄板構文です。",
+        code: `// コルーチン内でのフェードアウト処理
+while (audioSource.volume > 0.0f)
+{
+    audioSource.volume -= Time.deltaTime * fadeSpeed;
+    yield return null; // 1フレーム待機して次回へ！
+}`,
+        warning: "通常の関数内で while (true) などの終わらないループを書くと、ゲーム全体がフリーズ（無限ループ）して強制終了になります！必ずコルーチン内で yield するか終了条件を設けましょう。"
+      },
+      {
+        word: "break",
+        letter: "B",
+        category: "ループ構文",
+        pairs: ["continue", "switch / case"],
+        analogy: "🎛️ 音響のたとえ: 「非常停止ボタン（空きチャンネルが1つ見つかったら即座に探索終了）」",
+        desc: "実行中のループ（for, foreach, while）や switch 文から『今すぐ脱出』する命令。目的のボイスが1個見つかったら、残りのループを無駄に回さず即座に終わらせます。",
+        code: `AudioSource freeVoice = null;
+foreach (var voice in voicePool)
+{
+    if (!voice.isPlaying)
+    {
+        freeVoice = voice;
+        break; // 空きが1個見つかったので、残りの探索は即座に中止してループ脱出！
+    }
+}`,
+        warning: "二重ループ（入れ子）の中で break した場合、脱出できるのは「内側のループ」だけで、外側のループは継続します。"
+      },
+      {
+        word: "continue",
+        letter: "C",
+        category: "ループ構文",
+        pairs: ["break", "for"],
+        analogy: "🎛️ 音響のたとえ: 「ミュートトラックのスキップ（ミュート中のトラックは計算を飛ばして次のトラックへ進む）」",
+        desc: "ループの残りの処理をスキップして、『次の周（イテレーション）』へワープする命令。脱出はせず、次の要素の処理を続行します。",
+        code: `foreach (var track in audioTracks)
+{
+    if (track.isMuted)
+    {
+        continue; // このトラックはミュート中なのでエフェクト計算をスキップして次へ！
+    }
+    track.ProcessAudioEffects();
+}`,
+        warning: "break との違い: break はループ自体を完全終了しますが、continue は次の周回へ進みます。"
+      },
+
+      // --- 基本型・変数 ---
+      {
+        word: "bool",
+        letter: "B",
+        category: "基本型・変数",
+        pairs: ["if / else", "! (NOT)"],
+        analogy: "🎛️ 音響のたとえ: 「LEDランプの点灯/消灯、MUTEボタンのON/OFF（true か false）」",
+        desc: "真偽値型。true（真・ON）か false（偽・OFF）の2つの状態しか持たない超軽量なデータ型。フラグ管理（再生中か、ループ設定か、ミュート中か）に不可欠です。",
+        code: `public bool isPlaying = false; // 再生中フラグ
+public bool isLoop = true;     // ループ再生するかフラグ`,
+        warning: "bool の変数名は、is〜 や has〜（例: isMuted, hasFaded）のように疑問文形式で命名するとコードの意味が直感的にわかります。"
+      },
+      {
+        word: "float",
+        letter: "F",
+        category: "基本型・変数",
+        pairs: ["int", "Mathf"],
+        analogy: "🎛️ 音響のたとえ: 「アナログフェーダー（0.0f〜1.0f の音量、440.0f Hz の周波数、1.5秒のフェード時間）」",
+        desc: "単精度浮動小数点数型。小数を扱う型で、ゲームオーディオの世界で最も頻繁に登場します。音量、ピッチ、パン、再生時間、フェード秒数などはすべて float です。",
+        code: `public float masterVolume = 0.8f; // 音量 (0.0f 〜 1.0f)
+public float pitch = 1.0f;        // 再生速度・音程
+public float fadeTime = 2.5f;     // フェード時間（秒）`,
+        warning: "C#では小数の末尾に必ず「f」を付けるルールがあります（0.8f）。f を付け忘れると倍精度の double 型と誤解されてエラーになります。"
+      },
+      {
+        word: "int",
+        letter: "I",
+        category: "基本型・変数",
+        pairs: ["float", "Array []"],
+        analogy: "🎛️ 音響のたとえ: 「サンプリングレート（48000 Hz）、トラック番号（CH.1）、同時発音数（16）」",
+        desc: "整数型。小数点のない数（-2, -1, 0, 1, 2...）を扱う型。ボイス数、配列のインデックス番号、サンプリング周波数、ビートカウントなどに使います。",
+        code: `public int maxVoices = 16;      // 最大同時発音数
+public int sampleRate = 48000;   // サンプリング周波数
+public int currentTrackIndex = 0; // 現在のトラック番号`,
+        warning: "int 同士の割り算は小数が切り捨てられます。音量計算などの小数計算をするときは float を使いましょう。"
+      },
+      {
+        word: "string",
+        letter: "S",
+        category: "基本型・変数",
+        pairs: ["List<T>", "var"],
+        analogy: "🎛️ 音響のたとえ: 「トラック名ラベル、Cueシート名（'BGM_MainTheme', 'SE_Explosion'）」",
+        desc: "文字列型。テキストデータを扱います。効果音名、BGM名、Addressablesのアドレス文字列、オーディオクリップのリソース名などの指定に用います。",
+        code: `public string bgmName = "BGM_Boss_Stage1";
+public string seAddress = "Assets/Audio/SE/slash.wav";`,
+        warning: "毎フレーム文字列の結合（\"SE_\" + i）を大量に行うと、Unityのガベージコレクション（GCゴミ）が発生して音飛びの原因になることがあります。"
+      },
+      {
+        word: "var",
+        letter: "V",
+        category: "基本型・変数",
+        pairs: ["string", "List<T>"],
+        analogy: "🎛️ 音響のたとえ: 「オートゲイン・自動判別端子（挿したケーブルの規格を機材側が自動認識する）」",
+        desc: "暗黙的型推論。右辺に代入された値から、C#コンパイラが自動的に型を判別して決定してくれる便利な構文。長いクラス名やジェネリクスをスッキリ書けます。",
+        code: `// どちらも全く同じ意味！下の方がスッキリ読める
+Dictionary<string, AudioClip> dict = new Dictionary<string, AudioClip>();
+var dict = new Dictionary<string, AudioClip>(); // varでスマートに！
+
+var source = GetComponent<AudioSource>(); // AudioSource型と自動判定`,
+        warning: "var を使っても『何でも入る動的な型（object/dynamic）』になるわけではありません。コンパイル時に厳密な型が1度だけ決定されます。"
+      },
+      {
+        word: "const",
+        letter: "C",
+        category: "基本型・変数",
+        pairs: ["static", "var"],
+        analogy: "🎛️ 音響のたとえ: 「ハードウェア固定スペック（CDサンプリングレート 44100Hz などの不変値）」",
+        desc: "定数宣言。一度代入したら絶対に後から書き換えられない固定値を宣言します。ゲームの最大同時発音数やデフォルト音量など、絶対に変えたくない基準値に使います。",
+        code: `public const int MAX_VOICE_COUNT = 32; // 最大発音数は32固定（変更禁止！）
+public const float DEFAULT_VOLUME = 1.0f;`,
+        warning: "const はコンパイル時に値が確定するため、実行時にしかわからない値（Time.timeなど）には代入できません。"
+      },
+      {
+        word: "List<T>",
+        letter: "L",
+        category: "基本型・変数",
+        pairs: ["Array []", "foreach"],
+        analogy: "🎛️ 音響のたとえ: 「モジュラーシンセのラック（空きスロットにエフェクターをいくらでも増設・撤去できる）」",
+        desc: "可変長配列（ジェネリックリスト）。後から要素を何個でも追加（Add）したり削除（Remove）したりできる配列。再生中のボイス一覧やエフェクトキューの管理に多用されます。",
+        code: `// AudioClipを何個でも詰め込めるリスト
+public List<AudioClip> seList = new List<AudioClip>();
+
+seList.Add(newClip);       // 音を追加
+seList.Remove(finishedClip); // 終わった音を削除
+int total = seList.Count;   // 現在の登録数`,
+        warning: "要素の個数は .Length ではなく .Count で取得します。"
+      },
+      {
+        word: "Array []",
+        letter: "A",
+        category: "基本型・変数",
+        pairs: ["List<T>", "for"],
+        analogy: "🎛️ 音響のたとえ: 「16chアナログミキサー（最初からチャンネル数が16本とガッチリ決まっている卓）」",
+        desc: "固定長配列。最初に決めたサイズ（要素数）から途中で増やしたり減らしたりできない配列。メモリ効率が極めて高く、固定数のボイスプールなどに最適です。",
+        code: `// 16本固定のAudioSource配列を作成
+private AudioSource[] voiceChannels = new AudioSource[16];
+
+AudioSource firstVoice = voiceChannels[0]; // 0番目のチャンネル
+int channelCount = voiceChannels.Length;   // 全長は16`,
+        warning: "サイズを後から自由に変えたいときは、Array ではなく List<T> を使いましょう。"
+      },
+
+      // --- 関数・プロパティ ---
       {
         word: "get",
         letter: "G",
-        category: "プロパティ / 読み出し",
+        category: "関数・プロパティ",
         pairs: ["set", "property"],
         analogy: "🎛️ 音響のたとえ: 「音量メーターやフェーダーの目盛りを見る（値を取得する）」",
         desc: "クラス内の変数を外部から『安全に読み出す』ための窓口。直接変数をいじらせず、現在のマスター音量や再生状態を教えてあげる時に使います。",
@@ -1835,7 +2369,7 @@ Sound.<span class="c-fn">PlaySE</span>(slashClip); <span class="c-cm">// 超シ�
       {
         word: "set",
         letter: "S",
-        category: "プロパティ / 書き込み",
+        category: "関数・プロパティ",
         pairs: ["get", "property"],
         analogy: "🎛️ 音響のたとえ: 「フェーダーのツマミを新しい位置へ動かす（値を変更する）」",
         desc: "クラス内の変数を外部から『変更・設定する』ための窓口。受け取った新しい値（value）をチェックして、0.0〜1.0の範囲にクランプする等の安全装置を挟めます。",
@@ -1848,7 +2382,7 @@ Sound.<span class="c-fn">PlaySE</span>(slashClip); <span class="c-cm">// 超シ�
       {
         word: "return",
         letter: "R",
-        category: "関数の結果 / 脱出",
+        category: "関数・プロパティ",
         pairs: ["void"],
         analogy: "🎛️ 音響のたとえ: 「OUTPUT端子から加工された音を吐き出す / メーターに数値を表示する」",
         desc: "関数の計算結果や再生チケットを呼び出し元（手元）に持ち帰る命令。また、return を通過した瞬間にその関数はその行で即座に終了します。",
@@ -1861,239 +2395,344 @@ Sound.<span class="c-fn">PlaySE</span>(slashClip); <span class="c-cm">// 超シ�
       {
         word: "void",
         letter: "V",
-        category: "戻り値なし / 命令",
+        category: "関数・プロパティ",
         pairs: ["return"],
-        analogy: "🎛️ 音響のたとえ: 「一方通行のトリガーボタン（インターホンを押して鳴らしっぱなし）」",
-        desc: "『この関数は仕事をしたら終わり！ 手元には何も返さないよ』という宣言。音を鳴らすだけ、値をリセットするだけなど、結果を受け取る必要がない関数に使います。",
-        code: `public void PlayOneShot(AudioClip clip)
+        analogy: "🎛️ 音響のたとえ: 「一方通行のトリガーボタン（『再生せよ！』と命令するだけで、返事やデータは戻ってこない）」",
+        desc: "「この関数は何も値を持ち帰らない（戻り値がない）」ことを表すキーワード。再生命令、停止命令、音量変更など、アクションを起こして完結する処理に使います。",
+        code: `public void PlaySE(AudioClip clip)
 {
-    audioSource.PlayOneShot(clip); // 鳴らして終わり（返事は不要）
+    audioSource.PlayOneShot(clip); // 鳴らして終わり！（手元に何も持ち帰らない）
 }`,
-        warning: "void の関数の中で値を return しようとすると（例: return 1.0f;）コンパイルエラーになります。"
-      },
-      {
-        word: "yield",
-        letter: "Y",
-        category: "コルーチン / 待機・ポーズ",
-        pairs: ["IEnumerator", "WaitForSeconds", "coroutine"],
-        analogy: "🎛️ 音響のたとえ: 「シーケンサーのステップ休符 / オートメーションカーブのコマ送り」",
-        desc: "コルーチン（IEnumerator）の中で『ここで一旦処理を一時停止し、Unityに制御を返す！』と命じるキーワード。1フレーム待ったり数秒待ったりできます。",
-        code: `yield return null; // 次のフレーム（1/60秒後）まで休む！
-yield return new WaitForSeconds(1.5f); // 1.5秒休む！`,
-        warning: "普通の void や int の関数の中では yield は使えません。必ず戻り値が IEnumerator のコルーチンの中で使います。"
-      },
-      {
-        word: "IEnumerator",
-        letter: "I",
-        category: "コルーチン / 戻り値の型",
-        pairs: ["yield", "coroutine"],
-        analogy: "🎛️ 音響のたとえ: 「パラパラ漫画の進行役 / 1ステップずつ進めるシーケンス進行表」",
-        desc: "コルーチン関数の戻り値として絶対に指定する型名。『この関数はコマ送り（yield）で進行しますよ』というUnityへの合図です。",
-        code: `public IEnumerator FadeOutRoutine(float duration)
-{
-    // yield return で少しずつ進む処理...
-}`,
-        warning: "IEnumeratorの関数を呼ぶときは、普通に FadeOutRoutine() と書くだけでは動かず、StartCoroutine(FadeOutRoutine()) で起動する必要があります。"
-      },
-      {
-        word: "static",
-        letter: "S",
-        category: "静的 / 共有メモリ",
-        pairs: ["Instance", "Singleton"],
-        analogy: "🎛️ 音響のたとえ: 「スタジオ中央のマスター卓 / 全員が共有する1台だけの電源」",
-        desc: "『new しなくても、全宇宙のどこからでも直接アクセスできる1つだけの共有メンバ』。Sound.PlaySE(clip) のようにクラス名から直接呼べるようになります。",
-        code: `public static void PlaySE(AudioClip clip)
-{
-    // new SoundManager() しなくても Sound.PlaySE() で呼べる！
-}`,
-        warning: "static な関数の中からは、static がついていない普通（インスタンス）の変数や関数を直接触ることはできません。"
-      },
-      {
-        word: "Instance",
-        letter: "I",
-        category: "実体 / シングルトン窓口",
-        pairs: ["static", "Singleton"],
-        analogy: "🎛️ 音響のたとえ: 「部屋に1台だけ置かれたミキサー本体への直通ケーブル」",
-        desc: "シングルトンパターンで、唯一無二の本体オブジェクトを static 変数として保持する慣例の名前。SoundManager.Instance で本体にアクセスします。",
-        code: `public static SoundManager Instance { get; private set; }
-
-void Awake() {
-    if (Instance == null) Instance = this;
-}`,
-        warning: "シーン遷移の重複で2人目の自分が生まれたときは、Instance を上書きせず新しく生まれた側を Destroy して殺すのが鉄則です。"
-      },
-      {
-        word: "async",
-        letter: "A",
-        category: "非同期 / 宣言",
-        pairs: ["await", "Task"],
-        analogy: "🎛️ 音響のたとえ: 「バックグラウンド書き出し対応トラック」",
-        desc: "『この関数は途中で待たされる処理（大容量音源ロードや通信）が含まれる非同期関数ですよ』という合図。await を使う関数には必ず付けます。",
-        code: `public async UniTask PlayBgmAsync(string bgmKey)
-{
-    // この中で await が使える！
-}`,
-        warning: "async を付けた関数は、通常 Task や UniTask、または void を返します。"
-      },
-      {
-        word: "await",
-        letter: "A",
-        category: "非同期 / 完了待機",
-        pairs: ["async", "Task"],
-        analogy: "🎛️ 音響のたとえ: 「置き配の配達完了待ち（でも自分は部屋で別の作業を続けられる）」",
-        desc: "『非同期ロードが終わるまで待つ！ でもゲーム画面（メインスレッド）はフリーズさせないでね！』という合図。上から下へ素直にコードが書けます。",
-        code: `AudioClip clip = await Addressables.LoadAssetAsync<AudioClip>(key);
-Sound.PlayBGM(clip); // ロードが終わったらそのまま次の行へ！`,
-        warning: "await は async が付いた関数の中でしか使えません。"
-      },
-      {
-        word: "class",
-        letter: "C",
-        category: "参照型 / ヒープ領域",
-        pairs: ["struct"],
-        analogy: "🎛️ 音響のたとえ: 「スタジオに据え置きされた大型ラックマウント機材」",
-        desc: "C#の基本となる設計図。ヒープメモリという広大な場所に作られ、参照（ポインタ・住所）でやり取りされます。大規模なマネージャーやコンポーネント向き。",
-        code: `public class SoundManager : MonoBehaviour
-{
-    // 据え置きの司令塔
-}`,
-        warning: "毎フレーム new Class() するとゴミ（GC Allocation）が発生し、一定量溜まるとGCスパイクで音飛び（プチノイズ）が起きます。"
-      },
-      {
-        word: "struct",
-        letter: "S",
-        category: "値型 / スタック領域",
-        pairs: ["class"],
-        analogy: "🎛️ 音響のたとえ: 「パッチケーブルの中を流れる軽量な音声信号・パラメータの束」",
-        desc: "構造体。スタックメモリに作られ、使い終わったら一瞬で自動消滅するためGCゴミが一切出ません（ゼロアロケーション）。SoundPlayback や LoopPointSettings に最適。",
-        code: `public struct SoundPlayback
-{
-    public int id;
-    public byte generation;
-}`,
-        warning: "巨大すぎるデータを struct にすると、関数に渡すたびに丸ごとコピーが発生して逆に遅くなることがあります（16〜64バイト程度が理想）。"
-      },
-      {
-        word: "public",
-        letter: "P",
-        category: "アクセス修飾子 / 公開",
-        pairs: ["private"],
-        analogy: "🎛️ 音響のたとえ: 「機材のフロントパネルにある操作ツマミや端子」",
-        desc: "他のどのスクリプトからでも自由に呼び出したり値を変更できる公開設定。Unityのインスペクターにも表示されます。",
-        code: `public float masterVolume = 1.0f;
-public void Play() { }`,
-        warning: "何でもかんでも public にすると、あちこちから勝手に音量を上書きされてバグの温床になります。基本は private かプロパティにしましょう。"
-      },
-      {
-        word: "private",
-        letter: "P",
-        category: "アクセス修飾子 / 非公開",
-        pairs: ["public"],
-        analogy: "🎛️ 音響のたとえ: 「機材の裏蓋を開けた中にある基盤回路・内部配線」",
-        desc: "そのクラス自身の中からしか触れない非公開設定。外部の人間がいじってはいけない秘密の変数や内部計算関数を隠蔽（カプセル化）します。",
-        code: `private AudioSource bgmSource;
-private void CalculateVolume() { }`,
-        warning: "修飾子を何も書かずに void Test() と書いた場合、C#では自動的に private になります。"
+        warning: "void の関数内でも、途中で処理を切り上げたいときは単体で return; とだけ書けば即座に脱出できます。"
       },
       {
         word: "overload",
         letter: "O",
-        category: "多重定義 / 引数違い",
+        category: "関数・プロパティ",
         pairs: ["override"],
-        analogy: "🎛️ 音響のたとえ: 「ディレイ時間をミリ秒指定もBPM同期指定もできるマルチ対応ノブ」",
-        desc: "『同じ名前の関数で、引数の数や型が違うものを複数用意すること』。PlaySE(clip) と PlaySE(clip, volume) など。",
-        code: `public void Play(AudioClip c) { Play(c, 1f); }
-public void Play(AudioClip c, float v) { /* 実体 */ }`,
-        warning: "戻り値（voidとintなど）を変えただけではオーバーロードにならずコンパイルエラーになります。"
+        analogy: "🎛️ 音響のたとえ: 「マルチ入力端子（ミニプラグでも標準ジャックでもキャノンでも挿せる賢いミキサー入力）」",
+        desc: "同じ関数名で、引数（カッコの中身）の『個数』や『型』が異なる複数のバリエーションを用意すること。PlaySE(clip)、PlaySE(clip, volume) など呼び出し側に優しい設計ができます。",
+        code: `public void PlaySE(AudioClip clip) => PlaySE(clip, 1.0f);
+public void PlaySE(AudioClip clip, float volume)
+{
+    // ここに本物の再生処理
+}`,
+        warning: "戻り値（voidやint）を変えただけではオーバーロードになりません。必ず引数の型・個数を変える必要があります。"
       },
       {
         word: "override",
         letter: "O",
-        category: "上書き / 継承ポリモーフィズム",
-        pairs: ["overload"],
-        analogy: "🎛️ 音響のたとえ: 「既存の機材の回路をハックして、独自のカスタムサウンドに上書き改造する」",
-        desc: "『親クラスが持っている virtual 関数を、子クラスが自分好みに上書きして置き換えること』。基本の再生ロジックを特殊なBGM用に上書きしたい時などに使います。",
-        code: `public override void Play()
+        category: "関数・プロパティ",
+        pairs: ["overload", "interface"],
+        analogy: "🎛️ 音響のたとえ: 「インサート・オーバーライド（親機材の回路をバイパスして、自作基板のオリジナル回路で音を加工する）」",
+        desc: "親クラス（元祖）が持っている仮想関数（virtual）の処理を、子クラス側で『自分専用の処理に上書き改造』すること。オブジェクト指向のポリモーフィズムの根幹です。",
+        code: `// 親クラス: 通常のサウンドプレイヤー
+public virtual void Play() { audioSource.Play(); }
+
+// 子クラス: 3D空間サウンドプレイヤー（上書き！）
+public override void Play() 
 {
-    base.Play(); // 親の処理も呼びつつ...
-    Debug.Log("独自のクロスフェード演出！");
+    Update3DPosition(); // 3D計算を追加！
+    base.Play();        // 親の基本再生も呼ぶ
 }`,
-        warning: "親側の関数に virtual や abstract が付いていないと override できません。"
+        warning: "オーバーロード（Overload: 引数違いで同名関数を作る）と名前が似ていますが、全く別の概念です。"
+      },
+
+      // --- クラス・構造体・修飾子 ---
+      {
+        word: "class",
+        letter: "C",
+        category: "クラス・構造体",
+        pairs: ["struct", "new"],
+        analogy: "🎛️ 音響のたとえ: 「1台の大型ハードウェア音響ラック機材（本体は重く、何本もケーブルで繋がれる）」",
+        desc: "参照型の設計図。Unityの MonoBehaviour（SoundManagerなど）はすべてクラスです。実体はメモリ（ヒープ領域）に1つだけ置かれ、変数にはその『所在地の住所（参照）』が入ります。",
+        code: `public class SoundManager : MonoBehaviour
+{
+    // 変数や関数をひとまとめにした設計図
+}`,
+        warning: "class の変数を別の変数に代入すると、中身がコピーされるのではなく『同じ機材を2本のケーブルで指している』状態になるため、片方をいじると両方変わります。"
+      },
+      {
+        word: "struct",
+        letter: "S",
+        category: "クラス・構造体",
+        pairs: ["class"],
+        analogy: "🎛️ 音響のたとえ: 「手のひらに収まる電池や紙のメモ（身軽で、人に渡すときは現物が丸ごと複製される）」",
+        desc: "値型の軽量なデータ構造。Vector3（3D座標）や Color などが構造体です。関数に渡したり変数に代入すると、中身全体がその場で丸ごとコピー（複製）されます。",
+        code: `public struct SoundCue
+{
+    public string cueName;
+    public float volume;
+    public float pitch;
+}`,
+        warning: "巨大なデータを struct にすると、受け渡しのたびに丸ごとコピーが発生して逆に動作が重くなります。軽量なデータ（座標やパラメータのセット）に向いています。"
       },
       {
         word: "interface",
         letter: "I",
-        category: "規格書 / 契約",
-        pairs: ["implement"],
-        analogy: "🎛️ 音響のたとえ: 「Steinbergが決めた VST3 プラグインの接続端子規格書」",
-        desc: "『中身は空っぽで、関数の名前と型ルールだけを決めた契約書』。どんなエフェクトや音源であっても、同じラックに挿して一括管理するために使います。",
+        category: "クラス・構造体",
+        pairs: ["override", "class"],
+        analogy: "🎛️ 音響のたとえ: 「SteinbergのVST3プラグイン規格書（『ProcessAudio端子を必ず用意せよ』という契約書）」",
+        desc: "関数やプロパティの『形・規格』だけを定めた契約書。これをインプリメント（実装）したクラスは、約束された関数の中身を必ずプログラミングする義務を負います。",
         code: `public interface IAudioProcessor
 {
-    void Process(float[] buffer);
+    void Process(float[] buffer); // 規格書（中身は空っぽ）
 }`,
-        warning: "インターフェースをクラスにインプリメントしたら、契約書に書いてあるすべての関数の中身を1つ残らずプログラミングしなければなりません。"
+        warning: "インターフェースで宣言された関数を1つでも書き忘れると、コンパイルエラーになります。"
       },
       {
-        word: "Action",
-        letter: "A",
-        category: "コールバック / 委譲",
-        pairs: ["Func", "callback"],
-        analogy: "🎛️ 音響のたとえ: 「アシスタントへの作業完了時チェックリスト指示書」",
-        desc: "戻り値なし（void）の関数を引数として渡すためのC#標準デリゲート。再生終了コールバックやフェード完了通知の予約に使います。",
-        code: `public void PlayVoice(AudioClip clip, Action onComplete)
+        word: "public",
+        letter: "P",
+        category: "クラス・構造体",
+        pairs: ["private"],
+        analogy: "🎛️ 音響のたとえ: 「機材のフロントパネルにあるノブや入力ジャック（誰でも自由に触れる）」",
+        desc: "アクセス修飾子。他のどのスクリプトからでも自由に呼び出したり読み書きできる状態にします。Unityのインスペクターにも表示されます。",
+        code: `public float masterVolume = 1.0f; // 誰でも触れる！
+public void PlaySE() { ... }`,
+        warning: "何でもかんでも public にすると、予期せぬ場所から勝手に値を書き換えられて大バグの原因になります。外部から変えられたくないものは private にしましょう。"
+      },
+      {
+        word: "private",
+        letter: "P",
+        category: "クラス・構造体",
+        pairs: ["public"],
+        analogy: "🎛️ 音響のたとえ: 「機材の裏ブタを開けた内部の回路基板（外からは触らせない自己防衛）」",
+        desc: "アクセス修飾子。そのクラス（スクリプト）の内部からしかアクセスできない状態にします。内部の安全性を保つカプセル化の基本です。",
+        code: `private AudioSource internalSource; // 外部からは触れない安全な変数`,
+        warning: "修飾子を何も書かずに void Start() と書いた場合、C#では自動的に private になります。"
+      },
+      {
+        word: "static",
+        letter: "S",
+        category: "クラス・構造体",
+        pairs: ["Instance", "class"],
+        analogy: "🎛️ 音響のたとえ: 「スタジオの中央マスターミキサー（部屋に1台しかなく、全員で共有する）」",
+        desc: "クラスの実体（new）を作らなくても、クラス名から直接ドットでアクセスできる共通メンバー。ゲーム全体で共有したいデータや関数に付けます。",
+        code: `// Sound.PlaySE(clip) のようにどこからでも直接呼べる！
+public static void PlaySE(AudioClip clip)
 {
-    // 再生完了時に onComplete?.Invoke();
+    // 全宇宙共通の処理
 }`,
-        warning: "シーン遷移でコールバックを受け取る相手が先に破壊されるとNullReferenceExceptionになるため防御が必要です。"
+        warning: "static な関数の中からは、通常のインスタンス変数（staticが付いていない変数）を直接触ることはできません。"
       },
       {
-        word: "Mathf.Lerp",
-        letter: "M",
-        category: "音響数学 / 線形補間",
-        pairs: ["Mathf.Clamp", "Mathf.Pow"],
-        analogy: "🎛️ 音響のたとえ: 「ボリュームフェーダーを一定速度で滑らかに動かすオートメーション」",
-        desc: "A地点からB地点まで、割合 t（0.0〜1.0）で滑らかに数値を移り変わらせる補間関数。音量のフェードイン・フェードアウトのド定番です。",
-        code: `float currentVol = Mathf.Lerp(startVol, targetVol, timer / duration);`,
-        warning: "音量は人間の耳の特性上、本来はリニアではなく対数（dB）でフェードさせた方が自然に聴こえます。"
+        word: "Instance",
+        letter: "I",
+        category: "クラス・構造体",
+        pairs: ["static", "DontDestroyOnLoad"],
+        analogy: "🎛️ 音響のたとえ: 「マスターミキサー卓の『中央指令ポート』（全宇宙から直接命令を送る窓口）」",
+        desc: "シングルトンパターンで、ゲーム内にたった1つだけ存在する自分自身のインスタンスを全世界へ公開するための static プロパティの定番ネーミング。",
+        code: `public class SoundManager : MonoBehaviour
+{
+    public static SoundManager Instance { get; private set; }
+
+    void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject); // 2人目の自分を即死させる！
+    }
+}`,
+        warning: "シーン移動時に2人目のマネージャーが増殖しないよう、Awakeで既存のInstanceをチェックして自己防衛するコードが必須です。"
       },
       {
-        word: "DontDestroyOnLoad",
-        letter: "D",
-        category: "Unity機能 / シーン永続化",
-        pairs: ["Destroy", "Singleton"],
-        analogy: "🎛️ 音響のたとえ: 「ステージ転換で大道具を片付けても、PA卓とスピーカーだけは片付けずに残す」",
-        desc: "シーンを切り替えても、そのGameObjectを破棄せずに次のシーンへ引き継ぐUnityの特殊命令。BGMを途切れさせないサウンドマネージャーの必須テクニックです。",
-        code: `DontDestroyOnLoad(gameObject);`,
-        warning: "再び最初のシーンに戻ったとき、シーン内に置いてあった2体目のマネージャーが新しく生まれてしまうので、重複Destroyの自己防衛コードが必須です。"
+        word: "this",
+        letter: "T",
+        category: "クラス・構造体",
+        pairs: ["Instance"],
+        analogy: "🎛️ 音響のたとえ: 「『この私（この機材自身）』を指名するポインター」",
+        desc: "「現在実行中の、このクラスのインスタンス自身」を指すキーワード。引数の名前とフィールドの名前が同じ時に区別したり、シングルトンで Instance = this; と代入する時に使います。",
+        code: `public void SetVolume(float volume)
+{
+    this.volume = volume; // 「このクラスのvolume」に「引数のvolume」を代入
+}`,
+        warning: "static な関数の中では this は使えません（static は特定のインスタンスに属していないため）。"
       },
       {
         word: "new",
         letter: "N",
-        category: "インスタンス生成 / メモリ確保",
-        pairs: ["null", "GC"],
-        analogy: "🎛️ 音響のたとえ: 「工場から新しい機材を発注してスタジオに運び込む」",
-        desc: "クラスの新しい実体（インスタンス）をヒープメモリ上に生成するキーワード。オブジェクトプールを使わずにUpdateループ内で new すると即死します。",
-        code: `SoundPlayback playback = new SoundPlayback(id, gen);`,
-        warning: "リアルタイムオーディオ（OnAudioFilterReadや毎フレーム）で class を new してはいけません！ GCスパイクによる音飛びの元凶です。"
+        category: "クラス・構造体",
+        pairs: ["class", "null"],
+        analogy: "🎛️ 音響のたとえ: 「新品の機材をダンボールから開けてスタジオに新設する（メモリ確保）」",
+        desc: "クラスや構造体の『新しい実体（インスタンス）』をメモリ上に生み出すキーワード。リストやオブジェクトを初期化する時に必ず登場します。",
+        code: `List<AudioClip> clips = new List<AudioClip>(); // 新しいリストを生成！
+WaitForSeconds wait = new WaitForSeconds(1.0f); // 待機チケットを生成！`,
+        warning: "Unityの MonoBehaviour を継承したクラス（AudioSourceや自作Component）は new してはいけません！必ず AddComponent や Instantiate を使います。"
+      },
+      {
+        word: "null",
+        letter: "N",
+        category: "クラス・構造体",
+        pairs: ["new", "?. (Null条件)"],
+        analogy: "🎛️ 音響のたとえ: 「ケーブルがどこにも刺さっていない未接続状態（空っぽ）」",
+        desc: "参照型の変数が『何も指していない、空っぽである』ことを表す特別な値。null の変数に対して無理に関数を呼ぼうとすると、有名な NullReferenceException エラーで爆死します。",
+        code: `if (clip == null)
+{
+    Debug.LogWarning("AudioClipがセットされていません！");
+    return; // 事故を防止！
+}`,
+        warning: "コードがクラッシュする原因の第1位が null へのアクセスです。?. 演算子や if (x != null) で必ずガードしましょう。"
+      },
+
+      // --- コルーチン・非同期・Unity ---
+      {
+        word: "yield",
+        letter: "Y",
+        category: "コルーチン・非同期",
+        pairs: ["IEnumerator", "while"],
+        analogy: "🎛️ 音響のたとえ: 「ポーズボタン（処理を一時停止してUnityに一旦席を譲り、指定時間後に再開する）」",
+        desc: "コルーチンの中で処理を一時中断し、Unityのゲームループに制御を返すキーワード。1フレーム待ったり、BGMフェードのように時間経過を待つときに使います。",
+        code: `IEnumerator FadeOutRoutine()
+{
+    yield return new WaitForSeconds(1.0f); // 1秒間だけ待機！
+    // 1秒後にここから処理が再開される！
+}`,
+        warning: "yield return は戻り値の型が IEnumerator のコルーチン関数の中でしか使えません。"
+      },
+      {
+        word: "IEnumerator",
+        letter: "I",
+        category: "コルーチン・非同期",
+        pairs: ["yield"],
+        analogy: "🎛️ 音響のたとえ: 「ステップシーケンサー（1ステップずつ順番に再生コマを進める仕組み）」",
+        desc: "コルーチン関数を作成するときに、戻り値の型として必ず指定するインターフェース。内部に yield return を含む関数は IEnumerator を返します。",
+        code: `public IEnumerator PlaySequence()
+{
+    PlaySE(introClip);
+    yield return new WaitForSeconds(2.0f);
+    PlayBGM(mainBgmClip);
+}`,
+        warning: "呼び出すときは普通に関数を呼ぶだけでは動かず、必ず StartCoroutine(PlaySequence()); で起動する必要があります。"
+      },
+      {
+        word: "async",
+        letter: "A",
+        category: "コルーチン・非同期",
+        pairs: ["await"],
+        analogy: "🎛️ 音響のたとえ: 「バックヤードスタッフへの発注書（『裏で重い作業をやっておいてね』という宣言）」",
+        desc: "非同期メソッドであることを宣言する修飾子。巨大なBGMファイルやAddressablesの音源をディスクから読み込む際、画面を一切カクつかせずに裏で読み込みを行う時に使います。",
+        code: `public async void LoadBgmAsync(string address)
+{
+    // この中で await が使えるようになる！
+}`,
+        warning: "async を付けた関数の中では、少なくとも1箇所以上 await を呼び出す必要があります。"
+      },
+      {
+        word: "await",
+        letter: "A",
+        category: "コルーチン・非同期",
+        pairs: ["async"],
+        analogy: "🎛️ 音響のたとえ: 「裏方スタッフから『音源の納品完了しました！』の合図を受け取るまで待つ」",
+        desc: "非同期処理の完了を待機する命令。待っている間もゲームの画面描画は一切止まらず、バックグラウンドでのロードが終わった瞬間に次の行へ進みます。",
+        code: `// Addressablesから重い音源を非同期ロードして完了を待つ
+AudioClip clip = await Addressables.LoadAssetAsync<AudioClip>(address).Task;
+audioSource.clip = clip;
+audioSource.Play();`,
+        warning: "await は async が付いたメソッドの中でしか使えません。"
+      },
+      {
+        word: "DontDestroyOnLoad",
+        letter: "D",
+        category: "コルーチン・非同期",
+        pairs: ["Instance"],
+        analogy: "🎛️ 音響のたとえ: 「常設PAブース（ステージのセット転換で他の大道具が全部撤去されても、PA卓だけは絶対に撤去されない）」",
+        desc: "Unityの特別な関数。シーンが切り替わっても、指定したゲームオブジェクト（SoundManagerなど）を破棄せずに次のシーンへそのまま引き継ぎます。",
+        code: `void Awake()
+{
+    DontDestroyOnLoad(this.gameObject); // シーン移動してもBGMを止めずに生き残る！
+}`,
+        warning: "タイトル画面に戻ってきたときに2体目のSoundManagerが生まれてBGMが2重再生される事故（増殖バグ）の元になるため、シングルトンの自己防衛コードと必ずセットで使います。"
       }
     ];
 
     // ==========================================
-    // 辞書描画エンジン
+    // 辞書ビューのフィルタリング & レンダリングロジック
     // ==========================================
+    let currentCategoryFilter = 'ALL';
     let currentFilterLetter = 'ALL';
     let currentSearchQuery = '';
     let currentPairFilter = 'ALL';
 
+    // 文法カテゴリ一覧の定義
+    const CATEGORIES = [
+      'ALL',
+      '演算子・記号',
+      '条件分岐',
+      'ループ構文',
+      '基本型・変数',
+      '関数・プロパティ',
+      'クラス・構造体',
+      'コルーチン・非同期'
+    ];
+
+    // 関係性ペア定義
+    const PAIR_DEFINITIONS = [
+      { key: 'ALL', label: 'すべて' },
+      { key: '+ / -', label: '+ - * / ⇄ ++ --', words: ['+ - * / %', '++ / --'] },
+      { key: '== / !=', label: '== != ⇄ < >', words: ['== / !=', '< > <= >='] },
+      { key: '&& / ||', label: '&& ⇄ || ⇄ !', words: ['&& (AND)', '|| (OR)', '! (NOT)'] },
+      { key: 'if/switch', label: 'if ⇄ switch', words: ['if / else', 'switch / case', '? : (三項演算子)'] },
+      { key: 'for/foreach', label: 'for ⇄ foreach', words: ['for', 'foreach', 'while'] },
+      { key: 'break/continue', label: 'break ⇄ continue', words: ['break', 'continue'] },
+      { key: 'get/set', label: 'get ⇄ set', words: ['get', 'set'] },
+      { key: 'return/void', label: 'return ⇄ void', words: ['return', 'void'] },
+      { key: 'overload/override', label: 'overload ⇄ override', words: ['overload', 'override'] },
+      { key: 'class/struct', label: 'class ⇄ struct', words: ['class', 'struct'] },
+      { key: 'public/private', label: 'public ⇄ private', words: ['public', 'private'] },
+      { key: 'static/instance', label: 'static ⇄ Instance', words: ['static', 'Instance', 'DontDestroyOnLoad'] },
+      { key: 'yield/coroutine', label: 'yield ⇄ IEnumerator', words: ['yield', 'IEnumerator'] },
+      { key: 'async/await', label: 'async ⇄ await', words: ['async', 'await'] },
+      { key: 'null/safe', label: '?. ⇄ ?? ⇄ null', words: ['?. (Null条件演算子)', '?? (Null合体演算子)', 'null'] }
+    ];
+
     function initDictionary() {
-      // アルファベットバーの生成
-      const letters = ['ALL', 'A', 'C', 'D', 'G', 'I', 'M', 'N', 'O', 'P', 'R', 'S', 'V', 'Y'];
+      // 1. カテゴリフィルターボタンの生成
+      const catContainer = document.getElementById('cat-filter-list');
+      if (catContainer) {
+        catContainer.innerHTML = CATEGORIES.map(cat => {
+          const count = cat === 'ALL' 
+            ? DICTIONARY_DATA.length 
+            : DICTIONARY_DATA.filter(d => d.category === cat).length;
+          const label = cat === 'ALL' ? 'すべて表示' : cat;
+          const activeClass = cat === currentCategoryFilter ? 'active' : '';
+          return '<button class="cat-btn ' + activeClass + '" onclick="filterByCategory(\'' + cat + '\')">' +
+            '<span>' + label + '</span>' +
+            '<span class="cat-count">' + count + '</span>' +
+          '</button>';
+        }).join('');
+      }
+
+      // 2. アルファベット・記号 索引バーの生成
+      const letters = ['ALL', '#', 'A', 'B', 'C', 'D', 'F', 'G', 'I', 'L', 'N', 'O', 'P', 'R', 'S', 'T', 'V', 'W', 'Y'];
       const bar = document.getElementById('alphabet-bar');
       if (bar) {
         bar.innerHTML = letters.map(l => 
           '<button class="alpha-btn ' + (l === currentFilterLetter ? 'active' : '') + '" onclick="filterByLetter(\'' + l + '\')">' + l + '</button>'
         ).join('');
       }
+
+      // 3. 関係性ペアフィルターの生成
+      const relBar = document.getElementById('relation-bar');
+      if (relBar) {
+        relBar.innerHTML = PAIR_DEFINITIONS.map(p => 
+          '<button class="pair-filter-btn ' + (p.key === currentPairFilter ? 'active' : '') + '" onclick="filterByPair(\'' + p.key + '\')">' + p.label + '</button>'
+        ).join('');
+      }
+
+      renderDictionary();
+    }
+
+    function filterByCategory(cat) {
+      currentCategoryFilter = cat;
+      currentPairFilter = 'ALL';
+      // UIのアクティブ更新
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        const spanText = btn.querySelector('span').textContent;
+        const target = cat === 'ALL' ? 'すべて表示' : cat;
+        btn.classList.toggle('active', spanText === target);
+      });
+      document.querySelectorAll('.pair-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === 'すべて');
+      });
       renderDictionary();
     }
 
@@ -2113,7 +2752,7 @@ public void Play(AudioClip c, float v) { /* 実体 */ }`,
       currentPairFilter = pairKey;
       currentFilterLetter = 'ALL';
       document.querySelectorAll('.pair-filter-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('onclick').includes(pairKey));
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes('\'' + pairKey + '\''));
       });
       document.querySelectorAll('.alpha-btn').forEach(btn => {
         btn.classList.toggle('active', btn.textContent === 'ALL');
@@ -2123,7 +2762,23 @@ public void Play(AudioClip c, float v) { /* 実体 */ }`,
 
     function handleDictSearch(query) {
       currentSearchQuery = query.toLowerCase().trim();
+      const input = document.getElementById('dict-search-input');
+      if (input && input.value !== query) {
+        input.value = query;
+      }
       renderDictionary();
+    }
+
+    function resetAllFilters() {
+      currentCategoryFilter = 'ALL';
+      currentFilterLetter = 'ALL';
+      currentPairFilter = 'ALL';
+      currentSearchQuery = '';
+
+      const input = document.getElementById('dict-search-input');
+      if (input) input.value = '';
+
+      initDictionary();
     }
 
     function renderDictionary() {
@@ -2131,43 +2786,71 @@ public void Play(AudioClip c, float v) { /* 実体 */ }`,
       if (!container) return;
 
       const filtered = DICTIONARY_DATA.filter(item => {
+        // 1. カテゴリ絞り込み
+        if (currentCategoryFilter !== 'ALL' && item.category !== currentCategoryFilter) {
+          return false;
+        }
+
+        // 2. A-Z / 記号 索引絞り込み
         if (currentFilterLetter !== 'ALL' && item.letter !== currentFilterLetter) {
           return false;
         }
 
+        // 3. 関係性ペア絞り込み
         if (currentPairFilter !== 'ALL') {
-          const pairsMap = {
-            'get/set': ['get', 'set'],
-            'return/void': ['return', 'void'],
-            'yield/coroutine': ['yield', 'IEnumerator'],
-            'static/instance': ['static', 'Instance'],
-            'async/await': ['async', 'await'],
-            'class/struct': ['class', 'struct'],
-            'public/private': ['public', 'private'],
-            'overload/override': ['overload', 'override']
-          };
-          const targetWords = pairsMap[currentPairFilter] || [];
-          if (!targetWords.includes(item.word)) return false;
+          const pairDef = PAIR_DEFINITIONS.find(p => p.key === currentPairFilter);
+          if (pairDef && pairDef.words) {
+            const match = pairDef.words.some(w => item.word.toLowerCase().includes(w.toLowerCase()));
+            if (!match) return false;
+          }
         }
 
+        // 4. 検索クエリ絞り込み
         if (currentSearchQuery) {
           const inWord = item.word.toLowerCase().includes(currentSearchQuery);
           const inDesc = item.desc.toLowerCase().includes(currentSearchQuery);
           const inAnalogy = item.analogy.toLowerCase().includes(currentSearchQuery);
           const inCat = item.category.toLowerCase().includes(currentSearchQuery);
-          return inWord || inDesc || inAnalogy || inCat;
+          const inCode = item.code ? item.code.toLowerCase().includes(currentSearchQuery) : false;
+          return inWord || inDesc || inAnalogy || inCat || inCode;
         }
 
         return true;
       });
 
+      // ステータスバーの更新
       const badge = document.getElementById('dict-count-badge');
       if (badge) badge.textContent = filtered.length + ' / ' + DICTIONARY_DATA.length + ' 語 表示中';
 
+      const statusTitle = document.getElementById('dict-status-title');
+      if (statusTitle) {
+        if (currentCategoryFilter !== 'ALL') {
+          statusTitle.textContent = 'カテゴリ: ' + currentCategoryFilter;
+        } else if (currentFilterLetter !== 'ALL') {
+          statusTitle.textContent = '索引: [' + currentFilterLetter + '] から始まる用語';
+        } else if (currentPairFilter !== 'ALL') {
+          const pair = PAIR_DEFINITIONS.find(p => p.key === currentPairFilter);
+          statusTitle.textContent = 'ペア: ' + (pair ? pair.label : currentPairFilter);
+        } else if (currentSearchQuery) {
+          statusTitle.textContent = '検索: "' + currentSearchQuery + '"';
+        } else {
+          statusTitle.textContent = 'すべての単語（大全）';
+        }
+      }
+
+      const activeBadge = document.getElementById('dict-active-filter-badge');
+      if (activeBadge) {
+        const hasFilter = currentCategoryFilter !== 'ALL' || currentFilterLetter !== 'ALL' || currentPairFilter !== 'ALL' || currentSearchQuery;
+        activeBadge.textContent = hasFilter ? '（絞り込み中）' : '';
+      }
+
       if (filtered.length === 0) {
         container.innerHTML = 
-          '<div style="text-align: center; padding: 40px; color: var(--text-muted); background: var(--bg-card); border-radius: 12px;">' +
-          '該当する用語が見つかりませんでした。「A」などのボタンを押すか、別のキーワードで検索してみてください。' +
+          '<div style="text-align: center; padding: 48px 24px; color: var(--text-muted); background: var(--bg-card); border-radius: 14px; border: 1px dashed var(--border-color);">' +
+          '<div style="font-size: 28px; margin-bottom: 12px;">🔎</div>' +
+          '<div style="font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 6px;">該当する用語が見つかりませんでした</div>' +
+          '<p style="font-size: 13px; margin-bottom: 16px;">検索キーワードを変更するか、左サイドバーのリセットボタンを押してみてください。</p>' +
+          '<button class="filter-reset-btn" style="max-width: 200px; margin: 0 auto;" onclick="resetAllFilters()">リセットする</button>' +
           '</div>';
         return;
       }
@@ -2182,31 +2865,31 @@ public void Play(AudioClip c, float v) { /* 実体 */ }`,
 
         let codeHtml = '';
         if (item.code) {
-          codeHtml = '<pre style="margin: 10px 0;"><code>' + escapeHtml(item.code) + '</code></pre>';
+          codeHtml = '<pre style="margin: 12px 0 6px 0;"><code>' + escapeHtml(item.code) + '</code></pre>';
         }
 
         let warningHtml = '';
         if (item.warning) {
-          warningHtml = '<div class="warning-box" style="margin: 10px 0 0 0; padding: 12px 16px;">' +
-            '<span class="warning-title" style="font-size: 12px;">⚠️ 現場の掟:</span>' +
-            '<p style="margin: 0; font-size: 12px; color: var(--accent-amber);">' + item.warning + '</p>' +
+          warningHtml = '<div class="warning-box" style="margin: 12px 0 0 0; padding: 12px 16px;">' +
+            '<span class="warning-title" style="font-size: 12px;">⚠️ 現場の掟・落とし穴:</span>' +
+            '<p style="margin: 0; font-size: 12px; color: var(--accent-amber); line-height: 1.5;">' + item.warning + '</p>' +
             '</div>';
         }
 
-        return '<div id="word-' + item.word + '" class="dict-card">' +
+        return '<div id="word-' + encodeURIComponent(item.word) + '" class="dict-card">' +
           '<div class="dict-card-header">' +
             '<div>' +
               '<div class="dict-word-title">' +
                 '<span class="dict-alpha-badge">[' + item.letter + ']</span>' +
-                '<span>' + item.word + '</span>' +
+                '<span>' + escapeHtml(item.word) + '</span>' +
               '</div>' +
             '</div>' +
             '<span class="dict-cat-badge">' + item.category + '</span>' +
           '</div>' +
           pairsHtml +
-          '<div class="analogy-box" style="margin: 10px 0;">' +
-            '<div style="font-size: 13px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 4px;">' + item.analogy + '</div>' +
-            '<p style="margin: 0; font-size: 13px;">' + item.desc + '</p>' +
+          '<div class="analogy-box" style="margin: 12px 0;">' +
+            '<div style="font-size: 13px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 6px;">' + item.analogy + '</div>' +
+            '<p style="margin: 0; font-size: 13px; line-height: 1.6; color: #e2e8f0;">' + item.desc + '</p>' +
           '</div>' +
           codeHtml +
           warningHtml +
@@ -2223,9 +2906,11 @@ public void Play(AudioClip c, float v) { /* 実体 */ }`,
 
     // グローバル公開
     window.switchView = switchView;
+    window.filterByCategory = filterByCategory;
     window.filterByLetter = filterByLetter;
     window.filterByPair = filterByPair;
     window.handleDictSearch = handleDictSearch;
+    window.resetAllFilters = resetAllFilters;
 
     // 即時 & ロード後初期化
     initDictionary();
