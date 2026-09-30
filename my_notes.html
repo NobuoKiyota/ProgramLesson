@@ -1844,6 +1844,288 @@ Sound.<span class="c-fn">PlaySE</span>(slashClip); <span class="c-cm">// 超シ�
         </div>
       </div>
     </article>
+
+    <!-- ======================================================== -->
+    <!-- 第7問: C#の演算子・計算・記号のすべて 〜 音量フェード、dB変換、ボイスカウントからプロ御用達のnull安全記号まで 〜 -->
+    <!-- ======================================================== -->
+    <article id="qa-07" class="qa-card">
+      <div class="qa-header">
+        <div class="qa-num">Q.07</div>
+        <div>
+          <h2 class="qa-title">C#の「演算子・計算・記号」徹底深掘り！<br>音量フェード、dB対数変換、ボイス制限からプロ御用達のnull安全記号まで</h2>
+          <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+            キーワード: 算術演算子 (+ - * / %) / 整数の割り算事故 (int切り捨て) / インクリメント (++) / 比較と浮動小数点誤差 / 論理演算 (&&, ||, !) / 三項演算子 / Null条件 (?.), Null合体 (??), 式形式 (=>)
+          </p>
+        </div>
+      </div>
+
+      <!-- パート1: なぜ音響プログラマは演算子にこだわるのか？ -->
+      <div class="section-block">
+        <div class="section-title">🎛️ 音響の基礎: DAWのフェーダーはプログラム内部でどう計算されている？</div>
+        <p>
+          CubaseやPro ToolsなどのDAWでは、マウスでフェーダーを上下させたりパンを振ったりするだけで直感的に音量が変わります。<br>
+          しかし、Unityやゲームエンジンの内部では、すべて<strong>「波形のサンプリング数値に対する足し算・引き算・掛け算・割り算（演算子）」</strong>によって音がコントロールされています。
+        </p>
+        <div class="analogy-box">
+          <div class="analogy-title">🎙️ 音響のたとえ: 「リニア音量（0.0〜1.0）とデシベル（dB）の掛け算」</div>
+          <p style="margin: 0; font-size: 13px;">
+            Unityの <code>audioSource.volume</code> は <strong>0.0f（無音）〜 1.0f（最大音量 0dB）</strong> のリニア（線形）数値です。<br>
+            音量を半分にしたいときは引き算ではなく、<strong>「現在の音量 × 0.5f」という掛け算（*）</strong>を行います（約 -6dB の減衰）。<br>
+            音響プログラミングでは、引き算でボリュームを削るのではなく<strong>「ゲイン係数を掛け算する」</strong>のが基本です！
+          </p>
+        </div>
+      </div>
+
+      <!-- パート2: 四則演算と【超危険】整数の割り算事故 -->
+      <div class="section-block">
+        <div class="section-title">📐 基本の四則演算（+ - * / %）と、初心者が100%ハマる「整数の罠」</div>
+        <p>
+          C#の基本演算子は以下の5つです。
+        </p>
+        <ul style="padding-left: 20px; font-size: 13px; color: #cbd5e1; margin-bottom: 14px;">
+          <li style="margin-bottom: 4px;"><strong><code>+</code>（加算）</strong>: フェードイン時の音量加算、テンポのディレイ時間加算など</li>
+          <li style="margin-bottom: 4px;"><strong><code>-</code>（減算）</strong>: フェードアウト時の音量減算、残り再生時間のカウントダウンなど</li>
+          <li style="margin-bottom: 4px;"><strong><code>*</code>（乗算）</strong>: マスターボリューム × カテゴリ音量 × オブジェクト音量の多重ゲイン計算</li>
+          <li style="margin-bottom: 4px;"><strong><code>/</code>（除算）</strong>: 正規化（0〜100%の値を0.0〜1.0fに変換）、パンの均等配分など</li>
+          <li style="margin-bottom: 4px;"><strong><code>%</code>（剰余）</strong>: 割り算の「余り」を計算。4拍子の拍頭ループや、ボイスの巡回選択に超便利！</li>
+        </ul>
+
+        <div class="warning-box">
+          <div class="warning-title">⚠️ 超危険！ 現場初心者が100%引っかかる「整数の割り算事故」</div>
+          <p style="margin: 0; font-size: 13px; line-height: 1.6;">
+            例えば、プレイヤーの残りHP（50 / 100）に応じてBGMの音量を 0.5f に下げたいとします。<br>
+            以下のコードを書くと、<strong>信じられないことに音量が「0.0f（完全無音）」になってしまいます！</strong><br><br>
+            <code>int currentHP = 50;</code><br>
+            <code>int maxHP = 100;</code><br>
+            <code>float bgmVol = currentHP / maxHP; // ← ★結果は 0.5 ではなく 0 になる！！</code><br><br>
+            <strong>【理由】</strong> C#では<strong>「整数（int）÷ 整数（int）」の計算結果は必ず「整数（int）」になるルール</strong>があるため、小数点以下の <code>0.5</code> が無慈悲に切り捨てられて <code>0</code> になってしまうのです！<br>
+            <strong>【完全回避策】</strong> どちらか片方を float（小数）にして計算させます：<br>
+            <code>float bgmVol = (float)currentHP / maxHP; // 0.5f になる！</code><br>
+            <code>float bgmVol = currentHP / (float)maxHP; // これでもOK！</code><br>
+            <code>float bgmVol = 1.0f * currentHP / maxHP; // 1.0fを掛けて小数化してもOK！</code>
+          </p>
+        </div>
+      </div>
+
+      <!-- パート3: %（モジュロ）の音楽的活用法 -->
+      <div class="section-block">
+        <div class="section-title">🎵 %（モジュロ・余り）の音楽的魔法: 「小節ビート」と「ボイス巡回」</div>
+        <p>
+          割り算の余りを出す <code>%</code> は、サウンドプログラミングで驚くほど多用されます！
+        </p>
+
+        <pre><code><span class="c-cm">// ① 4拍子の拍頭（1拍目、2拍目、3拍目、4拍目）のループ検出</span>
+<span class="c-kw">int</span> <span class="c-param">beat</span> = <span class="c-param">totalTicks</span> % <span class="c-num">4</span>; <span class="c-cm">// 0, 1, 2, 3, 0, 1, 2, 3... と永遠に繰り返す！</span>
+<span class="c-kw">if</span> (<span class="c-param">beat</span> == <span class="c-num">0</span>)
+{
+    <span class="c-fn">PlayMetronomeAccented</span>(); <span class="c-cm">// 1拍目のアクセント音（チーン）</span>
+}
+
+<span class="c-cm">// ② 16チャンネル・ボイスプールのラウンドロビン（順繰り）再生</span>
+<span class="c-kw">private int</span> <span class="c-param">currentVoiceIndex</span> = <span class="c-num">0</span>;
+<span class="c-kw">public void</span> <span class="c-fn">PlayNextSE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>)
+{
+    <span class="c-param">voicePool</span>[<span class="c-param">currentVoiceIndex</span>].<span class="c-fn">PlayOneShot</span>(<span class="c-param">clip</span>);
+    <span class="c-cm">// % 16 を使うことで、15の次は自動的に0番へ戻る（配列オーバー事故を完全防止！）</span>
+    <span class="c-param">currentVoiceIndex</span> = (<span class="c-param">currentVoiceIndex</span> + <span class="c-num">1</span>) % <span class="c-num">16</span>;
+}
+</code></pre>
+      </div>
+
+      <!-- パート4: インクリメント（++ / --）と同時発音数リミッター -->
+      <div class="section-block">
+        <div class="section-title">🔢 インクリメント（++ / --）: ボイスカウンターと発音制限</div>
+        <p>
+          数値を素早く +1 する <code>++</code> と、-1 する <code>--</code> は、<strong>「今ゲーム中で効果音が何個鳴っているか」</strong>を監視するボイスリミッターで大活躍します。
+        </p>
+
+        <pre><code><span class="c-kw">private int</span> <span class="c-param">activeVoiceCount</span> = <span class="c-num">0</span>;
+<span class="c-kw">private const int</span> <span class="c-param">MAX_VOICES</span> = <span class="c-num">24</span>; <span class="c-cm">// 最大同時発音数は24ボイスまで</span>
+
+<span class="c-kw">public void</span> <span class="c-fn">OnSoundStarted</span>()
+{
+    <span class="c-param">activeVoiceCount</span>++; <span class="c-cm">// 音が鳴ったのでカウントを+1</span>
+    <span class="c-kw">if</span> (<span class="c-param">activeVoiceCount</span> &gt; <span class="c-param">MAX_VOICES</span>)
+    {
+        <span class="c-fn">StopOldestVoice</span>(); <span class="c-cm">// 音割れ防止のため一番古い音を強制停止</span>
+    }
+}
+
+<span class="c-kw">public void</span> <span class="c-fn">OnSoundFinished</span>()
+{
+    <span class="c-param">activeVoiceCount</span>--; <span class="c-cm">// 音が終わったのでカウントを-1</span>
+}
+</code></pre>
+      </div>
+
+      <!-- パート5: 比較演算子と「小数の誤差」問題 -->
+      <div class="section-block">
+        <div class="section-title">⚖️ 比較演算子（==, !=, &lt;, &gt;, &lt;=, &gt;=）と小数の誤差</div>
+        <p>
+          音量チェックやリミッター処理で欠かせない比較演算子ですが、<strong>小数の比較には重大な注意点</strong>があります。
+        </p>
+
+        <div class="warning-box">
+          <div class="warning-title">⚠️ float（小数）で == 1.0f の一致判定をしてはいけない理由</div>
+          <p style="margin: 0; font-size: 13px; line-height: 1.6;">
+            コンピュータの内部では、小数を2進数で近似計算しているため、<code>0.1f + 0.2f</code> は厳密には <code>0.30000004f</code> のような極微小なゴミ誤差を含みます。<br>
+            そのため、フェードイン処理で <code>if (volume == 1.0f)</code> と判定を書くと、<strong>実際には <code>0.999999f</code> や <code>1.000001f</code> になって永遠に一致せず、フェード終了判定をすり抜けてしまう事故</strong>が頻発します！<br><br>
+            <strong>【現場の鉄則】</strong><br>
+            ・上限判定には必ず <code>&gt;= 1.0f</code>（以上）を使う！<br>
+            ・下限判定には必ず <code>&lt;= 0.0f</code>（以下）を使う！<br>
+            ・もしどうしても厳密に近いか比べたいときは、Unityの <code>Mathf.Approximately(vol, 1.0f)</code> を使う！
+          </p>
+        </div>
+      </div>
+
+      <!-- パート6: 論理演算子（&&, ||, !）によるスマートな再生条件 -->
+      <div class="section-block">
+        <div class="section-title">⚡ 論理演算子（&&, ||, !）: 直列パッチと並列パッチ</div>
+        <p>
+          複数の条件を組み合わせる論理演算子は、音響機材のケーブル配線と同じです。
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin: 14px 0;">
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px;">
+            <div style="font-weight: bold; color: var(--accent-cyan); font-size: 13px; margin-bottom: 6px;">
+              ① &&（AND 直列接続）: すべてを満たすときだけ
+            </div>
+            <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 0;">
+              <code>if (isPlaying && isBoss)</code><br>
+              「BGMが再生中」かつ「ボス戦」の両方が揃ったときだけ処理を実行します。
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px;">
+            <div style="font-weight: bold; color: var(--accent-green); font-size: 13px; margin-bottom: 6px;">
+              ② ||（OR 並列接続）: どちらか一方でも
+            </div>
+            <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 0;">
+              <code>if (isMuted || masterVol &lt;= 0f)</code><br>
+              「ミュートされている」または「音量が0以下」のどちらか一方でも当てはまれば無音処理へ。
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px;">
+            <div style="font-weight: bold; color: var(--accent-amber); font-size: 13px; margin-bottom: 6px;">
+              ③ !（NOT 位相反転）: 〜でない場合
+            </div>
+            <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 0;">
+              <code>if (!audioSource.isPlaying)</code><br>
+              「再生中ではない（停止している）」空きボイスを探すときに直感的に書けます。
+            </p>
+          </div>
+        </div>
+
+        <h4 style="font-size: 14px; color: #ffffff; margin: 16px 0 6px;">✨ プロの現場技法: 「ガード節（Early Return）」でネストを浅くする！</h4>
+        <p>
+          if文の中にif文を何重にも入れ子（ネスト）にすると、コードが右へどんどん深くなって読みにくくなります。<br>
+          プロは <code>!</code> を使って「ダメな条件なら最初にすぐ追い返す（return）」という書き方をします。
+        </p>
+
+        <pre><code><span class="c-cm">// ❌ 初心者の深い入れ子コード（読みにくい）</span>
+<span class="c-kw">public void</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>)
+{
+    <span class="c-kw">if</span> (<span class="c-param">clip</span> != <span class="c-kw">null</span>)
+    {
+        <span class="c-kw">if</span> (!<span class="c-param">isMuted</span>)
+        {
+            <span class="c-kw">if</span> (<span class="c-param">audioSource</span> != <span class="c-kw">null</span>)
+            {
+                <span class="c-param">audioSource</span>.<span class="c-fn">PlayOneShot</span>(<span class="c-param">clip</span>);
+            }
+        }
+    }
+}
+
+<span class="c-cm">// ✅ プロのスマートなガード節（平坦で超読みやすい！）</span>
+<span class="c-kw">public void</span> <span class="c-fn">PlaySE</span>(<span class="c-type">AudioClip</span> <span class="c-param">clip</span>)
+{
+    <span class="c-kw">if</span> (<span class="c-param">clip</span> == <span class="c-kw">null</span> || <span class="c-param">isMuted</span> || <span class="c-param">audioSource</span> == <span class="c-kw">null</span>) <span class="c-kw">return</span>; <span class="c-cm">// ダメなら1行で門前払い！</span>
+
+    <span class="c-param">audioSource</span>.<span class="c-fn">PlayOneShot</span>(<span class="c-param">clip</span>); <span class="c-cm">// 本命の処理にすぐ到達！</span>
+}
+</code></pre>
+      </div>
+
+      <!-- パート7: プロが毎日使う3大スーパー便利記号（?. と ?? と =>） -->
+      <div class="section-block">
+        <div class="section-title">🌟 C#プロ御用達！ 現場の3大スーパー便利記号</div>
+        <p>
+          モダンなC#コードで頻出する、書くだけで劇的にコードが安全＆短くなる3つの記号です。
+        </p>
+
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin: 14px 0;">
+          <div style="font-weight: 800; color: var(--accent-cyan); font-size: 14px; margin-bottom: 8px;">
+            ① <code>?.</code>（Null条件演算子 / エルビス演算子）: クラッシュ即死を完全防止！
+          </div>
+          <p style="font-size: 13px; color: #cbd5e1;">
+            もし左側のオブジェクトが null（空っぽ）なら、右側の処理を実行せずに何事もなかったかのようにスルーします。
+          </p>
+          <pre style="margin: 8px 0;"><code><span class="c-cm">// SoundManagerが存在するときだけPlaySEを呼ぶ（存在しなければエラーにならず何もしない）</span>
+<span class="c-type">SoundManager</span>.<span class="c-param">Instance</span>?.<span class="c-fn">PlaySE</span>(<span class="c-param">slashClip</span>);
+</code></pre>
+
+          <div style="font-weight: 800; color: var(--accent-green); font-size: 14px; margin: 18px 0 8px 0;">
+            ② <code>??</code>（Null合体演算子）: 予備回線への自動フェイルオーバー！
+          </div>
+          <p style="font-size: 13px; color: #cbd5e1;">
+            左側の値が null だった場合、右側のデフォルト値（予備）を採用します。
+          </p>
+          <pre style="margin: 8px 0;"><code><span class="c-cm">// customClipがセットされていなければ、デフォルトの「ピッ」という効果音を鳴らす</span>
+<span class="c-type">AudioClip</span> <span class="c-param">clipToPlay</span> = <span class="c-param">customClip</span> ?? <span class="c-param">defaultBeepClip</span>;
+</code></pre>
+
+          <div style="font-weight: 800; color: var(--accent-amber); font-size: 14px; margin: 18px 0 8px 0;">
+            ③ <code>=&gt;</code>（ラムダ式 / 式形式のメンバー）: プロパティや関数を1行に凝縮！
+          </div>
+          <p style="font-size: 13px; color: #cbd5e1;">
+            <code>{ get { return ...; } }</code> のような冗長な記述を、1本の矢印（アロー）で超スマートに書けます。
+          </p>
+          <pre style="margin: 8px 0;"><code><span class="c-cm">// 「音量が0以下ならミュート中とみなす」プロパティを1行で定義！</span>
+<span class="c-kw">public bool</span> <span class="c-param">IsMuted</span> =&gt; <span class="c-param">masterVolume</span> &lt;= <span class="c-num">0.0f</span>;
+
+<span class="c-cm">// 1行の停止関数もアローでスッキリ！</span>
+<span class="c-kw">public void</span> <span class="c-fn">StopAll</span>() =&gt; <span class="c-param">audioSource</span>.<span class="c-fn">Stop</span>();
+</code></pre>
+        </div>
+      </div>
+
+      <!-- パート8: 理解度クイズ -->
+      <div class="quiz-box">
+        <div class="quiz-title">🎯 サウンドコーディング理解度チェック（第7問）</div>
+        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">
+          <strong>問題:</strong> ゲームの残り制限時間（<code>int remainingSeconds = 30;</code>、<code>int totalSeconds = 60;</code>）に応じて、時間切れが近づくほど警告BGMのピッチを 1.0f から徐々に上げようとしました。<br>
+          以下のコードを実行したところ、ピッチがまったく変化しない（1.0fのまま）バグが発生しました。原因は何でしょう？<br><br>
+          <code>float progress = remainingSeconds / totalSeconds;</code><br>
+          <code>audioSource.pitch = 1.0f + (1.0f - progress);</code>
+        </p>
+
+        <button class="quiz-btn" onclick="checkAnswer7(1)">
+          A. <code>audioSource.pitch</code> に小数を代入することがC#で禁止されているから。
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer7(2)">
+          B. <code>remainingSeconds / totalSeconds</code> が整数同士の割り算（int / int）になっているため、30 / 60 の結果が 0.5 ではなく 0 に切り捨てられてしまい、progress が常に 0.0f になっているから。
+        </button>
+        <button class="quiz-btn" onclick="checkAnswer7(3)">
+          C. <code>+</code> 演算子は足し算ではなく文字列結合にしか使えないから。
+        </button>
+
+        <div id="feedback7-correct" class="quiz-feedback" style="background: rgba(52, 211, 153, 0.15); border: 1px solid var(--accent-green); color: #a7f3d0;">
+          🎉 <strong>大正解！ B です！</strong><br>
+          これこそが現場で最も多発する「整数の割り算事故」です！<br>
+          <code>30 / 60</code> は数学的には <code>0.5</code> ですが、C#のint同士の計算では小数点以下がバッサリ切り捨てられて <code>0</code> になります。<br>
+          正しく動かすには、<code>(float)remainingSeconds / totalSeconds</code> のようにキャストして小数計算を強制する必要があります。
+        </div>
+
+        <div id="feedback7-wrong" class="quiz-feedback" style="background: rgba(248, 113, 113, 0.15); border: 1px solid var(--accent-red); color: #fca5a5;">
+          ❌ <strong>違います！</strong><br>
+          pitch に小数を代入することも、+ で数値を足すことも完全に正しい文法です。<br>
+          「整数（int）同士を割り算したとき、小数点以下の数値はどうなってしまうか」をもう一度思い出してみましょう！
+        </div>
+      </div>
+    </article>
+
     </div> <!-- /view-qa -->
 
     <!-- ========================================== -->
@@ -2974,6 +3256,16 @@ audioSource.Play();`,
     function checkAnswer6(choice) {
       const correctBox = document.getElementById('feedback6-correct');
       const wrongBox = document.getElementById('feedback6-wrong');
+      if (choice === 2) {
+        correctBox.style.display = 'block'; wrongBox.style.display = 'none';
+      } else {
+        correctBox.style.display = 'none'; wrongBox.style.display = 'block';
+      }
+    }
+
+    function checkAnswer7(choice) {
+      const correctBox = document.getElementById('feedback7-correct');
+      const wrongBox = document.getElementById('feedback7-wrong');
       if (choice === 2) {
         correctBox.style.display = 'block'; wrongBox.style.display = 'none';
       } else {
